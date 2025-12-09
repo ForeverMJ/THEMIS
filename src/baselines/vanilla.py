@@ -7,9 +7,11 @@ from src.state import AgentState
 
 
 def build_app(llm_model: str = "gpt-4o-mini"):
+    # ループなしのシンプルな直接プロンプトベースライン
     llm = ChatOpenAI(model=llm_model, temperature=0)
 
     def simple_fixer(state: AgentState) -> AgentState:
+        # 要件とコードを提示して一度だけ修正を生成
         code_blob = "\n\n".join(state["files"].values())
         prompt = (
             "Here is the code and the requirement. Fix the code. Return the full content.\n\n"

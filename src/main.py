@@ -10,16 +10,18 @@ from src.graph_manager import GraphManager
 from src.state import AgentState
 
 
-MAX_REVISIONS = 3
+MAX_REVISIONS = 3  # 修正ループの最大回数
 
 
 def build_workflow(llm_model: str = "gpt-5-mini") -> StateGraph:
+    # LangGraph のメインワークフローを組み立てる
     llm = ChatOpenAI(model=llm_model, temperature=0)
     graph_manager = GraphManager()
     developer = DeveloperAgent(llm)
     judge = JudgeAgent(llm)
 
     def initial_graph_builder_node(state: AgentState) -> AgentState:
+        # 初期コードからベースライン KG を構築
         code_blob = "\n\n".join(state["files"].values())
         structural_graph = graph_manager.parse_code_structure(code_blob)
         baseline_graph = graph_manager.enrich_with_requirements(
@@ -32,6 +34,7 @@ def build_workflow(llm_model: str = "gpt-5-mini") -> StateGraph:
         return new_state
 
     def developer_node(state: AgentState) -> AgentState:
+        # Developer が要件/矛盾レポートを見てコードを修正
         updated_files = developer.revise(
             state["files"], state["requirements"], state.get("conflict_report")
         )
@@ -41,6 +44,7 @@ def build_workflow(llm_model: str = "gpt-5-mini") -> StateGraph:
         return new_state
 
     def graph_builder_node(state: AgentState) -> AgentState:
+        # 修正後コードから KG を再構築
         code_blob = "\n\n".join(state["files"].values())
         structural_graph = graph_manager.parse_code_structure(code_blob)
         enriched_graph = graph_manager.enrich_with_requirements(
@@ -51,6 +55,7 @@ def build_workflow(llm_model: str = "gpt-5-mini") -> StateGraph:
         return new_state
 
     def judge_node(state: AgentState) -> AgentState:
+        # ベースラインと現在の KG を比較し矛盾を判定
         report = judge.evaluate(
             state["knowledge_graph"], state["requirements"], baseline_graph=state.get("baseline_graph")
         )
@@ -61,6 +66,7 @@ def build_workflow(llm_model: str = "gpt-5-mini") -> StateGraph:
         return new_state
 
     def should_revise(state: AgentState) -> str:
+        # 矛盾があれば再度 Developer に戻す
         if state.get("conflict_report") and state.get("revision_count", 0) < MAX_REVISIONS:
             return "revise"
         return "end"

@@ -26,6 +26,7 @@ class JudgeAgent:
         )
 
     def _hard_check(self, graph: nx.DiGraph) -> str | None:
+        # 明示的な VIOLATES エッジがあるかチェック（第一段階）
         violating = [
             (u, v, d) for u, v, d in graph.edges(data=True) if d.get("type") == "VIOLATES"
         ]
@@ -38,6 +39,7 @@ class JudgeAgent:
     def _soft_check(
         self, graph: nx.DiGraph, requirements: str, baseline_graph: nx.DiGraph | None
     ) -> str:
+        # ソフトチェック：エッジをテキスト化して LLM に最終判断を委ねる
         edge_descriptions = [
             f"{u} -[{d.get('type')}]-> {v}" for u, v, d in graph.edges(data=True)
         ]
@@ -62,6 +64,7 @@ class JudgeAgent:
     def evaluate(
         self, graph: nx.DiGraph, requirements: str, baseline_graph: nx.DiGraph | None = None
     ) -> str | None:
+        # ハードチェック→ソフトチェックの順で矛盾を判定
         hard_result = self._hard_check(graph)
         if hard_result:
             return hard_result

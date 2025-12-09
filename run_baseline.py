@@ -7,6 +7,7 @@ from src.baselines.vanilla import app
 
 
 def load_text(path: Path) -> str:
+    # ファイル読み込み（UTF-8 前提）
     if not path.exists():
         raise FileNotFoundError(f"Missing file: {path}")
     return path.read_text(encoding="utf-8")
@@ -30,6 +31,7 @@ def main() -> None:
         "revision_count": 0,
     }
 
+    # ベースライン (vanilla) を実行
     final_state = app.invoke(initial_state)
     final_code = final_state["files"][target_filename]
 

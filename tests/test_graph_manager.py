@@ -2,6 +2,8 @@ import networkx as nx
 
 from src.graph_manager import GraphManager
 
+# GraphManager の AST 抽出と要件付与の基本動作を確認するテスト
+
 
 def test_parse_code_structure_extracts_nodes_and_calls():
     code = '''

@@ -10,19 +10,23 @@ from src.state import AgentState
 
 
 class FileEdit(BaseModel):
+    # 1 ファイル分の修正内容
     filename: str
     content: str
 
 
 class CodebaseUpdate(BaseModel):
+    # 複数ファイルの修正結果
     files: List[FileEdit]
 
 
 def build_app(llm_model: str = "gpt-4o-mini") -> StateGraph:
+    # Reflexion: Generator と Critic のシンプルな往復ループ
     llm_generator = ChatOpenAI(model=llm_model, temperature=0).with_structured_output(CodebaseUpdate)
     llm_critic = ChatOpenAI(model=llm_model, temperature=0)
 
     def generator(state: AgentState) -> AgentState:
+        # Critic からの指摘を踏まえコードを再生成
         critique = state.get("conflict_report") or ""
         files_text = "\n\n".join(f"## {name}\n{content}" for name, content in state["files"].items())
         prompt = f"""You are a coder. Fix the code. If there is a critique, address it.
@@ -45,6 +49,7 @@ Return the full updated files in JSON with fields 'files': [{{'filename': str, '
         return new_state
 
     def critic(state: AgentState) -> AgentState:
+        # 要件に照らしてコードを確認し、APPROVE か短い批評を返す
         files_text = "\n\n".join(f"## {name}\n{content}" for name, content in state["files"].items())
         prompt = f"""You are a reviewer. Check if the code satisfies the requirements. If it is acceptable, reply with APPROVE.
 Otherwise, provide a short critique explaining what is wrong.

@@ -6,11 +6,13 @@ from pydantic import BaseModel
 
 
 class FileEdit(BaseModel):
+    # 1 ファイル分の修正内容
     filename: str
     content: str
 
 
 class DevOutput(BaseModel):
+    # 複数ファイル分の修正結果
     files: List[FileEdit]
 
 

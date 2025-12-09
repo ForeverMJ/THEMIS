@@ -10,12 +10,14 @@ from pydantic import BaseModel, Field
 
 
 class RequirementEdge(BaseModel):
+    # 要件ノードとコードノードを結ぶエッジの定義
     requirement: str = Field(..., description="Identifier of the requirement node")
     target: str = Field(..., description="Target code node name")
     relation: str = Field(..., description="Relation type, e.g., SATISFIES or VIOLATES")
 
 
 class GraphAugmentation(BaseModel):
+    # LLM が生成する追加ノードとエッジの入れ物
     requirement_nodes: List[str] = Field(
         default_factory=list, description="Requirement node identifiers to add"
     )
@@ -28,6 +30,7 @@ class GraphManager:
     """Builds and augments a knowledge graph combining code structure and requirements."""
 
     def parse_code_structure(self, code: str) -> nx.DiGraph:
+        # AST から関数・クラスと CALLS エッジを抽出する（構造情報のみ）
         graph = nx.DiGraph()
         tree = ast.parse(code)
 
