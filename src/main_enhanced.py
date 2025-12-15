@@ -12,9 +12,12 @@ from src.agents.developer import DeveloperAgent
 from src.agents.judge import JudgeAgent
 from src.enhanced_graph_adapter import EnhancedGraphAdapter
 from src.state import AgentState
+from dotenv import load_dotenv
+# Ensure .env values override any previously set (possibly malformed) env vars
+load_dotenv(override=True)
 
 
-MAX_REVISIONS = 3  # 修正ループの最大回数
+MAX_REVISIONS = 2  # 修正ループの最大回数
 
 
 def build_workflow(llm_model: str = "gpt-5-mini") -> StateGraph:

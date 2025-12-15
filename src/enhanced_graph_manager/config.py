@@ -14,7 +14,7 @@ class EnhancedGraphManagerConfig:
     extract_type_hints: bool = True
     
     # Semantic injection settings
-    llm_model: str = "gpt-3.5-turbo"
+    llm_model: str = "gpt-5-mini"
     max_requirement_length: int = 1000
     requirement_priority_threshold: int = 5
     

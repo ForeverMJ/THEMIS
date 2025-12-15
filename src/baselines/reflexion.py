@@ -72,7 +72,7 @@ Code:
         return new_state
 
     def should_continue(state: AgentState) -> str:
-        if state.get("conflict_report") and state.get("revision_count", 0) <= 3:
+        if state.get("conflict_report") and state.get("revision_count", 0) < 3:
             return "revise"
         return "end"
 

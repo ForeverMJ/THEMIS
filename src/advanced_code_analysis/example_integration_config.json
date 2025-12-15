@@ -1,0 +1,65 @@
+{
+  "llm": {
+    "provider": "openai",
+    "model_name": "gpt-5-mini",
+    "max_tokens": 4096,
+    "temperature": 0.1,
+    "timeout": 30,
+    "max_retries": 3,
+    "retry_delay": 1.0
+  },
+  "analysis": {
+    "max_context_tokens": 8000,
+    "confidence_threshold": 0.7,
+    "max_reasoning_rounds": 5,
+    "enable_pattern_learning": true,
+    "enable_conflict_detection": true,
+    "enable_multi_round_reasoning": true,
+    "classification_confidence_threshold": 0.6,
+    "max_classification_attempts": 3,
+    "max_related_functions": 10,
+    "max_dependency_depth": 3,
+    "include_test_files": false,
+    "pattern_similarity_threshold": 0.8,
+    "max_stored_patterns": 1000,
+    "pattern_cleanup_interval": 100
+  },
+  "storage": {
+    "patterns_db_path": "data/bug_patterns.json",
+    "feedback_db_path": "data/classification_feedback.json",
+    "cache_dir": "cache/advanced_analysis",
+    "enable_caching": true,
+    "cache_ttl_hours": 24
+  },
+  "logging": {
+    "log_level": "INFO",
+    "log_file": "logs/advanced_analysis.log",
+    "enable_console_logging": true,
+    "enable_file_logging": true,
+    "log_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  },
+  "integration": {
+    "enable_graph_context_enhancement": true,
+    "enable_semantic_requirement_mapping": true,
+    "enable_dependency_aware_analysis": true,
+    "enable_violation_guided_analysis": true,
+    "use_graph_for_bug_classification": true,
+    "use_graph_for_concept_mapping": true,
+    "use_graph_for_pattern_matching": true,
+    "max_graph_nodes_for_analysis": 1000,
+    "max_dependency_depth_for_context": 5,
+    "enable_parallel_graph_analysis": false,
+    "fallback_to_basic_analysis": true,
+    "fallback_confidence_threshold": 0.3,
+    "merge_analysis_results": true,
+    "preserve_graph_structure": true,
+    "add_analysis_nodes_to_graph": false
+  },
+  "integrate_with_enhanced_graph_manager": true,
+  "fallback_to_basic_analysis": true,
+  "parallel_analysis": false,
+  "max_concurrent_requests": 3,
+  "debug_mode": false,
+  "save_intermediate_results": false,
+  "verbose_logging": false
+}

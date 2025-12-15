@@ -8,6 +8,8 @@ from src.agents.developer import DeveloperAgent
 from src.agents.judge import JudgeAgent
 from src.graph_manager import GraphManager
 from src.state import AgentState
+from dotenv import load_dotenv
+load_dotenv()
 
 
 MAX_REVISIONS = 3  # 修正ループの最大回数

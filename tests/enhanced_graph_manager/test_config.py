@@ -14,7 +14,7 @@ class TestEnhancedGraphManagerConfig:
         assert config.max_ast_depth == 100
         assert config.extract_docstrings is True
         assert config.extract_type_hints is True
-        assert config.llm_model == "gpt-3.5-turbo"
+        assert config.llm_model == "gpt-5-mini"
         assert config.max_requirement_length == 1000
         assert config.requirement_priority_threshold == 5
         assert config.max_dependency_depth == 50
@@ -28,12 +28,12 @@ class TestEnhancedGraphManagerConfig:
         """Test creating config with custom values."""
         config = EnhancedGraphManagerConfig(
             max_ast_depth=200,
-            llm_model="gpt-4",
+            llm_model="gpt-5-mini",
             violation_confidence_threshold=0.8
         )
         
         assert config.max_ast_depth == 200
-        assert config.llm_model == "gpt-4"
+        assert config.llm_model == "gpt-5-mini"
         assert config.violation_confidence_threshold == 0.8
         # Other values should remain default
         assert config.extract_docstrings is True
@@ -53,7 +53,7 @@ class TestEnhancedGraphManagerConfig:
         """Test creating config from dictionary."""
         config_dict = {
             "max_ast_depth": 300,
-            "llm_model": "gpt-4-turbo",
+            "llm_model": "gpt-5-mini",
             "violation_confidence_threshold": 0.9,
             "extract_docstrings": False,
             "extract_type_hints": True,
@@ -69,7 +69,7 @@ class TestEnhancedGraphManagerConfig:
         config = EnhancedGraphManagerConfig.from_dict(config_dict)
         
         assert config.max_ast_depth == 300
-        assert config.llm_model == "gpt-4-turbo"
+        assert config.llm_model == "gpt-5-mini"
         assert config.violation_confidence_threshold == 0.9
         assert config.extract_docstrings is False
         assert config.trace_external_imports is True
