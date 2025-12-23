@@ -6,7 +6,7 @@ from langgraph.graph import END, StateGraph
 from src.state import AgentState
 
 
-def build_app(llm_model: str = "gpt-4o-mini"):
+def build_app(llm_model: str = "gpt-5-mini"):
     # ループなしのシンプルな直接プロンプトベースライン
     llm = ChatOpenAI(model=llm_model, temperature=0)
 

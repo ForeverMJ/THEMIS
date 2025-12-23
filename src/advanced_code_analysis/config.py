@@ -15,22 +15,46 @@ import os
 class LLMConfig:
     """Configuration for LLM API integration."""
     provider: str = "openai"  # openai, anthropic, local, etc.
-    model_name: str = "gpt-5-mini"
+    model_name: str = "gpt-4o-mini"  # 稳定的默认模型
     api_key: Optional[str] = None
     api_base: Optional[str] = None
+    # 最大トークン数（completion 上限）
     max_completion_tokens: int = 4096
+    # 互換性: 旧設定キーで上書きしたい場合に使用
+    legacy_max_completion_tokens: Optional[int] = None
     temperature: float = 0.1
-    timeout: int = 30
-    max_retries: int = 3
+    timeout: int = 100
+    max_retries: int = 4
     retry_delay: float = 1.0
     
+    @property
+    def max_tokens(self) -> int:
+        """Alias for max_completion_tokens for backward compatibility."""
+        return self.max_completion_tokens
+    
     def __post_init__(self):
-        """Load API key from environment if not provided."""
+        """Load configuration from environment if not provided."""
+        # 从环境变量读取模型配置（支持快速切换）
+        env_model = os.getenv("LLM_MODEL")
+        env_provider = os.getenv("LLM_PROVIDER")
+        
+        # 如果环境变量存在，总是使用环境变量的值（优先级更高）
+        if env_model:
+            self.model_name = env_model
+        
+        if env_provider:
+            self.provider = env_provider
+        
+        # Load API key from environment if not provided
         if self.api_key is None:
             if self.provider == "openai":
                 self.api_key = os.getenv("OPENAI_API_KEY")
             elif self.provider == "anthropic":
                 self.api_key = os.getenv("ANTHROPIC_API_KEY")
+        
+        # 互換性: 古い設定で max_completion_tokens（legacy）が渡された場合に上書き
+        if self.legacy_max_completion_tokens is not None:
+            self.max_completion_tokens = self.legacy_max_completion_tokens
 
 
 @dataclass
@@ -197,7 +221,7 @@ class AdvancedAnalysisConfig:
             'llm': {
                 'provider': self.llm.provider,
                 'model_name': self.llm.model_name,
-                'max_tokens': self.llm.max_tokens,
+                'max_completion_tokens': self.llm.max_completion_tokens,
                 'temperature': self.llm.temperature,
                 'timeout': self.llm.timeout,
                 'max_retries': self.llm.max_retries,
@@ -267,8 +291,8 @@ class AdvancedAnalysisConfig:
         if not self.llm.api_key and self.llm.provider in ['openai', 'anthropic']:
             issues.append(f"API key required for {self.llm.provider} provider")
         
-        if self.llm.max_tokens <= 0:
-            issues.append("max_tokens must be positive")
+        if self.llm.max_completion_tokens <= 0:
+            issues.append("max_completion_tokens must be positive")
         
         if not 0.0 <= self.llm.temperature <= 2.0:
             issues.append("temperature must be between 0.0 and 2.0")
@@ -284,7 +308,7 @@ class AdvancedAnalysisConfig:
             issues.append("max_context_tokens must be positive")
         
         # Validate that context tokens don't exceed LLM max tokens
-        if self.analysis.max_context_tokens > self.llm.max_tokens:
-            issues.append("max_context_tokens cannot exceed LLM max_tokens")
+        if self.analysis.max_context_tokens > self.llm.max_completion_tokens:
+            issues.append("max_context_tokens cannot exceed LLM max_completion_tokens")
         
         return issues

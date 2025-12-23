@@ -89,17 +89,73 @@ class OpenAIProvider(LLMProvider):
     async def generate(self, prompt: str, **kwargs) -> LLMResponse:
         """Generate response using OpenAI API."""
         client = self._get_client()
-        
-        # Prepare request parameters
+        start_time = time.time()
+
+        # gpt-5 系は responses API を使い、temperature=1固定かつ max_tokens
+        if self.config.model_name.startswith("gpt-5"):
+            # max_tokens 现在是 max_completion_tokens 的属性别名
+            completion_value = kwargs.get("max_tokens", kwargs.get("max_completion_tokens", self.config.max_tokens))
+            
+            # Responses API 使用正确的参数名称
+            params = {
+                "model": self.config.model_name,
+                "input": prompt,
+                "max_output_tokens": completion_value,  # 使用 max_tokens 而不是 max_output_tokens
+                "temperature": 1,  # gpt-5 要求 temperature=1
+            }
+            
+            self.logger.debug(f"Calling responses API with model={self.config.model_name}, max_tokens={completion_value}")
+            
+            try:
+                response = await client.responses.create(**params)
+                response_time = time.time() - start_time
+
+                # 详细日志
+                self.logger.debug(f"Response received: type={type(response)}, has_output={hasattr(response, 'output')}")
+                
+                # レスポンスからテキストを抽出
+                content_text = self._extract_response_text(response)
+                
+                if not content_text or not content_text.strip():
+                    self.logger.warning(f"Empty response from gpt-5 API. Response object: {response}")
+                    # 尝试直接访问 response 的属性
+                    self.logger.debug(f"Response attributes: {dir(response)}")
+                    if hasattr(response, 'output'):
+                        self.logger.debug(f"Response.output: {response.output}")
+
+                return LLMResponse(
+                    content=content_text,
+                    usage={
+                        "prompt_tokens": getattr(response.usage, "input_tokens", 0) or 0,
+                        "completion_tokens": getattr(response.usage, "output_tokens", 0) or 0,
+                        "total_tokens": getattr(response.usage, "total_tokens", 0) or 0,
+                    },
+                    model=response.model,
+                    finish_reason=getattr(response, "finish_reason", "stop"),
+                    response_time=response_time,
+                    raw_response=response.model_dump() if hasattr(response, "model_dump") else None,
+                )
+            except Exception as e:
+                self.logger.error(f"OpenAI responses API error: {e}", exc_info=True)
+                if "timeout" in str(e).lower():
+                    raise LLMTimeoutError(f"Request timed out: {e}")
+                elif "rate limit" in str(e).lower():
+                    raise LLMRateLimitError(f"Rate limit exceeded: {e}")
+                else:
+                    raise LLMError(f"OpenAI API error: {e}")
+
+        # 従来の chat/completions
+        # Support both max_tokens and max_completion_tokens for compatibility
+        # max_tokens 现在是 max_completion_tokens 的属性别名
+        completion_value = kwargs.get("max_completion_tokens") or kwargs.get("max_tokens") or self.config.max_tokens
+        requested_temp = kwargs.get("temperature", self.config.temperature)
         params = {
             "model": self.config.model_name,
             "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": kwargs.get("max_tokens", self.config.max_tokens),
-            "temperature": kwargs.get("temperature", self.config.temperature),
+            "max_tokens": completion_value,
+            "temperature": requested_temp,
         }
-        
-        start_time = time.time()
-        
+
         try:
             response = await client.chat.completions.create(**params)
             response_time = time.time() - start_time
@@ -125,6 +181,77 @@ class OpenAIProvider(LLMProvider):
                 raise LLMRateLimitError(f"Rate limit exceeded: {e}")
             else:
                 raise LLMError(f"OpenAI API error: {e}")
+
+    def _extract_response_text(self, response: Any) -> str:
+        """Extract textual content from OpenAI responses output."""
+        # responses API: output -> content -> text
+        try:
+            if hasattr(response, "output"):
+                output = getattr(response, "output", [])
+                self.logger.debug(f"Response has output attribute, type={type(output)}, len={len(output) if hasattr(output, '__len__') else 'N/A'}")
+                
+                text_parts = []
+                
+                # 处理列表形式的 output
+                if isinstance(output, list):
+                    for i, item in enumerate(output):
+                        self.logger.debug(f"Processing output item {i}: type={type(item)}")
+                        
+                        # 尝试访问 content 属性
+                        if hasattr(item, "content"):
+                            content_list = getattr(item, "content", [])
+                            self.logger.debug(f"Item {i} has content: type={type(content_list)}, len={len(content_list) if hasattr(content_list, '__len__') else 'N/A'}")
+                            
+                            if isinstance(content_list, list):
+                                for j, content in enumerate(content_list):
+                                    self.logger.debug(f"Processing content {j}: type={type(content)}")
+                                    
+                                    # 尝试获取 text 属性
+                                    if hasattr(content, "text"):
+                                        text_val = getattr(content, "text", None)
+                                        if text_val:
+                                            self.logger.debug(f"Found text: {text_val[:100]}...")
+                                            text_parts.append(text_val)
+                                    # 如果 content 本身是字典
+                                    elif isinstance(content, dict) and "text" in content:
+                                        text_val = content["text"]
+                                        if text_val:
+                                            self.logger.debug(f"Found text in dict: {text_val[:100]}...")
+                                            text_parts.append(text_val)
+                        
+                        # 如果 item 本身是字典
+                        elif isinstance(item, dict):
+                            if "content" in item:
+                                content_list = item["content"]
+                                if isinstance(content_list, list):
+                                    for content in content_list:
+                                        if isinstance(content, dict) and "text" in content:
+                                            text_val = content["text"]
+                                            if text_val:
+                                                text_parts.append(text_val)
+                
+                if text_parts:
+                    result = "\n".join(text_parts)
+                    self.logger.debug(f"Extracted {len(text_parts)} text parts, total length={len(result)}")
+                    return result
+                else:
+                    self.logger.warning("No text parts found in output")
+        except Exception as e:
+            self.logger.error(f"Error extracting response text: {e}", exc_info=True)
+        
+        # Fallback attributes
+        for attr in ("output_text", "content", "message", "text"):
+            try:
+                val = getattr(response, attr, None)
+                if isinstance(val, str) and val.strip():
+                    self.logger.debug(f"Using fallback attribute '{attr}': {val[:100]}...")
+                    return val
+            except Exception:
+                continue
+        
+        # Final fallback - convert to string
+        self.logger.warning("All extraction methods failed, converting response to string")
+        return str(response)
     
     def validate_config(self) -> List[str]:
         """Validate OpenAI-specific configuration."""
@@ -134,7 +261,7 @@ class OpenAIProvider(LLMProvider):
             issues.append("OpenAI API key is required")
         
         if self.config.model_name not in [
-            "gpt-4", "gpt-4-turbo", "gpt-3.5-turbo", "gpt-4o", "gpt-4o-mini"
+            "gpt-4", "gpt-4-turbo", "gpt-3.5-turbo", "gpt-4o", "gpt-5-mini", "gpt-5-mini"
         ]:
             issues.append(f"Unknown OpenAI model: {self.config.model_name}")
         
@@ -167,10 +294,11 @@ class AnthropicProvider(LLMProvider):
         client = self._get_client()
         
         # Prepare request parameters
+        # Anthropic は max_completion_tokens が有効なので従来のまま。ただし gpt-5 系は対象外。
         params = {
             "model": self.config.model_name,
             "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": kwargs.get("max_tokens", self.config.max_tokens),
+            "max_completion_tokens": kwargs.get("max_completion_tokens", self.config.max_completion_tokens),
             "temperature": kwargs.get("temperature", self.config.temperature),
         }
         
@@ -260,6 +388,12 @@ class LLMInterface:
         self.config = config
         self.provider = self._create_provider()
         self.logger = logging.getLogger(__name__)
+
+        # Usage tracking (best-effort; depends on provider returning usage)
+        self.total_prompt_tokens: int = 0
+        self.total_completion_tokens: int = 0
+        self.total_tokens: int = 0
+        self.successful_requests: int = 0
     
     def _create_provider(self) -> LLMProvider:
         """Create appropriate provider based on configuration."""
@@ -292,6 +426,8 @@ class LLMInterface:
                 self.logger.debug(f"LLM request attempt {attempt + 1}")
                 response = await self.provider.generate(prompt_text, **kwargs)
                 self.logger.debug(f"LLM response received in {response.response_time:.2f}s")
+
+                self._record_usage(response)
                 return response
             
             except (LLMTimeoutError, LLMRateLimitError) as e:
@@ -315,6 +451,34 @@ class LLMInterface:
             raise last_exception
         else:
             raise LLMError("Unknown error in LLM request")
+
+    def _record_usage(self, response: LLMResponse) -> None:
+        """Record token usage from a successful response (best-effort)."""
+        try:
+            usage = response.usage or {}
+            self.total_prompt_tokens += int(usage.get("prompt_tokens", 0) or 0)
+            self.total_completion_tokens += int(usage.get("completion_tokens", 0) or 0)
+            self.total_tokens += int(usage.get("total_tokens", 0) or 0)
+            self.successful_requests += 1
+        except Exception:
+            # Usage tracking must never break the request flow.
+            pass
+
+    def get_usage_stats(self) -> Dict[str, int]:
+        """Get cumulative token usage stats for this interface instance."""
+        return {
+            "prompt_tokens": self.total_prompt_tokens,
+            "completion_tokens": self.total_completion_tokens,
+            "total_tokens": self.total_tokens,
+            "successful_requests": self.successful_requests,
+        }
+
+    def reset_usage_stats(self) -> None:
+        """Reset cumulative token usage stats."""
+        self.total_prompt_tokens = 0
+        self.total_completion_tokens = 0
+        self.total_tokens = 0
+        self.successful_requests = 0
     
     def _render_template(self, template: PromptTemplate, 
                         variables: Dict[str, Any]) -> str:
@@ -334,7 +498,9 @@ class LLMInterface:
     async def test_connection(self) -> bool:
         """Test connection to the LLM provider."""
         try:
-            response = await self.generate("Hello", max_tokens=10)
+            # gpt-5 系に配慮し completion キーを指定
+            completion_kwargs = {"max_completion_tokens": 10} if self.config.model_name.startswith("gpt-5") else {"max_completion_tokens": 10}
+            response = await self.generate("Hello", **completion_kwargs)
             return len(response.content) > 0
         except Exception as e:
             self.logger.error(f"Connection test failed: {e}")

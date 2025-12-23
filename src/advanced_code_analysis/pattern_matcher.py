@@ -110,7 +110,7 @@ class SemanticPatternDetector(PatternDetector):
         prompt = self._create_semantic_detection_prompt(code, context)
         
         try:
-            response = await self.llm_interface.generate(prompt, max_tokens=1000)
+            response = await self.llm_interface.generate(prompt, max_completion_tokens=1000)
             return self._parse_semantic_response(response.content)
         except Exception as e:
             logger.error(f"Semantic pattern detection failed: {e}")
@@ -177,8 +177,12 @@ Format your response as JSON:
     
     def _parse_semantic_response(self, response: str) -> List[Tuple[PatternRule, float]]:
         """Parse LLM response for detected patterns."""
+        response_text = (response or "").strip()
+        if not response_text:
+            logger.info("Semantic pattern response was empty")
+            return []
         try:
-            data = json.loads(response.strip())
+            data = json.loads(response_text)
             patterns = []
             
             for pattern_data in data.get("patterns", []):
@@ -195,10 +199,32 @@ Format your response as JSON:
                 confidence = float(pattern_data.get('confidence', 0.5))
                 patterns.append((rule, confidence))
             
-            return patterns
-        
+            return patterns        
         except (json.JSONDecodeError, KeyError, ValueError) as e:
-            logger.warning(f"Failed to parse semantic pattern response: {e}")
+            # Try to salvage JSON block if the model wrapped it with text
+            import re
+            match = re.search(r"\{.*\}", response_text, re.DOTALL)
+            if match:
+                try:
+                    data = json.loads(match.group(0))
+                    return [
+                        (
+                            PatternRule(
+                                rule_id=f"semantic_{p.get('type','unknown')}",
+                                name=p.get('type', 'unknown').replace('_', ' ').title(),
+                                description=p.get('explanation', ''),
+                                pattern_regex="",
+                                bug_category=self._map_pattern_to_category(p.get('type', 'unknown')),
+                                confidence_weight=1.0
+                            ),
+                            float(p.get('confidence', 0.5))
+                        )
+                        for p in data.get("patterns", [])
+                    ]
+                except Exception:
+                    pass
+            snippet = response_text[:200].replace("\n", " ")
+            logger.warning(f"Failed to parse semantic pattern response: {e}; snippet: {snippet}")
             return []
     
     def _map_pattern_to_category(self, pattern_type: str) -> BugCategory:
@@ -658,8 +684,21 @@ Provide analysis including:
             List of pattern matches with guidance
         """
         try:
-            # Detect patterns in the code
-            detected_rules = self.detect_patterns(context.target_code, context)
+            # Detect patterns in the code (run regex sync, semantic async to avoid event-loop warnings)
+            detected_rules: List[Tuple[PatternRule, float]] = []
+            regex_matches = self.regex_detector.detect_patterns(context.target_code, context)
+            detected_rules.extend(regex_matches)
+
+            if self.semantic_detector:
+                try:
+                    semantic_matches = await self.semantic_detector.detect_patterns_async(
+                        context.target_code, context
+                    )
+                    detected_rules.extend(semantic_matches)
+                except Exception as e:
+                    self.logger.warning(f"Semantic pattern detection failed: {e}")
+
+            detected_rules.sort(key=lambda x: x[1], reverse=True)
             
             # Match against stored bug patterns
             matched_patterns = self.match_bug_patterns(issue_text, context.target_code)

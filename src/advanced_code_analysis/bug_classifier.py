@@ -355,6 +355,15 @@ class BugClassifier:
         self.feedback_history: List[ClassificationFeedback] = []
         self.logger = logging.getLogger(__name__)
     
+    def _completion_kwargs(self, max_completion_tokens: int, temperature: float) -> Dict[str, Any]:
+        """
+        Build kwargs for LLMInterface.generate, adapting to gpt-5 系列が要求する
+        max_completion_tokens と temperature=1 の制約。
+        """
+        if self.config.llm.model_name.startswith("gpt-5"):
+            return {"max_completion_tokens": max_completion_tokens, "temperature": 1}
+        return {"max_completion_tokens": max_completion_tokens, "temperature": temperature}
+    
     async def classify_bug_type(self, issue_text: str, 
                                code_context: Optional[str] = None) -> ClassificationResult:
         """Classify the bug type based on issue description and optional code context."""
@@ -377,8 +386,7 @@ class BugClassifier:
                     "issue_text": issue_text,
                     "code_context": context
                 },
-                max_tokens=1000,
-                temperature=0.1
+                **self._completion_kwargs(1000, temperature=0.1)
             )
             
             # Parse response
@@ -470,8 +478,7 @@ class BugClassifier:
                     "characteristics": ", ".join(bug_type.characteristics),
                     "available_strategies": "\n".join(strategy_descriptions)
                 },
-                max_tokens=500,
-                temperature=0.1
+                **self._completion_kwargs(500, temperature=0.1)
             )
             
             # Parse strategy selection
@@ -572,8 +579,7 @@ Provide detailed analysis and suggestions for resolution.""",
                     "previous_classification": json.dumps(prev_classification, indent=2),
                     "additional_context": context
                 },
-                max_tokens=800,
-                temperature=0.05  # Lower temperature for refinement
+                **self._completion_kwargs(800, temperature=0.05)  # Lower temperature for refinement
             )
             
             # Parse refined classification
@@ -599,33 +605,42 @@ Provide detailed analysis and suggestions for resolution.""",
     def _parse_classification_response(self, response_content: str) -> Dict:
         """Parse LLM response for bug classification."""
         try:
-            # Try to extract JSON from the response
             import re
-            
-            # Look for JSON block
-            json_match = re.search(r'\{.*\}', response_content, re.DOTALL)
-            if json_match:
-                json_str = json_match.group(0)
-                data = json.loads(json_str)
-                
-                # Validate required fields
-                if "category" not in data:
-                    raise ValueError("Missing 'category' field in classification response")
-                
-                # Normalize category name
-                category = data["category"].upper()
-                if category not in [cat.name for cat in BugCategory]:
-                    self.logger.warning(f"Unknown category '{category}', defaulting to LOGIC_ERROR")
-                    data["category"] = "LOGIC_ERROR"
-                else:
-                    data["category"] = category
-                
-                return data
-            else:
+
+            raw = (response_content or "").strip()
+            # Remove code fences if present
+            if raw.startswith("```"):
+                raw = raw.strip("`").strip()
+                if raw.lower().startswith("json"):
+                    raw = raw[len("json"):].lstrip()
+            if not raw:
+                raise ValueError("Empty classification response")
+
+            # Try to extract JSON block
+            json_match = re.search(r'\{.*\}', raw, re.DOTALL)
+            if not json_match:
                 raise ValueError("No JSON found in response")
-                
+
+            json_str = json_match.group(0)
+            data = json.loads(json_str)
+
+            # Validate required fields
+            if "category" not in data:
+                raise ValueError("Missing 'category' field in classification response")
+
+            # Normalize category name
+            category = data["category"].upper()
+            if category not in [cat.name for cat in BugCategory]:
+                self.logger.warning(f"Unknown category '{category}', defaulting to LOGIC_ERROR")
+                data["category"] = "LOGIC_ERROR"
+            else:
+                data["category"] = category
+
+            return data
+
         except (json.JSONDecodeError, ValueError) as e:
-            self.logger.error(f"Error parsing classification response: {e}")
+            preview = (response_content or "")[:200]
+            self.logger.error(f"Error parsing classification response: {e} | raw preview: {preview}")
             # Return default classification
             return {
                 "category": "LOGIC_ERROR",

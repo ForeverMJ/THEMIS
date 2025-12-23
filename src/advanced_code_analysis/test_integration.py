@@ -25,7 +25,7 @@ class TestAdvancedCodeAnalyzerIntegration:
             llm=LLMConfig(
                 provider="mock",
                 model_name="test-model",
-                max_tokens=1000,
+                max_completion_tokens=1000,
                 temperature=0.1
             )
         )

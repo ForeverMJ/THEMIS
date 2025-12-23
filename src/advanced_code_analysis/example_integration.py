@@ -34,7 +34,7 @@ async def main():
         llm=LLMConfig(
             provider="mock",  # Using mock for demo
             model_name="demo-model",
-            max_tokens=4000,
+            max_completion_tokens=4000,
             temperature=0.1
         )
     )

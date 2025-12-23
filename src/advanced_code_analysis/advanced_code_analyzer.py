@@ -366,10 +366,10 @@ class AdvancedCodeAnalyzer:
             )
             
             # Optimize context window for token limits
-            max_tokens = self.config.analysis.max_context_tokens
-            if context_window.token_count > max_tokens:
+            max_completion_tokens = self.config.analysis.max_context_tokens
+            if context_window.token_count > max_completion_tokens:
                 context_window = self.context_enhancer.optimize_context_window(
-                    context_window, max_tokens
+                    context_window, max_completion_tokens
                 )
             
             return context_window

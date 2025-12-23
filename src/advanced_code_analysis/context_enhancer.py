@@ -284,20 +284,20 @@ class ContextEnhancer:
             self.logger.error(f"Error extracting domain knowledge: {e}")
             return DomainKnowledge(domain_name=project_type)
     
-    def optimize_context_window(self, context: ContextWindow, max_tokens: int) -> ContextWindow:
+    def optimize_context_window(self, context: ContextWindow, max_completion_tokens: int) -> ContextWindow:
         """
         Optimize context window to fit within token limits while preserving important information.
         
         Args:
             context: Original context window
-            max_tokens: Maximum allowed tokens
+            max_completion_tokens: Maximum allowed tokens
             
         Returns:
             Optimized context window
         """
-        self.logger.debug(f"Optimizing context window: {context.token_count} -> {max_tokens} tokens")
+        self.logger.debug(f"Optimizing context window: {context.token_count} -> {max_completion_tokens} tokens")
         
-        if context.token_count <= max_tokens:
+        if context.token_count <= max_completion_tokens:
             return context
         
         try:
@@ -316,30 +316,51 @@ class ContextEnhancer:
             current_tokens = context.token_count
             
             # Strategy 1: Reduce related functions
-            while (current_tokens > max_tokens and len(optimized_context.related_functions) > 5):
+            while (current_tokens > max_completion_tokens and len(optimized_context.related_functions) > 5):
                 # Remove least relevant functions (simple heuristic: remove from end)
                 optimized_context.related_functions = optimized_context.related_functions[:-1]
                 current_tokens = self._estimate_token_count(optimized_context)
             
             # Strategy 2: Reduce module dependencies
-            while (current_tokens > max_tokens and len(optimized_context.module_dependencies) > 10):
+            while (current_tokens > max_completion_tokens and len(optimized_context.module_dependencies) > 10):
                 optimized_context.module_dependencies = optimized_context.module_dependencies[:-1]
                 current_tokens = self._estimate_token_count(optimized_context)
             
             # Strategy 3: Reduce domain concepts
-            while (current_tokens > max_tokens and len(optimized_context.domain_concepts) > 10):
+            while (current_tokens > max_completion_tokens and len(optimized_context.domain_concepts) > 10):
                 optimized_context.domain_concepts = optimized_context.domain_concepts[:-1]
                 current_tokens = self._estimate_token_count(optimized_context)
             
             # Strategy 4: Truncate target code if still too large
-            if current_tokens > max_tokens:
+            if current_tokens > max_completion_tokens:
                 target_lines = optimized_context.target_code.split('\n')
-                # Keep first 80% of lines as a simple truncation strategy
-                keep_lines = int(len(target_lines) * 0.8)
-                if keep_lines < len(target_lines):
-                    optimized_context.target_code = '\n'.join(target_lines[:keep_lines])
-                    optimized_context.target_code += "\n\n# ... (truncated for token limit)"
-                    current_tokens = self._estimate_token_count(optimized_context)
+                total_lines = len(target_lines)
+                if total_lines:
+                    # Estimate how many lines to keep to fit the token budget.
+                    ratio = max_completion_tokens / max(current_tokens, 1)
+                    keep_lines = max(50, int(total_lines * ratio))
+                    keep_lines = min(keep_lines, total_lines)
+
+                    if keep_lines < total_lines:
+                        # Ensure the truncated code remains syntactically valid (avoid cutting in the middle of a
+                        # triple-quoted string / block), otherwise AST-based steps downstream will degrade.
+                        truncated = None
+                        trial = keep_lines
+                        step = max(20, trial // 10)
+                        while trial > 20:
+                            candidate = '\n'.join(target_lines[:trial])
+                            try:
+                                ast.parse(candidate)
+                                truncated = candidate
+                                break
+                            except SyntaxError:
+                                trial -= step
+
+                        if truncated is None:
+                            truncated = '\n'.join(target_lines[:keep_lines])
+
+                        optimized_context.target_code = truncated + "\n\n# ... (truncated for token limit)"
+                        current_tokens = self._estimate_token_count(optimized_context)
             
             # Set final token count
             optimized_context.token_count = current_tokens

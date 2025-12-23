@@ -2,7 +2,9 @@ langgraph
 langchain
 langchain-openai
 langchain-core
+datasets
 networkx
 pydantic
 pytest
+python-dotenv
 hypothesis

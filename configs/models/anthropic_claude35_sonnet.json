@@ -1,0 +1,11 @@
+{
+  "llm": {
+    "provider": "anthropic",
+    "model_name": "claude-3-5-sonnet-20241022",
+    "max_tokens": 4096,
+    "temperature": 0.1,
+    "timeout": 100,
+    "max_retries": 4,
+    "retry_delay": 1.0
+  }
+}

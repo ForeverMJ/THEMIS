@@ -556,17 +556,17 @@ class ConceptMapper:
                 return matches
             
             # Limit elements to avoid token limits
-            max_elements = 20
+            max_elements = 15  # Reduced from 20 to avoid long responses
             if len(element_descriptions) > max_elements:
                 element_descriptions = element_descriptions[:max_elements]
             
-            # Create LLM prompt for conceptual matching
+            # Create LLM prompt for conceptual matching with stricter JSON requirements
             elements_text = "\n".join([f"{i+1}. {desc}" for i, (_, desc) in enumerate(element_descriptions)])
             
             prompt = f"""
-Given the following issue description and concept, identify which code elements are conceptually related:
+Given the following issue description and concept, identify which code elements are conceptually related.
 
-Issue: {issue_description[:500]}
+Issue: {issue_description[:400]}
 Concept to match: "{concept}"
 
 Available code elements:
@@ -575,7 +575,9 @@ Available code elements:
 For each element that is conceptually related to the concept "{concept}", provide:
 1. Element number (1-{len(element_descriptions)})
 2. Confidence score (0.0-1.0)
-3. Brief explanation of the conceptual relationship
+3. Brief explanation (one short sentence, no line breaks)
+
+IMPORTANT: Return ONLY valid JSON. Keep explanations short and on one line.
 
 Format your response as JSON:
 {{
@@ -583,19 +585,76 @@ Format your response as JSON:
         {{
             "element_number": 1,
             "confidence": 0.8,
-            "explanation": "This function handles user authentication which relates to the login concept"
+            "explanation": "Brief explanation here"
         }}
     ]
 }}
+
+If no matches found, return: {{"matches": []}}
 """
             
-            # Get LLM response
-            response = await self.llm_interface.generate(prompt, max_tokens=1000)
+            # Get LLM response with increased token limit
+            response = await self.llm_interface.generate(prompt, max_completion_tokens=1500)
             
-            # Parse LLM response
+            # Parse LLM response (robust to empty / fenced / non-JSON outputs)
             try:
                 import json
-                result_data = json.loads(response.content)
+                raw = (response.content or "").strip()
+                
+                # If content looks like an object repr (e.g., "Response(...)"), drop it so we can try raw_response
+                if raw.startswith("Response(") or raw.startswith("Response"):
+                    raw = ""
+                
+                if not raw and response.raw_response:
+                    # Try to extract text from raw_response (responses API output)
+                    try:
+                        output = response.raw_response.get("output") if isinstance(response.raw_response, dict) else None
+                        if output:
+                            text_parts = []
+                            for item in output:
+                                for content in item.get("content", []) or []:
+                                    text_val = content.get("text") if isinstance(content, dict) else None
+                                    if text_val:
+                                        text_parts.append(text_val)
+                            if text_parts:
+                                raw = "\n".join(text_parts).strip()
+                    except Exception:
+                        pass
+                
+                # Remove markdown code fences
+                if raw.startswith("```"):
+                    raw = raw.strip("`").strip()
+                    if raw.lower().startswith("json"):
+                        raw = raw[len("json"):].lstrip()
+                
+                if not raw:
+                    self.logger.warning("Empty LLM response for conceptual matching; skipping.")
+                    return matches
+                
+                # Try to parse JSON
+                try:
+                    result_data = json.loads(raw)
+                except json.JSONDecodeError as e:
+                    # Try to salvage JSON block from mixed output
+                    import re
+                    json_match = re.search(r"\{.*\}", raw, re.DOTALL)
+                    if json_match:
+                        try:
+                            result_data = json.loads(json_match.group(0))
+                        except json.JSONDecodeError:
+                            # Try to fix common JSON errors
+                            json_str = json_match.group(0)
+                            # Fix trailing commas
+                            json_str = re.sub(r',(\s*[}\]])', r'\1', json_str)
+                            # Try again
+                            try:
+                                result_data = json.loads(json_str)
+                            except json.JSONDecodeError:
+                                self.logger.warning(f"Could not parse JSON even after cleanup: {e}")
+                                return matches
+                    else:
+                        self.logger.warning(f"No JSON object found in response: {raw[:200]}")
+                        return matches
                 
                 for match_data in result_data.get('matches', []):
                     element_num = match_data.get('element_number', 0) - 1
@@ -618,7 +677,8 @@ Format your response as JSON:
                         matches.append(match)
                 
             except (json.JSONDecodeError, KeyError) as e:
-                self.logger.warning(f"Could not parse LLM response for conceptual matching: {e}")
+                preview = raw[:200] if 'raw' in locals() else ''
+                self.logger.warning(f"Could not parse LLM response for conceptual matching: {e} | raw preview: {preview}")
             
         except Exception as e:
             self.logger.error(f"Error in conceptual matching: {e}")
@@ -768,11 +828,39 @@ Format as JSON:
 }}
 """
             
-            response = await self.llm_interface.generate(prompt, max_tokens=800)
+            response = await self.llm_interface.generate(prompt, max_completion_tokens=1000)
             
             try:
                 import json
-                result_data = json.loads(response.content)
+                content = (response.content or "").strip()
+                if not content:
+                    self.logger.info("Pattern matching LLM response was empty")
+                    return candidates
+                
+                # Remove markdown code fences if present
+                if content.startswith("```"):
+                    content = content.strip("`").strip()
+                    if content.lower().startswith("json"):
+                        content = content[len("json"):].lstrip()
+                
+                try:
+                    result_data = json.loads(content)
+                except json.JSONDecodeError as e:
+                    # Try to salvage JSON wrapped in text
+                    import re
+                    json_match = re.search(r"\{.*\}", content, re.DOTALL)
+                    if json_match:
+                        json_str = json_match.group(0)
+                        # Fix trailing commas
+                        json_str = re.sub(r',(\s*[}\]])', r'\1', json_str)
+                        try:
+                            result_data = json.loads(json_str)
+                        except json.JSONDecodeError:
+                            self.logger.warning(f"Could not parse pattern matching JSON: {e}")
+                            return candidates
+                    else:
+                        self.logger.warning(f"No JSON found in pattern matching response")
+                        return candidates
                 
                 for suggestion in result_data.get('suggestions', []):
                     candidate = SearchCandidate(
@@ -786,8 +874,9 @@ Format as JSON:
                     candidates.append(candidate)
                     
             except (json.JSONDecodeError, KeyError) as e:
-                self.logger.warning(f"Could not parse LLM response for pattern matching: {e}")
-                
+                snippet = (response.content or "")[:200].replace("\n", " ")
+                self.logger.warning(f"Could not parse LLM response for pattern matching: {e}; snippet: {snippet}")
+            
         except Exception as e:
             self.logger.error(f"Error finding similar code patterns: {e}")
         

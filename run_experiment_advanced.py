@@ -334,29 +334,18 @@ async def run_experiment_case(case_name: str = None):
     # Run both analyses
     print(f"\n" + "=" * 80)
     
-    # Advanced analysis with different strategies
-    advanced_results = {}
+    # Advanced analysis using the adapter's own strategy selection
+    advanced_result = None
     if ADVANCED_ANALYSIS_AVAILABLE:
-        strategies_to_test = [
-            AnalysisStrategy.AUTO_SELECT,
-            AnalysisStrategy.ADVANCED_ONLY,
-        ]
-        
-        # Add integrated strategy if available
-        try:
-            adapter = EnhancedGraphAdapter()
-            status = adapter.get_system_status()
-            if 'integrated' in status['available_strategies']:
-                strategies_to_test.append(AnalysisStrategy.INTEGRATED)
-        except:
-            pass
-        
-        for strategy in strategies_to_test:
-            print(f"\n{'='*20} {strategy.value.upper()} ANALYSIS {'='*20}")
-            result = await run_advanced_analysis(requirements, source_code, target_filename, strategy)
-            if result:
-                advanced_results[strategy.value] = result
-                print_advanced_analysis_result(result)
+        print(f"\n{'='*20} AUTO-SELECT ANALYSIS {'='*20}")
+        advanced_result = await run_advanced_analysis(
+            requirements,
+            source_code,
+            target_filename,
+            AnalysisStrategy.AUTO_SELECT
+        )
+        if advanced_result:
+            print_advanced_analysis_result(advanced_result)
     
     # Traditional analysis
     print(f"\n{'='*20} TRADITIONAL ANALYSIS {'='*20}")
@@ -364,27 +353,19 @@ async def run_experiment_case(case_name: str = None):
     print_traditional_analysis_result(traditional_result)
     
     # Compare results
-    if advanced_results:
-        best_advanced = max(advanced_results.values(), key=lambda r: r.confidence_score if r.success else 0)
-        compare_results(best_advanced, traditional_result, source_code, target_filename)
+    if advanced_result:
+        compare_results(advanced_result, traditional_result, source_code, target_filename)
     
     # Summary
     print(f"\n🎯 Experiment Summary:")
     print("=" * 80)
     
-    if advanced_results:
-        successful_advanced = [r for r in advanced_results.values() if r.success]
+    if advanced_result:
         print(f"   Advanced Analysis:")
-        print(f"      Strategies tested: {len(advanced_results)}")
-        print(f"      Successful runs: {len(successful_advanced)}")
-        if successful_advanced:
-            avg_confidence = sum(r.confidence_score for r in successful_advanced) / len(successful_advanced)
-            avg_time = sum(r.processing_time for r in successful_advanced) / len(successful_advanced)
-            print(f"      Average confidence: {avg_confidence:.2f}")
-            print(f"      Average time: {avg_time:.2f}s")
-            
-            best_strategy = max(successful_advanced, key=lambda r: r.confidence_score)
-            print(f"      Best strategy: {best_strategy.strategy_used.value} (confidence: {best_strategy.confidence_score:.2f})")
+        print(f"      Strategy used: {advanced_result.strategy_used.value}")
+        print(f"      Success: {'Yes' if advanced_result.success else 'No'}")
+        print(f"      Confidence: {advanced_result.confidence_score:.2f}")
+        print(f"      Processing time: {advanced_result.processing_time:.2f}s")
     
     print(f"   Traditional Analysis:")
     print(f"      Processing time: {traditional_result['analysis_time']:.2f}s")
@@ -415,11 +396,6 @@ async def main():
     
     # Run default case
     await run_experiment_case()
-    
-    # Run specific cases if available
-    for case in available_cases[:2]:  # Limit to first 2 cases to avoid too much output
-        print(f"\n\n")
-        await run_experiment_case(case)
     
     print(f"\n✨ All experiments completed!")
     print(f"💡 The Advanced Code Analysis system provides:")

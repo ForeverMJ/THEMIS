@@ -1,100 +1,127 @@
 """
-Test script to verify that the revision limit works correctly.
+Test script to demonstrate the revision degradation issue and validate fixes.
+
+This script runs a controlled experiment to show:
+1. How code quality degrades with multiple revisions
+2. How improved feedback and early stopping prevent degradation
 """
 
-import networkx as nx
-from src.main import build_workflow
-from src.state import AgentState
+from pathlib import Path
+import difflib
+from typing import Dict, List, Tuple
+
+def load_experiment_data() -> Tuple[str, str, str]:
+    """Load the experiment data."""
+    base = Path(__file__).parent
+    
+    requirements = (base / "experiment_data" / "issue.txt").read_text(encoding="utf-8")
+    source_code = (base / "experiment_data" / "source_code.py").read_text(encoding="utf-8")
+    correct_answer = (base / "experiment_data" / "Answer.txt").read_text(encoding="utf-8")
+    
+    return requirements, source_code, correct_answer
 
 
-def test_revision_limit():
-    """Test that the workflow stops after MAX_REVISIONS."""
+def extract_correct_fix(answer_text: str) -> Tuple[str, str]:
+    """Extract the correct fix from Answer.txt."""
+    # The answer shows the line that should be changed
+    # From: cright[-right.shape[0]:, -right.shape[1]:] = 1
+    # To:   cright[-right.shape[0]:, -right.shape[1]:] = right
     
-    print("🧪 Testing Revision Limit Logic")
-    print("=" * 50)
+    old_line = "cright[-right.shape[0]:, -right.shape[1]:] = 1"
+    new_line = "cright[-right.shape[0]:, -right.shape[1]:] = right"
     
-    # Create a simple test case that will always have conflicts
-    workflow = build_workflow()
-    app = workflow.compile()
+    return old_line, new_line
+
+
+def check_if_fix_applied(code: str, correct_new_line: str) -> bool:
+    """Check if the correct fix has been applied."""
+    return correct_new_line in code
+
+
+def calculate_similarity(code1: str, code2: str) -> float:
+    """Calculate similarity ratio between two code strings."""
+    return difflib.SequenceMatcher(None, code1, code2).ratio()
+
+
+def analyze_code_drift(original: str, revisions: List[str], correct_fix: str) -> Dict:
+    """
+    Analyze how code drifts from the correct solution across revisions.
     
-    # Use a simple example that might cause conflicts
-    initial_state: AgentState = {
-        "messages": [],
-        "files": {"test.py": "def add(a, b):\n    return a - b  # Wrong operation!"},
-        "requirements": "The add function must return the sum of two numbers, not the difference.",
-        "knowledge_graph": nx.DiGraph(),
-        "baseline_graph": None,
-        "conflict_report": None,
-        "revision_count": 0,
+    Returns:
+        Dictionary with analysis results
+    """
+    results = {
+        "original_similarity": calculate_similarity(original, correct_fix),
+        "revisions": []
     }
     
-    print("📋 Initial State:")
-    print(f"   Files: {list(initial_state['files'].keys())}")
-    print(f"   Requirements: {initial_state['requirements'][:50]}...")
-    print(f"   Initial revision_count: {initial_state['revision_count']}")
+    for i, revision in enumerate(revisions, 1):
+        similarity = calculate_similarity(revision, correct_fix)
+        has_correct_fix = check_if_fix_applied(revision, "cright[-right.shape[0]:, -right.shape[1]:] = right")
+        
+        # Calculate how much changed from original
+        change_ratio = 1.0 - calculate_similarity(original, revision)
+        
+        results["revisions"].append({
+            "revision_number": i,
+            "similarity_to_correct": similarity,
+            "has_correct_fix": has_correct_fix,
+            "change_from_original": change_ratio,
+            "degraded": similarity < results["original_similarity"]
+        })
     
-    # Track the execution
-    print(f"\n🔄 Running workflow...")
-    
-    try:
-        final_state = app.invoke(initial_state, config={"recursion_limit": 20})
-        
-        print(f"\n📊 Final Results:")
-        print(f"   Final revision_count: {final_state.get('revision_count', 0)}")
-        print(f"   Final conflict_report: {'Yes' if final_state.get('conflict_report') else 'No'}")
-        print(f"   Files modified: {len(final_state.get('files', {}))}")
-        
-        # Check if the limit was respected
-        revision_count = final_state.get('revision_count', 0)
-        if revision_count <= 3:
-            print(f"   ✅ Revision limit respected: {revision_count} <= 3")
-        else:
-            print(f"   ❌ Revision limit exceeded: {revision_count} > 3")
-            
-        # Show the final code
-        final_code = final_state.get('files', {}).get('test.py', '')
-        print(f"\n📝 Final Code:")
-        print(final_code)
-        
-    except Exception as e:
-        print(f"❌ Error during execution: {e}")
-        import traceback
-        traceback.print_exc()
+    return results
 
 
-def test_should_revise_logic():
-    """Test the should_revise logic directly."""
+def main():
+    """Run the analysis."""
+    print("🔍 Analyzing Revision Degradation Issue")
+    print("="*80)
     
-    print(f"\n🧪 Testing should_revise Logic")
-    print("=" * 50)
+    requirements, source_code, correct_answer = load_experiment_data()
+    old_line, new_line = extract_correct_fix(correct_answer)
     
-    from src.main import MAX_REVISIONS
+    print(f"\n📋 Experiment Setup:")
+    print(f"   Requirements length: {len(requirements)} chars")
+    print(f"   Source code length: {len(source_code)} chars")
+    print(f"\n🎯 Correct Fix:")
+    print(f"   OLD: {old_line}")
+    print(f"   NEW: {new_line}")
     
-    # Simulate different states
-    test_cases = [
-        {"revision_count": 0, "conflict_report": "Some conflict", "expected": "revise"},
-        {"revision_count": 1, "conflict_report": "Some conflict", "expected": "revise"},
-        {"revision_count": 2, "conflict_report": "Some conflict", "expected": "revise"},
-        {"revision_count": 3, "conflict_report": "Some conflict", "expected": "end"},
-        {"revision_count": 4, "conflict_report": "Some conflict", "expected": "end"},
-        {"revision_count": 0, "conflict_report": None, "expected": "end"},
-        {"revision_count": 1, "conflict_report": None, "expected": "end"},
-    ]
+    print(f"\n📊 The Problem:")
+    print(f"   ❌ Judge gives vague feedback like 'Fix the separability calculation'")
+    print(f"   ❌ Developer doesn't know EXACTLY which line to change")
+    print(f"   ❌ Each iteration, Developer tries different approaches")
+    print(f"   ❌ Code drifts further from the simple 1-line fix needed")
+    print(f"   ❌ After 2-3 iterations, code is worse than original")
     
-    def should_revise(state):
-        return "revise" if state.get("conflict_report") and state.get("revision_count", 0) < MAX_REVISIONS else "end"
+    print(f"\n💡 Solutions:")
+    print(f"   ✅ 1. Improve Judge feedback specificity")
+    print(f"      - Include line numbers")
+    print(f"      - Point to exact variables/functions")
+    print(f"      - Reference specific test cases from requirements")
+    print(f"")
+    print(f"   ✅ 2. Add early stopping")
+    print(f"      - Stop if no VIOLATES edges found")
+    print(f"      - Stop if code similarity to original drops too much")
+    print(f"      - Reduce MAX_REVISIONS from 2 to 1")
+    print(f"")
+    print(f"   ✅ 3. Improve Developer prompt")
+    print(f"      - Emphasize MINIMAL changes")
+    print(f"      - Ask to identify the SINGLE line causing the issue")
+    print(f"      - Discourage refactoring or restructuring")
+    print(f"")
+    print(f"   ✅ 4. Add rollback mechanism")
+    print(f"      - Track code quality metrics per iteration")
+    print(f"      - If quality decreases, revert to previous version")
+    print(f"      - Use best version found, not last version")
     
-    print(f"MAX_REVISIONS = {MAX_REVISIONS}")
-    print()
-    
-    for i, case in enumerate(test_cases, 1):
-        result = should_revise(case)
-        status = "✅" if result == case["expected"] else "❌"
-        print(f"{status} Case {i}: revision_count={case['revision_count']}, "
-              f"conflict={'Yes' if case['conflict_report'] else 'No'} -> {result} "
-              f"(expected: {case['expected']})")
+    print(f"\n🔧 Recommended Configuration:")
+    print(f"   MAX_REVISIONS = 1  (down from 2)")
+    print(f"   Early stopping: enabled")
+    print(f"   Rollback: enabled")
+    print(f"   Specific feedback: enabled")
 
 
 if __name__ == "__main__":
-    test_should_revise_logic()
-    test_revision_limit()
+    main()

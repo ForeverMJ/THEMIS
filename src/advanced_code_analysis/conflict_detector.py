@@ -838,7 +838,7 @@ Provide mediation as JSON:
         response = await self.llm.generate(
             strategy.prompt_template,
             template_vars=template_vars,
-            max_tokens=1500,
+            max_completion_tokens=1500,
             temperature=0.1
         )
         

@@ -19,12 +19,14 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+*.md
 
 # Virtual Environment
 venv/
 ENV/
 env/
 .venv
+.venv-swebench/
 
 # IDE
 .vscode/
@@ -41,4 +43,5 @@ Thumbs.db
 *.txt
 !requirements.txt
 .hypothesis/
-
+logs/
+predictions/

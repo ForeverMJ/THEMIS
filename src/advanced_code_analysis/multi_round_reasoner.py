@@ -229,7 +229,7 @@ Resolution:
             response = await self.llm.generate(
                 self.prompt_templates["initial_analysis"],
                 template_vars=template_vars,
-                max_tokens=2000,
+                max_completion_tokens=2000,
                 temperature=0.1
             )
             
@@ -292,7 +292,7 @@ Resolution:
             response = await self.llm.generate(
                 self.prompt_templates["verification"],
                 template_vars=template_vars,
-                max_tokens=1500,
+                max_completion_tokens=1500,
                 temperature=0.0  # Use deterministic verification
             )
             
@@ -506,7 +506,7 @@ Analysis {i+1}:
             response = await self.llm.generate(
                 self.prompt_templates["conflict_resolution"],
                 template_vars=template_vars,
-                max_tokens=2000,
+                max_completion_tokens=2000,
                 temperature=0.1
             )
             
@@ -693,7 +693,7 @@ Confidence: {result.confidence:.2f}
             response = await self.llm.generate(
                 self.prompt_templates["refinement"],
                 template_vars=template_vars,
-                max_tokens=2000,
+                max_completion_tokens=2000,
                 temperature=0.1
             )
             

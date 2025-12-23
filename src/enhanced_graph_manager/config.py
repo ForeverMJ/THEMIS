@@ -15,7 +15,7 @@ class EnhancedGraphManagerConfig:
     
     # Semantic injection settings
     llm_model: str = "gpt-5-mini"
-    max_requirement_length: int = 1000
+    max_requirement_length: int = 1500
     requirement_priority_threshold: int = 5
     
     # Dependency tracing settings

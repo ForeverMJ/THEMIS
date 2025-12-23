@@ -20,7 +20,7 @@ class CodebaseUpdate(BaseModel):
     files: List[FileEdit]
 
 
-def build_app(llm_model: str = "gpt-4o-mini") -> StateGraph:
+def build_app(llm_model: str = "gpt-5-mini") -> StateGraph:
     # Reflexion: Generator と Critic のシンプルな往復ループ
     llm_generator = ChatOpenAI(model=llm_model, temperature=0).with_structured_output(CodebaseUpdate)
     llm_critic = ChatOpenAI(model=llm_model, temperature=0)

@@ -14,13 +14,23 @@ class JudgeAgent:
                 (
                     "system",
                     "You are a code auditor. Review the edges and determine if any requirement is violated "
-                    "or logically inconsistent with the code. Be concise and actionable.",
+                    "or logically inconsistent with the code. Be EXTREMELY SPECIFIC and actionable.\n\n"
+                    "CRITICAL: Your feedback quality directly impacts fix success rate.\n"
+                    "- Include EXACT function/variable names\n"
+                    "- Reference SPECIFIC test cases from requirements\n"
+                    "- Point to the EXACT line or operation causing the issue\n"
+                    "- Suggest the MINIMAL change needed (prefer 1-line fixes)",
                 ),
                 (
                     "user",
                     "Requirements:\n{requirements}\n\nBaseline graph edges:\n{baseline_edges}\n\n"
                     "Current graph edges:\n{edges}\n\n"
-                    "Report any inconsistencies and propose fixes. If none, answer 'OK'.",
+                    "Report any inconsistencies with SPECIFIC details:\n"
+                    "1. EXACT function/variable name with the issue\n"
+                    "2. SPECIFIC test case from requirements that fails\n"
+                    "3. PRECISE line or operation to fix\n"
+                    "4. MINIMAL change suggestion (prefer 1-line fixes)\n\n"
+                    "If no issues found, answer 'OK'.",
                 ),
             ]
         )

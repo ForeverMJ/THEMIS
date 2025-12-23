@@ -72,8 +72,8 @@ export ANTHROPIC_API_KEY="your-anthropic-key"
 {
   "llm": {
     "provider": "openai",
-    "model_name": "gpt-5-mini",
-    "max_tokens": 4096,
+    "model_name": "gpt-4o-mini",
+    "max_completion_tokens": 4096,
     "temperature": 0.1
   },
   "analysis": {

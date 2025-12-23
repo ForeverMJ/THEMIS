@@ -204,7 +204,7 @@ options = AnalysisOptions(
 {
   "llm": {
     "provider": "openai",
-    "model": "gpt-5-mini",
+    "model": "gpt-4o-mini",
     "max_tokens": 4000,
     "temperature": 0.1
   },

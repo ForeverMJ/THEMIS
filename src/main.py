@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-MAX_REVISIONS = 3  # 修正ループの最大回数
+MAX_REVISIONS = 1  # 修正ループの最大回数
 
 
 def build_workflow(llm_model: str = "gpt-5-mini") -> StateGraph:

@@ -166,7 +166,31 @@ class AnalysisResult:
     analysis_metadata: Dict[str, Any] = field(default_factory=dict)
     
     def __post_init__(self):
-        """Validate confidence score."""
+        """Normalize fields and validate confidence score."""
+        if not isinstance(self.bug_location, str):
+            if isinstance(self.bug_location, (list, tuple)):
+                self.bug_location = "\n".join(str(x) for x in self.bug_location)
+            else:
+                self.bug_location = str(self.bug_location)
+
+        if not isinstance(self.root_cause, str):
+            if isinstance(self.root_cause, (list, tuple)):
+                self.root_cause = "\n".join(str(x) for x in self.root_cause)
+            else:
+                self.root_cause = str(self.root_cause)
+
+        if not isinstance(self.fix_suggestion, str):
+            if isinstance(self.fix_suggestion, (list, tuple)):
+                self.fix_suggestion = "\n".join(str(x) for x in self.fix_suggestion)
+            else:
+                self.fix_suggestion = str(self.fix_suggestion)
+
+        if not isinstance(self.confidence, (int, float)):
+            try:
+                self.confidence = float(self.confidence)  # type: ignore[arg-type]
+            except Exception:
+                self.confidence = 0.0
+
         if not 0.0 <= self.confidence <= 1.0:
             raise ValueError("Confidence must be between 0.0 and 1.0")
 
