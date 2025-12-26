@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, TypedDict
+from typing import Any, Dict, List, NotRequired, Optional, TypedDict
 
 import networkx as nx
 from langchain_core.messages import BaseMessage
@@ -21,3 +21,10 @@ class AgentState(TypedDict):
     conflict_report: Optional[str]
     # 修正ループ回数
     revision_count: int
+
+    # Optional extras used by some workflows / runners.
+    repo_root: NotRequired[str]
+    advanced_analysis: NotRequired[Any]
+    advanced_usage: NotRequired[Dict[str, Any]]
+    analysis_report: NotRequired[Dict[str, Any]]
+    code_history: NotRequired[List[Dict[str, Any]]]

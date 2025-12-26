@@ -126,7 +126,39 @@ def build_integrated_workflow(
         """Best-effort: load additional files when the Developer references unknown paths/snippets."""
         m = re.search(r"Developer proposed edit for unknown file: (.+)$", err.strip())
         if m:
-            return _try_load_file_into_state(state, rel_path=m.group(1).strip())
+            rel_path = m.group(1).strip()
+            if _try_load_file_into_state(state, rel_path=rel_path):
+                return True
+
+            # Fallback: if the path is wrong (e.g., repo uses "lib/<pkg>/..."), try suffix match.
+            repo_root_raw = state.get("repo_root")
+            if not repo_root_raw:
+                return False
+            repo_root = Path(str(repo_root_raw))
+            try:
+                proc = subprocess.run(
+                    ["git", "ls-files"],
+                    cwd=str(repo_root),
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+            except Exception:
+                return False
+            if proc.returncode != 0:
+                return False
+
+            rel_norm = rel_path.replace("\\", "/").lstrip("./")
+            candidates = [p.strip() for p in proc.stdout.splitlines() if p.strip().endswith(rel_norm)]
+            if not candidates:
+                return False
+
+            # Prefer shortest path (least nested) to avoid grabbing vendored copies.
+            candidates.sort(key=lambda p: (len(p), p))
+            loaded_any = False
+            for cand in candidates[:2]:
+                loaded_any |= _try_load_file_into_state(state, rel_path=cand)
+            return loaded_any
 
         preview_marker = "Preview:\n"
         if preview_marker not in err:
@@ -492,7 +524,7 @@ def build_integrated_workflow(
     workflow = StateGraph(AgentState)
     
     # Add nodes
-    workflow.add_node("advanced_analysis", 
+    workflow.add_node("advanced_analysis_step", 
                      lambda s: _run_async(advanced_analysis_node(s)))
     workflow.add_node("initial_graph_builder", initial_graph_builder_node)
     workflow.add_node("developer", developer_node)
@@ -500,8 +532,8 @@ def build_integrated_workflow(
     workflow.add_node("judge", judge_node)
 
     # Define workflow edges
-    workflow.set_entry_point("advanced_analysis")
-    workflow.add_edge("advanced_analysis", "initial_graph_builder")
+    workflow.set_entry_point("advanced_analysis_step")
+    workflow.add_edge("advanced_analysis_step", "initial_graph_builder")
     workflow.add_edge("initial_graph_builder", "developer")
     workflow.add_edge("developer", "graph_builder")
     workflow.add_edge("graph_builder", "judge")
