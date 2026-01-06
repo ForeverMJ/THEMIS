@@ -25,6 +25,7 @@ import json
 import random
 import re
 import subprocess
+import sys
 import time
 from collections import defaultdict
 from dataclasses import dataclass
@@ -647,8 +648,8 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=42, help="Sampling seed")
     parser.add_argument("--workdir", default="swebench_runs", help="Working directory for repo checkouts/logs")
     parser.add_argument("--output", default="predictions/swebench_lite_sample.jsonl", help="Output predictions jsonl")
-    parser.add_argument("--model", default="gpt-4o-mini", help="LLM model for Developer/Judge (ChatOpenAI)")
-    parser.add_argument("--analysis-model", default="gpt-4o-mini", help="LLM model for Advanced Analysis (LLMInterface)")
+    parser.add_argument("--model", default="gpt-5.1-codex-mini", help="LLM model for Developer/Judge (ChatOpenAI)")
+    parser.add_argument("--analysis-model", default="gpt-5.1-codex-mini", help="LLM model for Advanced Analysis (LLMInterface)")
     parser.add_argument("--mode", choices=["integrated", "traditional"], default="integrated")
     parser.add_argument(
         "--workflow-builder",
@@ -674,6 +675,12 @@ def main() -> None:
     )
     parser.add_argument("--dry-run", action="store_true", help="Skip LLM calls; output empty patches")
     args = parser.parse_args()
+
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
     load_dotenv(override=True)
     workflow_builder = args.workflow_builder or _default_workflow_builder(args.mode)

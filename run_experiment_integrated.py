@@ -84,7 +84,14 @@ def build_integrated_workflow(
     if analysis_model:
         os.environ["LLM_MODEL"] = analysis_model
 
-    llm_kwargs: dict[str, Any] = {"model": llm_model, "temperature": 0}
+    def _use_responses_api(model_name: str) -> bool:
+        return model_name.startswith("gpt-5") or "codex" in model_name
+
+    llm_kwargs: dict[str, Any] = {"model": llm_model}
+    if _use_responses_api(llm_model):
+        llm_kwargs["use_responses_api"] = True
+    else:
+        llm_kwargs["temperature"] = 0
     if callbacks is not None:
         llm_kwargs["callbacks"] = list(callbacks)
     llm = ChatOpenAI(**llm_kwargs)
@@ -373,6 +380,7 @@ def build_integrated_workflow(
         attempt_report: Optional[str] = enhanced_report if enhanced_report else None
         updated_files: Optional[Dict[str, str]] = None
         last_error: Optional[Exception] = None
+        force_full_files: set[str] = set()
 
         for attempt in range(3):
             try:
@@ -380,10 +388,20 @@ def build_integrated_workflow(
                     state["files"],
                     state["requirements"],
                     attempt_report,
+                    force_full_files=force_full_files,
                 )
             except Exception as e:
                 last_error = e
                 print(f"WARNING: Developer output could not be applied (attempt {attempt + 1}/3): {e}")
+                error_text = str(e)
+                full_file_note = ""
+                match = re.search(r"snippet not found in ([^\\s:]+\\.py)", error_text)
+                if match:
+                    force_full_files.add(match.group(1))
+                    full_file_note = (
+                        f"Full file content for {match.group(1)} was added; "
+                        "please copy an exact `before` snippet from it."
+                    )
                 if _maybe_expand_context_from_error(state, str(e)):
                     base = enhanced_report.strip()
                     attempt_report = (base + "\n\n" if base else "") + (
@@ -393,7 +411,8 @@ def build_integrated_workflow(
                     updated_files = None
                     continue
                 base = enhanced_report.strip()
-                attempt_report = (base + "\n\n" if base else "") + f"Previous attempt failed to apply: {e}"
+                retry_note = f"{full_file_note}\n" if full_file_note else ""
+                attempt_report = (base + "\n\n" if base else "") + retry_note + f"Previous attempt failed to apply: {e}"
                 updated_files = None
                 continue
 
