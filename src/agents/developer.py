@@ -271,7 +271,14 @@ class DeveloperAgent:
         second_exact = int(ordered[1][1]["exact_matches"]) if len(ordered) > 1 else 0
 
         # Only accept high-confidence, unambiguous fuzzy matches.
-        if best_ratio < 0.92:
+        if best_ratio < 0.88:
+            return None
+        min_ratio = 0.92
+        if best_exact >= 4 and best_ratio >= 0.88:
+            min_ratio = 0.88
+        elif best_exact >= 2 and (best_ratio - second_ratio) >= 0.03:
+            min_ratio = 0.90
+        if best_ratio < min_ratio:
             return None
         if (best_ratio - second_ratio) < 0.01 and best_exact <= second_exact:
             # If all candidate windows are identical, apply to all occurrences.
@@ -358,6 +365,7 @@ class DeveloperAgent:
             force_full_files=force_full_files,
         )
 
+        allowed_files = ", ".join(sorted(files.keys())) if files else "(none)"
         prompt = f"""
 You are a Senior Software Engineer specializing in fixing complex logical inconsistencies.
 
@@ -366,6 +374,9 @@ Current Requirements (Issue):
 
 Conflict Report (CRITICAL - MUST FIX):
 {conflict_text}
+
+Allowed Files (edit ONLY these exact filenames):
+{allowed_files}
 
 Current Files:
 {current_files}
@@ -382,7 +393,7 @@ Current Files:
    - Do NOT change function signatures unless explicitly required.
 
 3. OUTPUT FORMAT (IMPORTANT)
-Return a list of exact text edits to apply.
+Return a list of exact text edits to apply. The list MUST be non-empty.
 
 Each edit must include:
 - filename: which file to edit
@@ -390,6 +401,7 @@ Each edit must include:
 - after: the replacement snippet
 
 Rules:
+- Do NOT propose edits for files not listed in Allowed Files.
 - `before` MUST appear exactly once in the file content.
 - If the file is shown as an excerpt, `before` MUST be copied verbatim from that excerpt (including indentation).
 - Include at least 2 unchanged context lines above and below the changed lines in `before`.

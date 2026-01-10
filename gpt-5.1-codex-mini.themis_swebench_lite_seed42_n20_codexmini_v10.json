@@ -1,10 +1,10 @@
 {
     "total_instances": 300,
     "submitted_instances": 20,
-    "completed_instances": 16,
+    "completed_instances": 20,
     "resolved_instances": 7,
-    "unresolved_instances": 9,
-    "empty_patch_instances": 4,
+    "unresolved_instances": 13,
+    "empty_patch_instances": 0,
     "error_instances": 0,
     "completed_ids": [
         "django__django-11620",
@@ -12,13 +12,17 @@
         "django__django-12284",
         "django__django-12497",
         "django__django-12589",
+        "django__django-15320",
         "django__django-15996",
         "django__django-16139",
         "matplotlib__matplotlib-18869",
+        "pydata__xarray-4248",
         "pytest-dev__pytest-5495",
         "scikit-learn__scikit-learn-13439",
         "scikit-learn__scikit-learn-25638",
         "sphinx-doc__sphinx-8713",
+        "sympy__sympy-11897",
+        "sympy__sympy-13773",
         "sympy__sympy-15308",
         "sympy__sympy-22840",
         "sympy__sympy-24066",
@@ -306,12 +310,7 @@
         "sympy__sympy-24213",
         "sympy__sympy-24909"
     ],
-    "empty_patch_ids": [
-        "django__django-15320",
-        "pydata__xarray-4248",
-        "sympy__sympy-11897",
-        "sympy__sympy-13773"
-    ],
+    "empty_patch_ids": [],
     "submitted_ids": [
         "django__django-11620",
         "django__django-11848",
@@ -345,11 +344,15 @@
     ],
     "unresolved_ids": [
         "django__django-12497",
+        "django__django-15320",
         "django__django-15996",
         "django__django-16139",
         "matplotlib__matplotlib-18869",
+        "pydata__xarray-4248",
         "pytest-dev__pytest-5495",
         "scikit-learn__scikit-learn-25638",
+        "sympy__sympy-11897",
+        "sympy__sympy-13773",
         "sympy__sympy-15308",
         "sympy__sympy-22840",
         "sympy__sympy-24066"
