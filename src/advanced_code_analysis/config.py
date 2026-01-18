@@ -23,7 +23,7 @@ class LLMConfig:
     # 互換性: 旧設定キーで上書きしたい場合に使用
     legacy_max_completion_tokens: Optional[int] = None
     temperature: float = 0.1
-    timeout: int = 100
+    timeout: int = 600
     max_retries: int = 4
     retry_delay: float = 1.0
     

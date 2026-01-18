@@ -657,16 +657,83 @@ Format as JSON:
     def _parse_llm_extraction_response(self, response_content: str) -> Dict[str, Any]:
         """Parse LLM response for extraction data."""
         try:
-            # Try to extract JSON from the response
+            # 1. Try to extract JSON from markdown code blocks
+            code_block = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', response_content, re.DOTALL)
+            if code_block:
+                try:
+                    return json.loads(code_block.group(1))
+                except json.JSONDecodeError:
+                    pass  # Fall through to other methods
+
+            # 2. Try to find the first outer-most JSON object
             json_match = re.search(r'\{.*\}', response_content, re.DOTALL)
             if json_match:
-                return json.loads(json_match.group())
-            else:
-                # Fallback: try to parse the entire response as JSON
-                return json.loads(response_content)
+                content = json_match.group(0)
+                try:
+                    return json.loads(content)
+                except json.JSONDecodeError:
+                    # Attempt to clean trailing commas which are common in LLM output
+                    content_clean = re.sub(r',\s*\}', '}', content)
+                    content_clean = re.sub(r',\s*\]', ']', content_clean)
+                    try:
+                        return json.loads(content_clean)
+                    except json.JSONDecodeError:
+                        pass # Fall through
+
+            # 3. Fallback: try to parse the entire response as JSON
+            return json.loads(response_content)
+
         except json.JSONDecodeError as e:
+            # 4. Try to repair truncated JSON first as it's a common issue with large responses
+            try:
+                repaired = self._repair_truncated_json(response_content)
+                if repaired:
+                    self.logger.info(f"JSON parsing failed but was successfully repaired: {e}")
+                    return repaired
+            except Exception:
+                pass
+
             self.logger.warning(f"Failed to parse LLM response as JSON: {e}")
+            
+            # 5. Last resort: try lenient parsing for common issues on the raw content
+            try:
+                content = response_content
+                content = re.sub(r',\s*\}', '}', content)
+                content = re.sub(r',\s*\]', ']', content)
+                # json.loads with strict=False allows control characters
+                return json.loads(content, strict=False)
+            except Exception:
+                pass
+                
             return {}
+
+    def _repair_truncated_json(self, content: str) -> Dict[str, Any]:
+        """Attempt to repair truncated JSON by removing incomplete parts and closing brackets."""
+        content = content.strip()
+        
+        # Find the last closing brace or bracket
+        last_brace = content.rfind('}')
+        last_bracket = content.rfind(']')
+        
+        cut_point = max(last_brace, last_bracket)
+        if cut_point == -1:
+            return {}
+            
+        # Try with the prefix up to the last closing character
+        content_prefix = content[:cut_point+1]
+        
+        # Try appending combinations of closing brackets
+        # The structure usually is Object -> Key -> Array -> Object
+        # So likely we need ']}' or ']} }' etc.
+        suffixes = ['}', ']}', ']]}', '}}', '}]}', ']}}', '}]}}']
+        
+        for suffix in suffixes:
+            try:
+                return json.loads(content_prefix + suffix, strict=False)
+            except json.JSONDecodeError:
+                continue
+                
+        return {}
     
     def _parse_summary_response(self, response_content: str) -> Dict[str, Any]:
         """Parse LLM response for summary data."""

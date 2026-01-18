@@ -91,52 +91,77 @@ class OpenAIProvider(LLMProvider):
         client = self._get_client()
         start_time = time.time()
 
-        # gpt-5 系は responses API を使い、temperature=1固定かつ max_tokens
+        # gpt-5 系は flex API を使い、temperature=1固定かつ max_tokens
         if self.config.model_name.startswith("gpt-5"):
             # max_tokens 现在是 max_completion_tokens 的属性别名
             completion_value = kwargs.get("max_tokens", kwargs.get("max_completion_tokens", self.config.max_tokens))
             
-            # Responses API 使用正确的参数名称
-            params = {
-                "model": self.config.model_name,
-                "input": prompt,
-                "max_output_tokens": completion_value,  # 使用 max_tokens 而不是 max_output_tokens
-                "temperature": 1,  # gpt-5 要求 temperature=1
-            }
+            # モデルタイプを判定: codex系 vs chat系
+            is_codex_model = "codex" in self.config.model_name.lower()
             
-            self.logger.debug(f"Calling responses API with model={self.config.model_name}, max_tokens={completion_value}")
+            self.logger.debug(f"Model={self.config.model_name}, is_codex={is_codex_model}, max_tokens={completion_value}")
             
             try:
-                response = await client.responses.create(**params)
-                response_time = time.time() - start_time
-
-                # 详细日志
-                self.logger.debug(f"Response received: type={type(response)}, has_output={hasattr(response, 'output')}")
-                
-                # レスポンスからテキストを抽出
-                content_text = self._extract_response_text(response)
-                
-                if not content_text or not content_text.strip():
-                    self.logger.warning(f"Empty response from gpt-5 API. Response object: {response}")
-                    # 尝试直接访问 response 的属性
-                    self.logger.debug(f"Response attributes: {dir(response)}")
-                    if hasattr(response, 'output'):
-                        self.logger.debug(f"Response.output: {response.output}")
-
-                return LLMResponse(
-                    content=content_text,
-                    usage={
-                        "prompt_tokens": getattr(response.usage, "input_tokens", 0) or 0,
-                        "completion_tokens": getattr(response.usage, "output_tokens", 0) or 0,
-                        "total_tokens": getattr(response.usage, "total_tokens", 0) or 0,
-                    },
-                    model=response.model,
-                    finish_reason=getattr(response, "finish_reason", "stop"),
-                    response_time=response_time,
-                    raw_response=response.model_dump() if hasattr(response, "model_dump") else None,
-                )
+                if is_codex_model:
+                    # Codex models use /v1/responses endpoint
+                    responses_params = {
+                        "model": self.config.model_name,
+                        "input": prompt,  # responses API uses "input" not "prompt"
+                        "max_output_tokens": completion_value,  # responses API uses "max_output_tokens"
+                        "temperature": 1,
+                    }
+                    
+                    self.logger.debug(f"Calling responses API for codex model")
+                    response = await client.responses.create(**responses_params)
+                    response_time = time.time() - start_time
+                    
+                    # Responses API returns text via output_text or output[].content[].text
+                    content_text = self._extract_response_text(response)
+                    
+                    return LLMResponse(
+                        content=content_text,
+                        usage={
+                            "prompt_tokens": getattr(response.usage, "input_tokens", 0) or 0,
+                            "completion_tokens": getattr(response.usage, "output_tokens", 0) or 0,
+                            "total_tokens": getattr(response.usage, "total_tokens", 0) or 0,
+                        },
+                        model=response.model,
+                        finish_reason=getattr(response, "status", "completed"),  # Responses API uses "status"
+                        response_time=response_time,
+                        raw_response=response.model_dump() if hasattr(response, "model_dump") else None,
+                    )
+                else:
+                    # Chat models use /v1/chat/completions endpoint with flex tier
+                    chat_params = {
+                        "model": self.config.model_name,
+                        "messages": [{"role": "user", "content": prompt}],
+                        "max_completion_tokens": completion_value,
+                        "temperature": 1,
+                        "service_tier": "flex"
+                    }
+                    
+                    self.logger.debug(f"Calling chat.completions API with flex tier")
+                    response = await client.chat.completions.create(**chat_params)
+                    response_time = time.time() - start_time
+                    
+                    # Chat API returns content in choices[0].message.content
+                    content_text = response.choices[0].message.content if response.choices else ""
+                    
+                    return LLMResponse(
+                        content=content_text,
+                        usage={
+                            "prompt_tokens": response.usage.prompt_tokens,
+                            "completion_tokens": response.usage.completion_tokens,
+                            "total_tokens": response.usage.total_tokens,
+                        },
+                        model=response.model,
+                        finish_reason=response.choices[0].finish_reason if response.choices else "stop",
+                        response_time=response_time,
+                        raw_response=response.model_dump() if hasattr(response, "model_dump") else None,
+                    )
+                    
             except Exception as e:
-                self.logger.error(f"OpenAI responses API error: {e}", exc_info=True)
+                self.logger.error(f"OpenAI API error: {e}", exc_info=True)
                 if "timeout" in str(e).lower():
                     raise LLMTimeoutError(f"Request timed out: {e}")
                 elif "rate limit" in str(e).lower():
