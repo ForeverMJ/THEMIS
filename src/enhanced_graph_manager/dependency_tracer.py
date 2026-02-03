@@ -319,11 +319,16 @@ class DependencyTracer:
             
             def _check_variable_usage(self, node, function_context):
                 """Recursively check for variable usage in an expression."""
+                # Skip if no function context (module-level code)
+                if function_context is None:
+                    return
+                
                 if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
                     var_name = node.id
                     if var_name not in self.tracer.variable_usages:
                         self.tracer.variable_usages[var_name] = []
-                    if function_context not in self.tracer.variable_usages[var_name]:
+                    usages = self.tracer.variable_usages[var_name]
+                    if usages is not None and function_context not in usages:
                         self.tracer.variable_usages[var_name].append(function_context)
                 elif isinstance(node, ast.Attribute):
                     if (isinstance(node.value, ast.Name) and 
@@ -331,7 +336,8 @@ class DependencyTracer:
                         var_name = f"self.{node.attr}"
                         if var_name not in self.tracer.variable_usages:
                             self.tracer.variable_usages[var_name] = []
-                        if function_context not in self.tracer.variable_usages[var_name]:
+                        usages = self.tracer.variable_usages[var_name]
+                        if usages is not None and function_context not in usages:
                             self.tracer.variable_usages[var_name].append(function_context)
                 
                 # Recursively check child nodes

@@ -19,11 +19,11 @@ class LLMConfig:
     api_key: Optional[str] = None
     api_base: Optional[str] = None
     # 最大トークン数（completion 上限）
-    max_completion_tokens: int = 4096
+    max_completion_tokens: int = 8192
     # 互換性: 旧設定キーで上書きしたい場合に使用
     legacy_max_completion_tokens: Optional[int] = None
     temperature: float = 0.1
-    timeout: int = 100
+    timeout: int = 600
     max_retries: int = 4
     retry_delay: float = 1.0
     

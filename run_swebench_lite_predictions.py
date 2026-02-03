@@ -25,6 +25,7 @@ import json
 import random
 import re
 import subprocess
+import sys
 import time
 from collections import defaultdict
 from dataclasses import dataclass
@@ -643,12 +644,14 @@ def main() -> None:
         default=None,
         help="Run specific instance_id(s). Can be passed multiple times; overrides --num/--seed sampling.",
     )
-    parser.add_argument("--num", type=int, default=30, help="Number of instances to sample")
+    parser.add_argument("--num", type=int, default=30, help="Number of instances to sample (ignored if --start/--end used)")
     parser.add_argument("--seed", type=int, default=42, help="Sampling seed")
+    parser.add_argument("--start", type=int, default=None, help="Start index (0-based) for instance selection after shuffle")
+    parser.add_argument("--end", type=int, default=None, help="End index (exclusive) for instance selection after shuffle")
     parser.add_argument("--workdir", default="swebench_runs", help="Working directory for repo checkouts/logs")
     parser.add_argument("--output", default="predictions/swebench_lite_sample.jsonl", help="Output predictions jsonl")
-    parser.add_argument("--model", default="gpt-4o-mini", help="LLM model for Developer/Judge (ChatOpenAI)")
-    parser.add_argument("--analysis-model", default="gpt-4o-mini", help="LLM model for Advanced Analysis (LLMInterface)")
+    parser.add_argument("--model", default="gpt-5.1-codex-mini", help="LLM model for Developer/Judge (ChatOpenAI)")
+    parser.add_argument("--analysis-model", default="gpt-5.1-codex-mini", help="LLM model for Advanced Analysis (LLMInterface)")
     parser.add_argument("--mode", choices=["integrated", "traditional"], default="integrated")
     parser.add_argument(
         "--workflow-builder",
@@ -674,6 +677,12 @@ def main() -> None:
     )
     parser.add_argument("--dry-run", action="store_true", help="Skip LLM calls; output empty patches")
     args = parser.parse_args()
+
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
     load_dotenv(override=True)
     workflow_builder = args.workflow_builder or _default_workflow_builder(args.mode)
@@ -706,8 +715,20 @@ def main() -> None:
             raise RuntimeError(f"Requested instance_id(s) not found in dataset: {missing}")
         print(f"Selected {len(selected)} specified instance(s) from {args.dataset}:{args.split}")
     else:
-        selected = _sample_instances(instances, n=args.num, seed=args.seed)
-        print(f"Selected {len(selected)} instances (seed={args.seed}) from {args.dataset}:{args.split}")
+        # Apply seed-based shuffle first
+        instances_sorted = sorted(instances, key=lambda x: str(x.get("instance_id", "")))
+        rng = random.Random(args.seed)
+        rng.shuffle(instances_sorted)
+        
+        # Use --start/--end if provided, otherwise use --num
+        if args.start is not None or args.end is not None:
+            start_idx = args.start if args.start is not None else 0
+            end_idx = args.end if args.end is not None else len(instances_sorted)
+            selected = instances_sorted[start_idx:end_idx]
+            print(f"Selected instances [{start_idx}:{end_idx}] (seed={args.seed}) from {args.dataset}:{args.split}")
+        else:
+            selected = instances_sorted[:args.num]
+            print(f"Selected {len(selected)} instances (seed={args.seed}) from {args.dataset}:{args.split}")
 
     print(f"Predictions file: {output_path}")
 

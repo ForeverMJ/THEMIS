@@ -238,7 +238,7 @@ class SemanticInjector:
         keywords.update(part.lower() for part in name_parts)
         
         # Add keywords from node data
-        if 'data' in node_data:
+        if node_data is not None and 'data' in node_data:
             data_obj = node_data['data']
             
             # Extract from docstring if available
