@@ -91,52 +91,81 @@ class OpenAIProvider(LLMProvider):
         client = self._get_client()
         start_time = time.time()
 
-        # gpt-5 系は responses API を使い、temperature=1固定かつ max_tokens
+        # gpt-5 系は flex API を使い、temperature=1固定かつ max_tokens
         if self.config.model_name.startswith("gpt-5"):
             # max_tokens 现在是 max_completion_tokens 的属性别名
             completion_value = kwargs.get("max_tokens", kwargs.get("max_completion_tokens", self.config.max_tokens))
             
-            # Responses API 使用正确的参数名称
-            params = {
-                "model": self.config.model_name,
-                "input": prompt,
-                "max_output_tokens": completion_value,  # 使用 max_tokens 而不是 max_output_tokens
-                "temperature": 1,  # gpt-5 要求 temperature=1
-            }
+            # モデルタイプを判定: codex系 vs chat系
+            is_codex_model = "codex" in self.config.model_name.lower()
             
-            self.logger.debug(f"Calling responses API with model={self.config.model_name}, max_tokens={completion_value}")
+            self.logger.debug(f"Model={self.config.model_name}, is_codex={is_codex_model}, max_tokens={completion_value}")
             
             try:
-                response = await client.responses.create(**params)
-                response_time = time.time() - start_time
-
-                # 详细日志
-                self.logger.debug(f"Response received: type={type(response)}, has_output={hasattr(response, 'output')}")
-                
-                # レスポンスからテキストを抽出
-                content_text = self._extract_response_text(response)
-                
-                if not content_text or not content_text.strip():
-                    self.logger.warning(f"Empty response from gpt-5 API. Response object: {response}")
-                    # 尝试直接访问 response 的属性
-                    self.logger.debug(f"Response attributes: {dir(response)}")
-                    if hasattr(response, 'output'):
-                        self.logger.debug(f"Response.output: {response.output}")
-
-                return LLMResponse(
-                    content=content_text,
-                    usage={
-                        "prompt_tokens": getattr(response.usage, "input_tokens", 0) or 0,
-                        "completion_tokens": getattr(response.usage, "output_tokens", 0) or 0,
-                        "total_tokens": getattr(response.usage, "total_tokens", 0) or 0,
-                    },
-                    model=response.model,
-                    finish_reason=getattr(response, "finish_reason", "stop"),
-                    response_time=response_time,
-                    raw_response=response.model_dump() if hasattr(response, "model_dump") else None,
-                )
+                if is_codex_model:
+                    # Codex models need larger output tokens to avoid truncation
+                    # Minimum 16384 tokens for codex models
+                    codex_completion_value = max(completion_value, 16384)
+                    
+                    # Codex models use /v1/responses endpoint
+                    responses_params = {
+                        "model": self.config.model_name,
+                        "input": prompt,  # responses API uses "input" not "prompt"
+                        "max_output_tokens": codex_completion_value,  # responses API uses "max_output_tokens"
+                        "temperature": 1,
+                    }
+                    
+                    self.logger.debug(f"Calling responses API for codex model")
+                    response = await client.responses.create(**responses_params)
+                    response_time = time.time() - start_time
+                    
+                    # Responses API returns text via output_text or output[].content[].text
+                    content_text = self._extract_response_text(response)
+                    
+                    return LLMResponse(
+                        content=content_text,
+                        usage={
+                            "prompt_tokens": getattr(response.usage, "input_tokens", 0) or 0,
+                            "completion_tokens": getattr(response.usage, "output_tokens", 0) or 0,
+                            "total_tokens": getattr(response.usage, "total_tokens", 0) or 0,
+                        },
+                        model=response.model,
+                        finish_reason=getattr(response, "status", "completed"),  # Responses API uses "status"
+                        response_time=response_time,
+                        raw_response=response.model_dump() if hasattr(response, "model_dump") else None,
+                    )
+                else:
+                    # Chat models use /v1/chat/completions endpoint with flex tier
+                    chat_params = {
+                        "model": self.config.model_name,
+                        "messages": [{"role": "user", "content": prompt}],
+                        "max_completion_tokens": completion_value,
+                        "temperature": 1,
+                        "service_tier": "flex"
+                    }
+                    
+                    self.logger.debug(f"Calling chat.completions API with flex tier")
+                    response = await client.chat.completions.create(**chat_params)
+                    response_time = time.time() - start_time
+                    
+                    # Chat API returns content in choices[0].message.content
+                    content_text = response.choices[0].message.content if response.choices else ""
+                    
+                    return LLMResponse(
+                        content=content_text,
+                        usage={
+                            "prompt_tokens": response.usage.prompt_tokens,
+                            "completion_tokens": response.usage.completion_tokens,
+                            "total_tokens": response.usage.total_tokens,
+                        },
+                        model=response.model,
+                        finish_reason=response.choices[0].finish_reason if response.choices else "stop",
+                        response_time=response_time,
+                        raw_response=response.model_dump() if hasattr(response, "model_dump") else None,
+                    )
+                    
             except Exception as e:
-                self.logger.error(f"OpenAI responses API error: {e}", exc_info=True)
+                self.logger.error(f"OpenAI API error: {e}", exc_info=True)
                 if "timeout" in str(e).lower():
                     raise LLMTimeoutError(f"Request timed out: {e}")
                 elif "rate limit" in str(e).lower():
@@ -186,59 +215,112 @@ class OpenAIProvider(LLMProvider):
         """Extract textual content from OpenAI responses output."""
         # responses API: output -> content -> text
         try:
+            output_text = getattr(response, "output_text", None)
+            if isinstance(output_text, str) and output_text.strip():
+                self.logger.debug(f"Using response.output_text: {output_text[:100]}...")
+                return output_text
+        except Exception:
+            pass
+
+        try:
             if hasattr(response, "output"):
                 output = getattr(response, "output", [])
-                self.logger.debug(f"Response has output attribute, type={type(output)}, len={len(output) if hasattr(output, '__len__') else 'N/A'}")
-                
+                self.logger.debug(
+                    f"Response has output attribute, type={type(output)}, "
+                    f"len={len(output) if hasattr(output, '__len__') else 'N/A'}"
+                )
+
                 text_parts = []
-                
-                # 处理列表形式的 output
-                if isinstance(output, list):
-                    for i, item in enumerate(output):
-                        self.logger.debug(f"Processing output item {i}: type={type(item)}")
-                        
-                        # 尝试访问 content 属性
-                        if hasattr(item, "content"):
-                            content_list = getattr(item, "content", [])
-                            self.logger.debug(f"Item {i} has content: type={type(content_list)}, len={len(content_list) if hasattr(content_list, '__len__') else 'N/A'}")
-                            
+
+                if isinstance(output, dict):
+                    output_items = [output]
+                elif isinstance(output, (list, tuple)):
+                    output_items = list(output)
+                elif hasattr(output, "__iter__") and not isinstance(output, (str, bytes)):
+                    output_items = list(output)
+                else:
+                    output_items = [output]
+
+                for i, item in enumerate(output_items):
+                    if item is None:
+                        continue
+                    self.logger.debug(f"Processing output item {i}: type={type(item)}")
+
+                    if hasattr(item, "text"):
+                        text_val = getattr(item, "text", None)
+                        if text_val:
+                            self.logger.debug(f"Found item.text: {text_val[:100]}...")
+                            text_parts.append(text_val)
+                            continue
+                    if hasattr(item, "output_text"):
+                        text_val = getattr(item, "output_text", None)
+                        if text_val:
+                            self.logger.debug(f"Found item.output_text: {text_val[:100]}...")
+                            text_parts.append(text_val)
+                            continue
+
+                    if hasattr(item, "content"):
+                        content_list = getattr(item, "content", [])
+                        self.logger.debug(
+                            f"Item {i} has content: type={type(content_list)}, "
+                            f"len={len(content_list) if hasattr(content_list, '__len__') else 'N/A'}"
+                        )
+
+                        if isinstance(content_list, dict):
+                            content_iter = [content_list]
+                        elif isinstance(content_list, (list, tuple)):
+                            content_iter = list(content_list)
+                        elif hasattr(content_list, "__iter__") and not isinstance(content_list, (str, bytes)):
+                            content_iter = list(content_list)
+                        else:
+                            content_iter = [content_list]
+
+                        for j, content in enumerate(content_iter):
+                            if content is None:
+                                continue
+                            self.logger.debug(f"Processing content {j}: type={type(content)}")
+
+                            if hasattr(content, "text"):
+                                text_val = getattr(content, "text", None)
+                                if text_val:
+                                    self.logger.debug(f"Found text: {text_val[:100]}...")
+                                    text_parts.append(text_val)
+                                    continue
+                            if hasattr(content, "output_text"):
+                                text_val = getattr(content, "output_text", None)
+                                if text_val:
+                                    self.logger.debug(f"Found output_text: {text_val[:100]}...")
+                                    text_parts.append(text_val)
+                                    continue
+
+                            if isinstance(content, dict):
+                                text_val = content.get("text") or content.get("output_text")
+                                if text_val:
+                                    self.logger.debug(f"Found text in dict: {text_val[:100]}...")
+                                    text_parts.append(text_val)
+                                    continue
+
+                    if isinstance(item, dict):
+                        if "content" in item:
+                            content_list = item["content"]
                             if isinstance(content_list, list):
-                                for j, content in enumerate(content_list):
-                                    self.logger.debug(f"Processing content {j}: type={type(content)}")
-                                    
-                                    # 尝试获取 text 属性
-                                    if hasattr(content, "text"):
-                                        text_val = getattr(content, "text", None)
+                                for content in content_list:
+                                    if isinstance(content, dict):
+                                        text_val = content.get("text") or content.get("output_text")
                                         if text_val:
-                                            self.logger.debug(f"Found text: {text_val[:100]}...")
                                             text_parts.append(text_val)
-                                    # 如果 content 本身是字典
-                                    elif isinstance(content, dict) and "text" in content:
-                                        text_val = content["text"]
-                                        if text_val:
-                                            self.logger.debug(f"Found text in dict: {text_val[:100]}...")
-                                            text_parts.append(text_val)
-                        
-                        # 如果 item 本身是字典
-                        elif isinstance(item, dict):
-                            if "content" in item:
-                                content_list = item["content"]
-                                if isinstance(content_list, list):
-                                    for content in content_list:
-                                        if isinstance(content, dict) and "text" in content:
-                                            text_val = content["text"]
-                                            if text_val:
-                                                text_parts.append(text_val)
-                
+
                 if text_parts:
                     result = "\n".join(text_parts)
-                    self.logger.debug(f"Extracted {len(text_parts)} text parts, total length={len(result)}")
+                    self.logger.debug(
+                        f"Extracted {len(text_parts)} text parts, total length={len(result)}"
+                    )
                     return result
                 else:
                     self.logger.warning("No text parts found in output")
         except Exception as e:
             self.logger.error(f"Error extracting response text: {e}", exc_info=True)
-        
+
         # Fallback attributes
         for attr in ("output_text", "content", "message", "text"):
             try:
@@ -248,11 +330,40 @@ class OpenAIProvider(LLMProvider):
                     return val
             except Exception:
                 continue
-        
+
+        # Try to extract from model_dump() if available (Responses API)
+        try:
+            if hasattr(response, "model_dump"):
+                dump = response.model_dump()
+                self.logger.debug(f"Trying model_dump extraction, keys: {list(dump.keys()) if isinstance(dump, dict) else 'N/A'}")
+                
+                # Try output_text first
+                if isinstance(dump, dict):
+                    if "output_text" in dump and dump["output_text"]:
+                        return dump["output_text"]
+                    
+                    # Try output -> [item] -> content -> [content_item] -> text
+                    if "output" in dump and isinstance(dump["output"], list):
+                        text_parts = []
+                        for item in dump["output"]:
+                            if isinstance(item, dict):
+                                # Direct text attribute
+                                if "text" in item and item["text"]:
+                                    text_parts.append(item["text"])
+                                # Content list
+                                elif "content" in item and isinstance(item["content"], list):
+                                    for content_item in item["content"]:
+                                        if isinstance(content_item, dict) and "text" in content_item:
+                                            text_parts.append(content_item["text"])
+                        if text_parts:
+                            return "\n".join(text_parts)
+        except Exception as e:
+            self.logger.debug(f"model_dump extraction failed: {e}")
+
         # Final fallback - convert to string
         self.logger.warning("All extraction methods failed, converting response to string")
         return str(response)
-    
+
     def validate_config(self) -> List[str]:
         """Validate OpenAI-specific configuration."""
         issues = []

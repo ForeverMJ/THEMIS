@@ -84,7 +84,14 @@ def build_integrated_workflow(
     if analysis_model:
         os.environ["LLM_MODEL"] = analysis_model
 
-    llm_kwargs: dict[str, Any] = {"model": llm_model, "temperature": 0}
+    def _use_responses_api(model_name: str) -> bool:
+        return model_name.startswith("gpt-5") or "codex" in model_name
+
+    llm_kwargs: dict[str, Any] = {"model": llm_model}
+    if _use_responses_api(llm_model):
+        llm_kwargs["use_responses_api"] = True
+    else:
+        llm_kwargs["temperature"] = 0
     if callbacks is not None:
         llm_kwargs["callbacks"] = list(callbacks)
     llm = ChatOpenAI(**llm_kwargs)
@@ -127,8 +134,18 @@ def build_integrated_workflow(
         m = re.search(r"Developer proposed edit for unknown file: (.+)$", err.strip())
         if m:
             rel_path = m.group(1).strip()
-            if _try_load_file_into_state(state, rel_path=rel_path):
+            rel_norm = rel_path.replace("\\", "/").lstrip("./")
+            if _try_load_file_into_state(state, rel_path=rel_norm):
                 return True
+
+            rel_obj = Path(rel_norm)
+            if rel_obj.suffix == ".py" and len(rel_obj.parts) > 1:
+                parent_dir = Path(*rel_obj.parts[:-1])
+                parent_module = parent_dir.with_suffix(".py").as_posix()
+                init_module = (parent_dir / "__init__.py").as_posix()
+                for cand in (parent_module, init_module):
+                    if _try_load_file_into_state(state, rel_path=cand):
+                        return True
 
             # Fallback: if the path is wrong (e.g., repo uses "lib/<pkg>/..."), try suffix match.
             repo_root_raw = state.get("repo_root")
@@ -148,8 +165,15 @@ def build_integrated_workflow(
             if proc.returncode != 0:
                 return False
 
-            rel_norm = rel_path.replace("\\", "/").lstrip("./")
             candidates = [p.strip() for p in proc.stdout.splitlines() if p.strip().endswith(rel_norm)]
+            if not candidates:
+                base_name = rel_obj.name
+                if base_name:
+                    candidates = [
+                        p.strip()
+                        for p in proc.stdout.splitlines()
+                        if p.strip().endswith("/" + base_name) or p.strip() == base_name
+                    ]
             if not candidates:
                 return False
 
@@ -373,6 +397,7 @@ def build_integrated_workflow(
         attempt_report: Optional[str] = enhanced_report if enhanced_report else None
         updated_files: Optional[Dict[str, str]] = None
         last_error: Optional[Exception] = None
+        force_full_files: set[str] = set()
 
         for attempt in range(3):
             try:
@@ -380,20 +405,50 @@ def build_integrated_workflow(
                     state["files"],
                     state["requirements"],
                     attempt_report,
+                    force_full_files=force_full_files,
                 )
             except Exception as e:
                 last_error = e
                 print(f"WARNING: Developer output could not be applied (attempt {attempt + 1}/3): {e}")
-                if _maybe_expand_context_from_error(state, str(e)):
+                error_text = str(e)
+                full_file_note = ""
+                match = re.search(r"snippet not found in ([^\\s:]+\\.py)", error_text)
+                if match:
+                    force_full_files.add(match.group(1))
+                    full_file_note = (
+                        f"Full file content for {match.group(1)} was added; "
+                        "please copy an exact `before` snippet from it."
+                    )
+                no_edits_note = ""
+                if "Developer returned no edits" in error_text:
+                    force_full_files.update(state["files"].keys())
+                    no_edits_note = (
+                        "You must return at least one edit that addresses the requirements; "
+                        "do not return an empty edits list."
+                    )
+                unknown_file_note = ""
+                if "Developer proposed edit for unknown file" in error_text:
+                    unknown_file_note = (
+                        "Only edit the files listed in the prompt; do not invent new file paths."
+                    )
+                notes = [note for note in (full_file_note, no_edits_note, unknown_file_note) if note]
+                note_text = "\n".join(notes)
+
+                if _maybe_expand_context_from_error(state, error_text):
                     base = enhanced_report.strip()
-                    attempt_report = (base + "\n\n" if base else "") + (
+                    extra = (
                         "Additional relevant files were loaded into the context. "
                         "Please re-try with an exact `before` snippet from the provided files."
                     )
+                    attempt_report = (base + "\n\n" if base else "") + (
+                        (note_text + "\n") if note_text else ""
+                    ) + extra
                     updated_files = None
                     continue
                 base = enhanced_report.strip()
-                attempt_report = (base + "\n\n" if base else "") + f"Previous attempt failed to apply: {e}"
+                attempt_report = (base + "\n\n" if base else "") + (
+                    (note_text + "\n") if note_text else ""
+                ) + f"Previous attempt failed to apply: {e}"
                 updated_files = None
                 continue
 

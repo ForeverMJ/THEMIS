@@ -69,7 +69,40 @@ class JudgeAgent:
                 "baseline_edges": "\n".join(baseline_descriptions),
             }
         )
-        return result.content if hasattr(result, "content") else str(result)
+        content = result.content if hasattr(result, "content") else result
+        return self._coerce_text(content)
+
+    @staticmethod
+    def _coerce_text(value: object) -> str:
+        if value is None:
+            return ""
+        if isinstance(value, str):
+            return value
+        if isinstance(value, list):
+            parts: list[str] = []
+            for item in value:
+                if item is None:
+                    continue
+                if isinstance(item, str):
+                    parts.append(item)
+                    continue
+                if isinstance(item, dict):
+                    text = item.get("text") or item.get("content")
+                    if text is not None:
+                        parts.append(str(text))
+                    continue
+                text = getattr(item, "text", None) or getattr(item, "content", None)
+                if text is not None:
+                    parts.append(str(text))
+            if parts:
+                return "\n".join(parts)
+            return "\n".join(str(item) for item in value)
+        if isinstance(value, dict):
+            if "text" in value:
+                return str(value["text"])
+            if "content" in value:
+                return str(value["content"])
+        return str(value)
 
     def evaluate(
         self, graph: nx.DiGraph, requirements: str, baseline_graph: nx.DiGraph | None = None
