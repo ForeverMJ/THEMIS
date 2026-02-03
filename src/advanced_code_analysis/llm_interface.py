@@ -103,11 +103,15 @@ class OpenAIProvider(LLMProvider):
             
             try:
                 if is_codex_model:
+                    # Codex models need larger output tokens to avoid truncation
+                    # Minimum 16384 tokens for codex models
+                    codex_completion_value = max(completion_value, 16384)
+                    
                     # Codex models use /v1/responses endpoint
                     responses_params = {
                         "model": self.config.model_name,
                         "input": prompt,  # responses API uses "input" not "prompt"
-                        "max_output_tokens": completion_value,  # responses API uses "max_output_tokens"
+                        "max_output_tokens": codex_completion_value,  # responses API uses "max_output_tokens"
                         "temperature": 1,
                     }
                     
@@ -326,6 +330,35 @@ class OpenAIProvider(LLMProvider):
                     return val
             except Exception:
                 continue
+
+        # Try to extract from model_dump() if available (Responses API)
+        try:
+            if hasattr(response, "model_dump"):
+                dump = response.model_dump()
+                self.logger.debug(f"Trying model_dump extraction, keys: {list(dump.keys()) if isinstance(dump, dict) else 'N/A'}")
+                
+                # Try output_text first
+                if isinstance(dump, dict):
+                    if "output_text" in dump and dump["output_text"]:
+                        return dump["output_text"]
+                    
+                    # Try output -> [item] -> content -> [content_item] -> text
+                    if "output" in dump and isinstance(dump["output"], list):
+                        text_parts = []
+                        for item in dump["output"]:
+                            if isinstance(item, dict):
+                                # Direct text attribute
+                                if "text" in item and item["text"]:
+                                    text_parts.append(item["text"])
+                                # Content list
+                                elif "content" in item and isinstance(item["content"], list):
+                                    for content_item in item["content"]:
+                                        if isinstance(content_item, dict) and "text" in content_item:
+                                            text_parts.append(content_item["text"])
+                        if text_parts:
+                            return "\n".join(text_parts)
+        except Exception as e:
+            self.logger.debug(f"model_dump extraction failed: {e}")
 
         # Final fallback - convert to string
         self.logger.warning("All extraction methods failed, converting response to string")

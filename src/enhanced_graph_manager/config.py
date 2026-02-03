@@ -19,7 +19,7 @@ class EnhancedGraphManagerConfig:
     requirement_priority_threshold: int = 5
     
     # Dependency tracing settings
-    max_dependency_depth: int = 50
+    max_dependency_depth: int = 100
     trace_external_imports: bool = False
     
     # Violation flagging settings
