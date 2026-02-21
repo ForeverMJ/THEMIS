@@ -41,6 +41,8 @@ class SemanticInjector:
             # Skip empty or very short sentences
             if len(sentence.strip()) < 10:
                 continue
+            if self._is_metadata_sentence(sentence):
+                continue
                 
             # Check if sentence contains requirement indicators
             if self._is_requirement_sentence(sentence):
@@ -151,20 +153,85 @@ class SemanticInjector:
     
     def _split_into_sentences(self, text: str) -> List[str]:
         """Split text into sentences."""
-        # Simple sentence splitting using periods, exclamation marks, and question marks
-        sentences = re.split(r'[.!?]+', text)
-        return [s.strip() for s in sentences if s.strip()]
+        normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+        # Keep dotted test/function identifiers intact by splitting on punctuation+whitespace.
+        chunks = re.split(r"(?<=[.!?])\s+|\n+", normalized)
+        return [s.strip() for s in chunks if s.strip()]
     
     def _is_requirement_sentence(self, sentence: str) -> bool:
         """Check if a sentence contains requirement indicators."""
-        requirement_indicators = [
-            'should', 'must', 'shall', 'need', 'require', 'want', 'expect',
-            'implement', 'add', 'create', 'build', 'develop', 'fix', 'update',
-            'improve', 'enhance', 'support', 'handle', 'process', 'manage'
-        ]
-        
+        if self._is_metadata_sentence(sentence):
+            return False
+
         sentence_lower = sentence.lower()
-        return any(indicator in sentence_lower for indicator in requirement_indicators)
+
+        if sentence_lower.startswith("- ") and ("test" in sentence_lower or "failing" in sentence_lower):
+            return True
+
+        if "fix the following failing tests" in sentence_lower:
+            return True
+
+        # Filter process/update chatter that is not a behavioral requirement.
+        if re.search(r"\b(i|we)\b.*\b(will|try|provide|submit|fix)\b", sentence_lower):
+            return False
+
+        strong_modals = [
+            "must",
+            "should",
+            "shall",
+            "required",
+            "needs to",
+            "need to",
+        ]
+        action_verbs = [
+            "fix",
+            "update",
+            "correct",
+            "support",
+            "handle",
+            "return",
+            "raise",
+            "show",
+            "display",
+            "use",
+            "avoid",
+            "preserve",
+            "maintain",
+            "replace",
+        ]
+
+        has_modal = any(token in sentence_lower for token in strong_modals)
+        has_action = any(token in sentence_lower for token in action_verbs)
+        has_code_like_token = bool(
+            re.search(r"[`'\"]?[A-Za-z_][A-Za-z0-9_.]{2,}[`'\"]?", sentence)
+        )
+        return (has_modal and has_action) or (has_action and has_code_like_token)
+
+    def _is_metadata_sentence(self, sentence: str) -> bool:
+        """Filter non-requirement narrative/meta text from issue descriptions."""
+        s = sentence.strip()
+        if not s:
+            return True
+        s_lower = s.lower()
+        metadata_patterns = [
+            r"^description\b",
+            r"^edit\b",
+            r"^last modified\b",
+            r"^traceback\b",
+            r"^here'?s a pr\b",
+            r"\bpull request\b",
+            r"\bpr\b",
+            r"\bsubmitted\b",
+            r"\bwill provide\b",
+            r"\bi'll\b",
+            r"\bthanks\b",
+        ]
+        if any(re.search(pattern, s_lower) for pattern in metadata_patterns):
+            return True
+        # Log-like lines are high-noise and rarely actionable requirements.
+        if re.match(r"^\s*file\s+\".*\", line \d+", s_lower):
+            return True
+        return False
     
     def _create_requirement_node(self, sentence: str) -> RequirementNode:
         """Create a requirement node from a sentence."""

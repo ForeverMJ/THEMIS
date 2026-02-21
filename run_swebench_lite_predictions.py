@@ -26,6 +26,11 @@ import random
 import re
 import subprocess
 import sys
+print(f"DEBUG: sys.path: {sys.path}")
+try:
+    import src.agents.developer
+except ImportError as e:
+    print(f"DEBUG: Could not import src.agents.developer: {e}")
 import time
 from collections import defaultdict
 from dataclasses import dataclass
@@ -374,10 +379,39 @@ def _list_files_for_token(repo_root: Path, *, token: str, include_tests: bool) -
     return _python_scan_list_files(repo_root, token=token, include_tests=include_tests)
 
 
+def _normalize_test_list(raw: Any) -> List[str]:
+    """
+    Normalize dataset test fields (e.g., FAIL_TO_PASS) into a list of test names.
+
+    SWE-bench rows may store FAIL_TO_PASS either as a Python list or as a JSON string.
+    """
+    if raw is None:
+        return []
+
+    if isinstance(raw, str):
+        text = raw.strip()
+        if not text:
+            return []
+        if text.startswith("[") and text.endswith("]"):
+            try:
+                parsed = json.loads(text)
+            except Exception:
+                parsed = None
+            if isinstance(parsed, list):
+                return [str(item).strip() for item in parsed if str(item).strip()]
+        return [line.strip(" -\t") for line in text.splitlines() if line.strip()]
+
+    if isinstance(raw, (list, tuple, set)):
+        return [str(item).strip() for item in raw if str(item).strip()]
+
+    text = str(raw).strip()
+    return [text] if text else []
+
+
 def _select_target_file(repo_root: Path, instance: Dict[str, Any]) -> Optional[str]:
     problem = (instance.get("problem_statement") or "").strip()
     hints = (instance.get("hints_text") or "").strip()
-    fail_to_pass = "\n".join(instance.get("FAIL_TO_PASS") or [])
+    fail_to_pass = "\n".join(_normalize_test_list(instance.get("FAIL_TO_PASS")))
     # PASS_TO_PASS is often huge/noisy and hurts file selection; keep FAIL_TO_PASS only.
     combined = f"{problem}\n\n{hints}\n\n{fail_to_pass}".strip()
 
@@ -479,7 +513,7 @@ def _select_target_file(repo_root: Path, instance: Dict[str, Any]) -> Optional[s
 def _build_requirements(instance: Dict[str, Any]) -> str:
     problem = (instance.get("problem_statement") or "").strip()
     hints = (instance.get("hints_text") or "").strip()
-    fail_to_pass = instance.get("FAIL_TO_PASS") or []
+    fail_to_pass = _normalize_test_list(instance.get("FAIL_TO_PASS"))
 
     parts: List[str] = []
     if problem:
@@ -487,7 +521,7 @@ def _build_requirements(instance: Dict[str, Any]) -> str:
     if hints:
         parts.append(f"Hints:\n{hints}")
     if fail_to_pass:
-        tests = "\n".join(f"- {t}" for t in list(fail_to_pass)[:25])
+        tests = "\n".join(f"- {t}" for t in fail_to_pass[:25])
         parts.append(f"Fix the following failing tests:\n{tests}")
 
     return "\n\n".join(parts).strip()
@@ -562,7 +596,7 @@ def _run_langgraph_workflow(
     analysis_strategy: str,
     max_revisions: int,
     recursion_limit: int,
-) -> Tuple[Dict[str, str], Dict[str, Any]]:
+) -> Tuple[Dict[str, str], Dict[str, Any], Optional[Dict[str, str]]]:
     token_cb = TokenCounterCallback()
     app = _build_langgraph_app(
         workflow_builder=workflow_builder,
@@ -622,7 +656,34 @@ def _run_langgraph_workflow(
     if isinstance(advanced_usage, dict):
         meta["advanced_usage"] = advanced_usage
 
-    return updated_files, meta
+    conflict_metrics_history = final_state.get("conflict_metrics_history")
+    if isinstance(conflict_metrics_history, list):
+        meta["conflict_metrics_history"] = conflict_metrics_history
+
+    developer_metrics_history = final_state.get("developer_metrics_history")
+    if isinstance(developer_metrics_history, list):
+        meta["developer_metrics_history"] = developer_metrics_history
+
+    loop_summary = final_state.get("loop_summary")
+    if isinstance(loop_summary, dict):
+        meta["loop_summary"] = loop_summary
+
+    fallback_files: Optional[Dict[str, str]] = None
+    raw_last_effective = final_state.get("last_effective_files")
+    if isinstance(raw_last_effective, dict):
+        fallback_files = {
+            str(path): str(content)
+            for path, content in raw_last_effective.items()
+        }
+        meta["last_effective_files_available"] = True
+    else:
+        meta["last_effective_files_available"] = False
+
+    last_effective_revision = final_state.get("last_effective_revision")
+    if isinstance(last_effective_revision, int):
+        meta["last_effective_revision"] = last_effective_revision
+
+    return updated_files, meta, fallback_files
 def _generate_patch(repo_root: Path) -> str:
     # Use git diff for a canonical patch that SWE-bench harness can apply.
     return _git(repo_root, ["diff", "--no-color"])
@@ -768,7 +829,7 @@ def main() -> None:
             patch = ""
 
             if not args.dry_run:
-                updated_files, meta = _run_langgraph_workflow(
+                updated_files, meta, last_effective_files = _run_langgraph_workflow(
                     workflow_builder=workflow_builder,
                     repo_root=repo_root,
                     files=files,
@@ -798,6 +859,40 @@ def main() -> None:
                     )
 
                 patch = _generate_patch(repo_root)
+                meta["patch_source"] = "final_files"
+                meta["empty_patch_reason"] = None
+
+                if not patch and isinstance(last_effective_files, dict) and last_effective_files:
+                    # Fallback to the last syntactically valid effective files from the workflow.
+                    for rel_path in last_effective_files.keys():
+                        if rel_path in file_styles:
+                            continue
+                        abs_path = repo_root / rel_path
+                        try:
+                            file_styles[rel_path] = _detect_file_style(abs_path)
+                        except Exception:
+                            file_styles[rel_path] = ("\n", True)
+                    for rel_path, content in last_effective_files.items():
+                        abs_path = repo_root / rel_path
+                        nl, eof_nl = file_styles.get(rel_path, ("\n", True))
+                        _write_text_exact(
+                            abs_path,
+                            _apply_file_style(content, newline=nl, ends_with_newline=eof_nl),
+                        )
+                    fallback_patch = _generate_patch(repo_root)
+                    if fallback_patch:
+                        patch = fallback_patch
+                        meta["patch_source"] = "last_effective_files_fallback"
+
+                if not patch:
+                    if isinstance(last_effective_files, dict) and last_effective_files:
+                        meta["empty_patch_reason"] = (
+                            "final_files_and_last_effective_files_have_no_repo_diff"
+                        )
+                    else:
+                        meta["empty_patch_reason"] = (
+                            "no_effective_changes_in_workflow"
+                        )
 
             duration = time.time() - start
             result = SolveResult(

@@ -64,6 +64,9 @@ class ViolationEdge:
     """Represents requirement satisfaction or violation relationships."""
     requirement: str
     code_node: str
-    status: str  # SATISFIES, VIOLATES
+    status: str  # SATISFIES, VIOLATES, ADVISORY
     reason: str
     confidence: float
+    blocking: bool = False
+    evidence_score: float = 0.0
+    evidence_tags: Optional[List[str]] = None

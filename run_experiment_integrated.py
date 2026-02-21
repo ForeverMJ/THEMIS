@@ -69,6 +69,7 @@ def build_integrated_workflow(
     analysis_model: str | None = None,
     analysis_strategy: AnalysisStrategy = AnalysisStrategy.AUTO_SELECT,
     callbacks: Optional[Sequence[Any]] = None,
+    stop_policy: str = "hybrid",
 ) -> StateGraph:
     """
     Build integrated workflow that combines:
@@ -131,7 +132,10 @@ def build_integrated_workflow(
 
     def _maybe_expand_context_from_error(state: AgentState, err: str) -> bool:
         """Best-effort: load additional files when the Developer references unknown paths/snippets."""
-        m = re.search(r"Developer proposed edit for unknown file: (.+)$", err.strip())
+        m = re.search(
+            r"Developer proposed (?:edit|rewrite) for unknown file: (.+)$",
+            err.strip(),
+        )
         if m:
             rel_path = m.group(1).strip()
             rel_norm = rel_path.replace("\\", "/").lstrip("./")
@@ -241,6 +245,205 @@ def build_integrated_workflow(
                 msg = e.msg or "SyntaxError"
                 errors.append(f"{path}:{lineno}:{offset}: {msg}")
         return errors
+
+    def _extract_target_symbols(
+        conflict_report: Optional[str],
+        prioritized_violations: list[dict[str, Any]],
+        *,
+        max_symbols: int = 8,
+    ) -> list[str]:
+        low_signal = {
+            "set",
+            "error",
+            "errors",
+            "field",
+            "fields",
+            "model",
+            "models",
+            "name",
+            "names",
+            "value",
+            "values",
+            "type",
+            "types",
+            "related",
+            "self",
+            "none",
+            "get",
+            "add",
+            "update",
+            "delete",
+            "remove",
+            "check",
+            "create",
+            "_",
+        }
+
+        def _clean_symbol(raw: str) -> str:
+            sym = str(raw or "").strip()
+            if not sym:
+                return ""
+            if "|" in sym:
+                sym = sym.split("|", 1)[0].strip()
+            return sym
+
+        symbols: list[str] = []
+        seen: set[str] = set()
+
+        for violation in prioritized_violations[:8]:
+            sym = _clean_symbol(str(violation.get("code_node") or ""))
+            if not sym:
+                continue
+            for candidate in (sym, sym.split(".")[-1]):
+                cand = _clean_symbol(candidate)
+                if not cand:
+                    continue
+                low = cand.lower()
+                if len(cand) < 4 or low in low_signal:
+                    continue
+                if cand in seen:
+                    continue
+                seen.add(cand)
+                symbols.append(cand)
+                if len(symbols) >= max_symbols:
+                    return symbols
+
+        text = str(conflict_report or "")
+        for match in re.finditer(r"REQ-\d+\s*->\s*([A-Za-z_][A-Za-z0-9_.]*)", text):
+            sym = _clean_symbol(match.group(1))
+            if not sym:
+                continue
+            for candidate in (sym, sym.split(".")[-1]):
+                cand = _clean_symbol(candidate)
+                if not cand:
+                    continue
+                low = cand.lower()
+                if len(cand) < 4 or low in low_signal:
+                    continue
+                if cand in seen:
+                    continue
+                seen.add(cand)
+                symbols.append(cand)
+                if len(symbols) >= max_symbols:
+                    return symbols
+
+        return symbols
+
+    def _collect_changed_lines(old_text: str, new_text: str) -> list[str]:
+        old_lines = old_text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+        new_lines = new_text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+        changed: list[str] = []
+        sm = difflib.SequenceMatcher(a=old_lines, b=new_lines)
+        for tag, i1, i2, j1, j2 in sm.get_opcodes():
+            if tag == "equal":
+                continue
+            if tag in ("replace", "insert"):
+                changed.extend(new_lines[j1:j2])
+            elif tag == "delete":
+                changed.extend(old_lines[i1:i2])
+        return changed
+
+    def _normalize_symbol_name(symbol: str) -> str:
+        return str(symbol or "").replace("::", ".").strip().lower()
+
+    def _symbol_leaf(symbol: str) -> str:
+        normalized = _normalize_symbol_name(symbol)
+        return normalized.split(".")[-1] if normalized else ""
+
+    def _symbol_matches(target: str, applied: str) -> bool:
+        t_norm = _normalize_symbol_name(target)
+        a_norm = _normalize_symbol_name(applied)
+        if not t_norm or not a_norm:
+            return False
+        if t_norm == a_norm:
+            return True
+        if t_norm.endswith("." + a_norm) or a_norm.endswith("." + t_norm):
+            return True
+        t_leaf = _symbol_leaf(target)
+        a_leaf = _symbol_leaf(applied)
+        return bool(t_leaf and a_leaf and t_leaf == a_leaf)
+
+    def _compute_target_hit(
+        old_files: Dict[str, str],
+        new_files: Dict[str, str],
+        target_symbols: list[str],
+        *,
+        applied_symbols: Optional[list[str]] = None,
+    ) -> Dict[str, Any]:
+        if not target_symbols:
+            return {
+                "target_hit": None,
+                "target_hit_rate": None,
+                "target_symbols_total": 0,
+                "target_symbols_hit": 0,
+                "changed_line_count": 0,
+                "target_hit_via": None,
+                "applied_symbols_count": 0,
+            }
+
+        changed_lines: list[str] = []
+        all_paths = set(old_files.keys()).union(new_files.keys())
+        for path in all_paths:
+            old_text = old_files.get(path, "")
+            new_text = new_files.get(path, "")
+            if old_text == new_text:
+                continue
+            changed_lines.extend(_collect_changed_lines(old_text, new_text))
+
+        safe_applied_symbols = [str(s).strip() for s in (applied_symbols or []) if str(s).strip()]
+        symbol_hits: set[str] = set()
+        for sym in target_symbols:
+            if any(_symbol_matches(sym, applied) for applied in safe_applied_symbols):
+                symbol_hits.add(sym)
+
+        if not changed_lines:
+            hit_count = len(symbol_hits)
+            total = len(target_symbols)
+            hit_rate = hit_count / total if total else 0.0
+            return {
+                "target_hit": hit_count > 0,
+                "target_hit_rate": hit_rate,
+                "target_symbols_total": len(target_symbols),
+                "target_symbols_hit": hit_count,
+                "changed_line_count": 0,
+                "hit_symbols": sorted(symbol_hits),
+                "target_hit_via": "applied_symbols" if hit_count > 0 else None,
+                "applied_symbols_count": len(safe_applied_symbols),
+                "applied_symbols": safe_applied_symbols,
+            }
+
+        changed_blob = "\n".join(changed_lines)
+        changed_blob_l = changed_blob.lower()
+        text_hits: set[str] = set()
+        for sym in target_symbols:
+            if sym in changed_blob or sym.lower() in changed_blob_l:
+                text_hits.add(sym)
+
+        hit_symbols = set(symbol_hits).union(text_hits)
+        hit_count = len(hit_symbols)
+        total = len(target_symbols)
+        hit_rate = hit_count / total if total else 0.0
+        hit_via: Optional[str]
+        if hit_symbols:
+            via_parts: list[str] = []
+            if symbol_hits:
+                via_parts.append("applied_symbols")
+            if text_hits:
+                via_parts.append("changed_lines")
+            hit_via = "+".join(via_parts)
+        else:
+            hit_via = None
+        return {
+            "target_hit": hit_count > 0,
+            "target_hit_rate": hit_rate,
+            "target_symbols_total": total,
+            "target_symbols_hit": hit_count,
+            "changed_line_count": len(changed_lines),
+            "hit_symbols": sorted(hit_symbols),
+            "target_hit_via": hit_via,
+            "applied_symbols_count": len(safe_applied_symbols),
+            "applied_symbols": safe_applied_symbols,
+        }
 
     async def advanced_analysis_node(state: AgentState) -> AgentState:
         """
@@ -368,14 +571,25 @@ def build_integrated_workflow(
         # Prepare enhanced context for developer
         conflict_report = state.get("conflict_report")
         advanced_analysis = state.get("advanced_analysis", {})
+        analysis_report = state.get("analysis_report", {})
         
         # Enhance conflict report with advanced analysis insights
         enhanced_report = conflict_report or ""
         
         if advanced_analysis:
-            findings = advanced_analysis.get("findings", [])
-            recommendations = advanced_analysis.get("recommendations", [])
-            
+            raw_findings = list(advanced_analysis.get("findings") or [])
+            raw_recommendations = list(advanced_analysis.get("recommendations") or [])
+
+            def _shorten(item: Any, *, max_len: int = 300) -> str:
+                text = str(item).strip()
+                if len(text) <= max_len:
+                    return text
+                return text[: max_len - 3].rstrip() + "..."
+
+            # Keep context concise and high-signal to reduce noisy edits.
+            findings = [_shorten(f) for f in raw_findings[:3]]
+            recommendations = [_shorten(r) for r in raw_recommendations[:3]]
+
             if findings or recommendations:
                 enhanced_report += "\n\n=== Advanced Analysis Insights ===\n"
                 
@@ -390,25 +604,96 @@ def build_integrated_workflow(
                         enhanced_report += f"{i}. {rec}\n"
                 
                 print(
-                    f"Enhanced developer context with {len(findings)} findings and {len(recommendations)} recommendations"
+                    "Enhanced developer context with "
+                    f"{len(findings)} findings and {len(recommendations)} recommendations"
                 )
+
+        # Add high-signal graph violations (with reasons) as direct edit targets.
+        prioritized_violations = []
+        if isinstance(analysis_report, dict):
+            violation_report = analysis_report.get("violation_report")
+            if isinstance(violation_report, dict):
+                raw_prioritized = violation_report.get("prioritized_violations")
+                if isinstance(raw_prioritized, list):
+                    prioritized_violations = raw_prioritized
+        blocking_prioritized = [
+            v for v in prioritized_violations if bool(v.get("blocking", False))
+        ]
+        display_violations = blocking_prioritized or prioritized_violations
+        if display_violations:
+            enhanced_report += "\n\n=== Graph Violation Priorities ===\n"
+            for i, violation in enumerate(display_violations[:5], 1):
+                requirement_id = str(violation.get("requirement_id") or "REQ-?")
+                code_node = str(violation.get("code_node") or "unknown_node")
+                reason = str(violation.get("reason") or "unspecified")
+                confidence_raw = violation.get("confidence")
+                blocking_text = " blocking" if bool(violation.get("blocking", False)) else " advisory"
+                confidence_text = ""
+                if confidence_raw is not None:
+                    try:
+                        confidence_text = f" (confidence={float(confidence_raw):.2f})"
+                    except Exception:
+                        confidence_text = f" (confidence={confidence_raw})"
+                enhanced_report += (
+                    f"{i}. {requirement_id} -> {code_node}: {reason}{confidence_text}{blocking_text}\n"
+                )
+            print(
+                "Added prioritized graph violations to developer context: "
+                f"{min(len(display_violations), 5)} item(s)"
+            )
+
+        target_symbol_source = blocking_prioritized
+        target_symbols = _extract_target_symbols(conflict_report, target_symbol_source)
+        if target_symbols:
+            enhanced_report += "\n\n=== Conflict Target Symbols (must touch at least one) ===\n"
+            enhanced_report += ", ".join(target_symbols) + "\n"
+            print(f"Target symbols for this revision: {', '.join(target_symbols)}")
         
         # Developer revises code with enhanced context
         attempt_report: Optional[str] = enhanced_report if enhanced_report else None
         updated_files: Optional[Dict[str, str]] = None
+        temp_files: Dict[str, str] = state["files"]
         last_error: Optional[Exception] = None
         force_full_files: set[str] = set()
+        attempts_used = 0
+        no_effective_retry_count = 0
+        last_revision_meta: Dict[str, Any] = {}
+        target_hit_info: Dict[str, Any] = {
+            "target_hit": None,
+            "target_hit_rate": None,
+            "target_symbols_total": len(target_symbols),
+            "target_symbols_hit": 0,
+            "changed_line_count": 0,
+            "target_hit_via": None,
+            "applied_symbols_count": 0,
+        }
 
         for attempt in range(3):
+            attempts_used = attempt + 1
             try:
                 updated_files = developer.revise(
-                    state["files"],
+                    temp_files,
                     state["requirements"],
                     attempt_report,
                     force_full_files=force_full_files,
                 )
+                last_revision_meta = dict(getattr(developer, "last_revision_meta", {}) or {})
+
+                target_hit_info = _compute_target_hit(
+                    state["files"],
+                    updated_files,
+                    target_symbols,
+                    applied_symbols=list(last_revision_meta.get("applied_symbols") or []),
+                )
+                if target_symbols and not bool(target_hit_info.get("target_hit")):
+                    preview = ", ".join(target_symbols[:6])
+                    print(
+                        "WARNING: Developer changes did not hit target symbols this round "
+                        f"({preview}); keeping change as soft-constraint mode."
+                    )
             except Exception as e:
                 last_error = e
+                last_revision_meta = dict(getattr(developer, "last_revision_meta", {}) or {})
                 print(f"WARNING: Developer output could not be applied (attempt {attempt + 1}/3): {e}")
                 error_text = str(e)
                 full_file_note = ""
@@ -426,16 +711,71 @@ def build_integrated_workflow(
                         "You must return at least one edit that addresses the requirements; "
                         "do not return an empty edits list."
                     )
+                if "Developer returned no rewrites" in error_text:
+                    force_full_files.update(state["files"].keys())
+                    no_edits_note = (
+                        "You must return at least one symbol rewrite that addresses the requirements; "
+                        "do not return an empty rewrites list."
+                    )
+                if "no effective file changes" in error_text:
+                    no_effective_retry_count += 1
+                    no_edits_note = (
+                        "Your rewrite must include a real code change that addresses the conflict report."
+                    )
+                else:
+                    no_effective_retry_count = 0
+                if "No target-hit edits" in error_text:
+                    no_edits_note = (
+                        "Your rewrite must touch at least one conflict target symbol "
+                        f"({', '.join(target_symbols[:6])})."
+                    )
+                failed_rewrites = list(last_revision_meta.get("failed_rewrites") or [])
+                syntax_failures = [
+                    item for item in failed_rewrites
+                    if "syntax error" in str(item.get("reason", "")).lower()
+                ]
+                syntax_note = ""
+                if syntax_failures:
+                    preview_items = [
+                        f"{item.get('filename')}:{item.get('symbol')} -> {item.get('reason')}"
+                        for item in syntax_failures[:2]
+                    ]
+                    syntax_note = (
+                        "Fix syntax in symbol replacement output. "
+                        + " | ".join(preview_items)
+                    )
                 unknown_file_note = ""
                 if "Developer proposed edit for unknown file" in error_text:
                     unknown_file_note = (
                         "Only edit the files listed in the prompt; do not invent new file paths."
                     )
-                notes = [note for note in (full_file_note, no_edits_note, unknown_file_note) if note]
+                if "Developer proposed rewrite for unknown file" in error_text:
+                    unknown_file_note = (
+                        "Only rewrite files listed in the prompt; do not invent new file paths."
+                    )
+                if "unknown symbol" in error_text or "ambiguous symbol" in error_text:
+                    unknown_file_note = (
+                        "Use exact Python symbol names from the provided file, e.g. "
+                        "`function_name`, `ClassName`, or `ClassName.method_name`."
+                    )
+                notes = [
+                    note for note in (
+                        full_file_note,
+                        no_edits_note,
+                        syntax_note,
+                        unknown_file_note,
+                    ) if note
+                ]
+                if no_effective_retry_count >= 2:
+                    notes.append(
+                        "Surgical mode: change only the smallest conflict-related logic block; "
+                        "do not submit equivalent rewrites."
+                    )
                 note_text = "\n".join(notes)
 
                 if _maybe_expand_context_from_error(state, error_text):
-                    base = enhanced_report.strip()
+                    base_source = conflict_report or enhanced_report
+                    base = str(base_source).strip()
                     extra = (
                         "Additional relevant files were loaded into the context. "
                         "Please re-try with an exact `before` snippet from the provided files."
@@ -445,7 +785,8 @@ def build_integrated_workflow(
                     ) + extra
                     updated_files = None
                     continue
-                base = enhanced_report.strip()
+                base_source = conflict_report if no_effective_retry_count >= 1 else enhanced_report
+                base = str(base_source).strip()
                 attempt_report = (base + "\n\n" if base else "") + (
                     (note_text + "\n") if note_text else ""
                 ) + f"Previous attempt failed to apply: {e}"
@@ -458,6 +799,8 @@ def build_integrated_workflow(
 
             last_error = RuntimeError("Syntax errors in developer output:\n" + "\n".join(syntax_errors))
             print(f"WARNING: Syntax errors after developer revision (attempt {attempt + 1}/3); retrying once.")
+            # Retry from the latest output so the model can directly repair syntax.
+            temp_files = updated_files
             base = enhanced_report.strip()
             attempt_report = (base + "\n\n" if base else "") + "Syntax errors in your last output:\n" + "\n".join(
                 syntax_errors
@@ -465,11 +808,64 @@ def build_integrated_workflow(
             updated_files = None
 
         if updated_files is None:
-            raise RuntimeError(str(last_error) if last_error else "Developer failed to produce valid edits")
-         
+            # Keep workflow alive for loop experiments: do not abort the whole instance on a bad turn.
+            print(
+                "WARNING: Developer failed to produce applicable edits after retries; "
+                "keeping previous files for this revision."
+            )
+            if last_error is not None:
+                print(f"WARNING: Last developer error: {last_error}")
+            updated_files = state["files"]
+        
+        effective_change = updated_files != state["files"]
+        target_hit_info = _compute_target_hit(
+            state["files"],
+            updated_files,
+            target_symbols,
+            applied_symbols=list(last_revision_meta.get("applied_symbols") or []),
+        )
+        if effective_change:
+            print("Developer produced effective file changes in this revision.")
+        else:
+            print("WARNING: No effective file changes in this revision.")
+        if target_hit_info.get("target_hit") is not None:
+            print(
+                "Target-hit metrics: "
+                f"hit={target_hit_info.get('target_hit')}, "
+                f"rate={float(target_hit_info.get('target_hit_rate') or 0.0):.2f}, "
+                f"symbols={target_hit_info.get('target_symbols_hit')}/"
+                f"{target_hit_info.get('target_symbols_total')}, "
+                f"via={target_hit_info.get('target_hit_via')}, "
+                f"applied_symbols={target_hit_info.get('applied_symbols_count')}"
+            )
+
         new_state = state.copy()
         new_state["files"] = updated_files
         new_state["conflict_report"] = None
+        new_state["last_effective_meta"] = dict(last_revision_meta)
+        if effective_change:
+            new_state["last_effective_files"] = dict(updated_files)
+            new_state["last_effective_revision"] = int(state.get("revision_count", 0) or 0)
+        developer_metrics_history = list(state.get("developer_metrics_history", []))
+        developer_metrics_history.append(
+            {
+                "revision": state.get("revision_count", 0),
+                "attempts_used": attempts_used,
+                "effective_change": effective_change,
+                "last_error": str(last_error) if last_error is not None else None,
+                "target_hit": target_hit_info.get("target_hit"),
+                "target_hit_rate": target_hit_info.get("target_hit_rate"),
+                "target_symbols_total": target_hit_info.get("target_symbols_total"),
+                "target_symbols_hit": target_hit_info.get("target_symbols_hit"),
+                "changed_line_count": target_hit_info.get("changed_line_count"),
+                "target_hit_via": target_hit_info.get("target_hit_via"),
+                "applied_symbols_count": target_hit_info.get("applied_symbols_count"),
+                "applied_symbols": list(target_hit_info.get("applied_symbols") or []),
+                "applied_rewrites": int(last_revision_meta.get("applied_rewrites") or 0),
+                "proposed_rewrites": int(last_revision_meta.get("proposed_rewrites") or 0),
+            }
+        )
+        new_state["developer_metrics_history"] = developer_metrics_history
         
         return new_state
 
@@ -499,6 +895,46 @@ def build_integrated_workflow(
         
         return new_state
 
+    def _conflict_metrics(
+        report: Optional[str],
+        *,
+        advisory_report: Optional[str] = None,
+        analysis_report: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        text = (report or advisory_report or "").strip()
+
+        blocking_count: Optional[int] = None
+        advisory_count: Optional[int] = None
+        if isinstance(analysis_report, dict):
+            violation_report = analysis_report.get("violation_report")
+            if isinstance(violation_report, dict):
+                try:
+                    blocking_count = int(violation_report.get("total_blocking_violations"))
+                    advisory_count = int(violation_report.get("total_advisory_violations"))
+                except Exception:
+                    blocking_count = None
+                    advisory_count = None
+
+        metrics_source = "analysis_report"
+        if blocking_count is None or advisory_count is None:
+            metrics_source = "judge_text"
+            lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+            blocking_lines = [ln for ln in lines if re.search(r"^B\d+\.\s+REQ-\d+\s*->", ln)]
+            advisory_lines = [ln for ln in lines if re.search(r"^A\d+\.\s+REQ-\d+\s*->", ln)]
+            if not blocking_lines and not advisory_lines:
+                # Backward compatibility with old Judge format.
+                blocking_lines = [ln for ln in lines if re.search(r"\bREQ-\d+\s*->", ln)]
+            blocking_count = len(blocking_lines)
+            advisory_count = len(advisory_lines)
+
+        return {
+            "conflict_len": len(text),
+            "violates_count": int(blocking_count),  # kept for backward compatibility
+            "blocking_conflicts_count": int(blocking_count),
+            "advisory_conflicts_count": int(advisory_count),
+            "metrics_source": metrics_source,
+        }
+
     def judge_node(state: AgentState) -> AgentState:
         """
         Step 5: Judge evaluates the revised code with quality tracking
@@ -515,6 +951,9 @@ def build_integrated_workflow(
         
         new_state = state.copy()
         new_state["conflict_report"] = report
+        advisory_report = getattr(judge, "last_advisory_report", None)
+        if advisory_report:
+            new_state["judge_advisory_report"] = advisory_report
         
         # Track code quality across iterations
         if "code_history" not in new_state:
@@ -527,6 +966,69 @@ def build_integrated_workflow(
             "has_conflicts": bool(report),
             "conflict_report": report
         })
+
+        conflict_metrics_history = list(state.get("conflict_metrics_history", []))
+        current_metrics = _conflict_metrics(
+            report,
+            advisory_report=advisory_report,
+            analysis_report=state.get("analysis_report"),
+        )
+        current_metrics["revision"] = state.get("revision_count", 0)
+        if conflict_metrics_history:
+            prev = conflict_metrics_history[-1]
+            prev_score = (
+                int(prev.get("blocking_conflicts_count", prev.get("violates_count", 0)) or 0),
+                int(prev.get("advisory_conflicts_count", 0) or 0),
+            )
+            curr_score = (
+                int(current_metrics.get("blocking_conflicts_count", current_metrics.get("violates_count", 0)) or 0),
+                int(current_metrics.get("advisory_conflicts_count", 0) or 0),
+            )
+            current_metrics["conflict_down"] = curr_score < prev_score
+            current_metrics["delta_violates"] = curr_score[0] - prev_score[0]
+            current_metrics["delta_blocking_conflicts"] = curr_score[0] - prev_score[0]
+            current_metrics["delta_advisory_conflicts"] = curr_score[1] - prev_score[1]
+            current_metrics["delta_conflict_len"] = int(current_metrics["conflict_len"]) - int(prev.get("conflict_len", 0) or 0)
+        else:
+            current_metrics["conflict_down"] = None
+            current_metrics["delta_violates"] = None
+            current_metrics["delta_blocking_conflicts"] = None
+            current_metrics["delta_advisory_conflicts"] = None
+            current_metrics["delta_conflict_len"] = None
+        conflict_metrics_history.append(current_metrics)
+        new_state["conflict_metrics_history"] = conflict_metrics_history
+        print(
+            "Conflict metrics: "
+            f"len={current_metrics['conflict_len']}, "
+            f"blocking={current_metrics.get('blocking_conflicts_count', current_metrics['violates_count'])}, "
+            f"advisory={current_metrics.get('advisory_conflicts_count', 0)}, "
+            f"down={current_metrics['conflict_down']}, "
+            f"source={current_metrics.get('metrics_source')}"
+        )
+
+        developer_metrics_history = list(new_state.get("developer_metrics_history", []))
+        developer_rounds = len(developer_metrics_history)
+        effective_rounds = sum(1 for m in developer_metrics_history if m.get("effective_change"))
+        target_rounds = [m for m in developer_metrics_history if m.get("target_hit") is not None]
+        target_hit_rounds = sum(1 for m in target_rounds if m.get("target_hit"))
+        target_hit_rate = (target_hit_rounds / len(target_rounds)) if target_rounds else 0.0
+        new_state["loop_summary"] = {
+            "developer_rounds": developer_rounds,
+            "effective_rounds": effective_rounds,
+            "effective_modification_rate": (
+                effective_rounds / developer_rounds if developer_rounds else 0.0
+            ),
+            "target_hit_rounds": target_hit_rounds,
+            "target_rounds": len(target_rounds),
+            "target_hit_rate": target_hit_rate,
+        }
+        print(
+            "Developer metrics: "
+            f"effective_rounds={effective_rounds}/{developer_rounds} "
+            f"(rate={new_state['loop_summary']['effective_modification_rate']:.2f}), "
+            f"target_hit={target_hit_rounds}/{len(target_rounds)} "
+            f"(rate={target_hit_rate:.2f})"
+        )
         
         if report:
             new_state["revision_count"] = state["revision_count"] + 1
@@ -545,30 +1047,44 @@ def build_integrated_workflow(
         """
         Decide whether to revise again or end.
         
-        Implements early stopping to prevent code degradation:
-        1. Stop if no conflicts found
-        2. Stop if MAX_REVISIONS reached
-        3. Stop if code quality is degrading
+        Stop conditions are controlled by `stop_policy`:
+        - conflict_only: stop only when Judge report is empty (or max revisions reached)
+        - violates_only: stop only when KG has no VIOLATES edges (or max revisions reached)
+        - hybrid: stop when either condition is met (or max revisions reached)
         """
-        if not state.get("conflict_report"):
-            # No conflicts - we're done!
-            return "end"
-        
+        def _has_violates_edges(s: AgentState) -> bool:
+            kg = s.get("knowledge_graph")
+            if not kg:
+                return False
+            for _u, _v, d in kg.edges(data=True):
+                if d.get("type") == "VIOLATES":
+                    return True
+            return False
+
+        no_conflicts = not state.get("conflict_report")
+        has_violates = _has_violates_edges(state)
+
         revision_count = state.get("revision_count", 0)
         
         if revision_count >= effective_max_revisions:
-            print(f"WARNING: MAX_REVISIONS ({effective_max_revisions}) reached - stopping to prevent degradation")
+            print(f"MAX_REVISIONS ({effective_max_revisions}) reached - stopping.")
             return "end"
-        
-        # Check for explicit VIOLATES edges (hard failures)
-        kg = state.get("knowledge_graph")
-        if kg:
-            violating_edges = [
-                (u, v) for u, v, d in kg.edges(data=True) 
-                if d.get("type") == "VIOLATES"
-            ]
-            if not violating_edges:
-                print("No VIOLATES edges found - stopping (soft conflicts may be false positives)")
+
+        if stop_policy == "conflict_only":
+            if no_conflicts:
+                print("Stopping: Judge conflict report is empty.")
+                return "end"
+        elif stop_policy == "violates_only":
+            if not has_violates:
+                print("Stopping: no VIOLATES edges in knowledge graph.")
+                return "end"
+        else:
+            # hybrid policy (backward-compatible default)
+            if no_conflicts:
+                print("Stopping: Judge conflict report is empty.")
+                return "end"
+            if not has_violates:
+                print("Stopping: no VIOLATES edges in knowledge graph.")
                 return "end"
         
         # Continue revising
@@ -602,6 +1118,44 @@ def build_integrated_workflow(
     )
 
     return workflow
+
+
+def build_integrated_workflow_conflict_only(
+    llm_model: str = "gpt-5-mini",
+    *,
+    max_revisions: int | None = None,
+    analysis_model: str | None = None,
+    analysis_strategy: AnalysisStrategy = AnalysisStrategy.AUTO_SELECT,
+    callbacks: Optional[Sequence[Any]] = None,
+) -> StateGraph:
+    """Integrated workflow variant: stop only when Judge conflict report is empty."""
+    return build_integrated_workflow(
+        llm_model=llm_model,
+        max_revisions=max_revisions,
+        analysis_model=analysis_model,
+        analysis_strategy=analysis_strategy,
+        callbacks=callbacks,
+        stop_policy="conflict_only",
+    )
+
+
+def build_integrated_workflow_violates_only(
+    llm_model: str = "gpt-5-mini",
+    *,
+    max_revisions: int | None = None,
+    analysis_model: str | None = None,
+    analysis_strategy: AnalysisStrategy = AnalysisStrategy.AUTO_SELECT,
+    callbacks: Optional[Sequence[Any]] = None,
+) -> StateGraph:
+    """Integrated workflow variant: stop only when graph has no VIOLATES edges."""
+    return build_integrated_workflow(
+        llm_model=llm_model,
+        max_revisions=max_revisions,
+        analysis_model=analysis_model,
+        analysis_strategy=analysis_strategy,
+        callbacks=callbacks,
+        stop_policy="violates_only",
+    )
 
 
 def main():

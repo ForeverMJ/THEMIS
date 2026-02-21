@@ -51,6 +51,15 @@ def build_workflow(
                 lineno = int(e.lineno or 0)
                 offset = int(e.offset or 0)
                 msg = e.msg or "SyntaxError"
+                
+                # Extract context lines for debugging
+                if lineno > 0:
+                    lines = content.splitlines()
+                    start_ctx = max(0, lineno - 3)
+                    end_ctx = min(len(lines), lineno + 2)
+                    context_snippet = "\n".join([f"{i+1}: {l}" for i, l in enumerate(lines[start_ctx:end_ctx], start=start_ctx)])
+                    print(f"DEBUG: Syntax Error Context in {path}:\n{context_snippet}\n" + "-"*30)
+                
                 errors.append(f"{path}:{lineno}:{offset}: {msg}")
         return errors
 
@@ -83,17 +92,25 @@ def build_workflow(
         print("Developer analyzing and revising code...")
         
         attempt_report = state.get("conflict_report")
-        updated_files: Optional[dict[str, str]] = None
-        last_error: Optional[Exception] = None
+        temp_files = state["files"]
+        error_files = set()
 
-        for attempt in range(2):
+        for attempt in range(5):
             try:
-                updated_files = developer.revise(state["files"], state["requirements"], attempt_report)
+                # Use temp_files (which might contain previous broken edits) as the base
+                # Force full content for files that had syntax errors to ensure context
+                updated_files = developer.revise(
+                    temp_files, 
+                    state["requirements"], 
+                    attempt_report,
+                    force_full_files=error_files if attempt > 0 else None
+                )
             except Exception as e:
                 last_error = e
-                print(f"WARNING: Developer output could not be applied (attempt {attempt + 1}/2): {e}")
+                print(f"WARNING: Developer output could not be applied (attempt {attempt + 1}/5): {e}")
                 base = (attempt_report or "").strip()
                 attempt_report = (base + "\n\n" if base else "") + f"Previous attempt failed to apply: {e}"
+                # If apply failed, we don't update temp_files; we retry from the same state
                 updated_files = None
                 continue
 
@@ -102,15 +119,34 @@ def build_workflow(
                 break
 
             last_error = RuntimeError("Syntax errors in developer output:\n" + "\n".join(syntax_errors))
-            print(f"WARNING: Syntax errors after developer revision (attempt {attempt + 1}/2); retrying once.")
+            print(f"WARNING: Syntax errors after developer revision (attempt {attempt + 1}/5); retrying once.")
+            
+            # CRITICAL: Keep the broken files so the developer can see and fix the errors!
+            temp_files = updated_files
+            error_files = set()
+            for err in syntax_errors:
+                # Format is "path/to/file.py:line:col: msg"
+                parts = err.split(":")
+                if parts:
+                    error_files.add(parts[0])
+
             base = (attempt_report or "").strip()
-            attempt_report = (base + "\n\n" if base else "") + "Syntax errors in your last output:\n" + "\n".join(
-                syntax_errors
-            )
+            attempt_report = (base + "\n\n" if base else "") + (
+                "Syntax errors in your last output. "
+                "The file content below has been updated to include your broken changes. "
+                "PLEASE FIX THE SYNTAX ERRORS:\n"
+            ) + "\n".join(syntax_errors)
             updated_files = None
 
         if updated_files is None:
-            raise RuntimeError(str(last_error) if last_error else "Developer failed to produce valid edits")
+            print("WARNING: Failed to fix syntax errors after multiple attempts. Reverting to original state.")
+            # Fallback: Revert to original files so the workflow doesn't crash.
+            # The Judge will likely complain that nothing changed, prompting a fresh attempt.
+            updated_files = state["files"]
+            # Optionally append a note to the report for the next iteration
+            if last_error:
+                print(f"   Revert reason: {last_error}")
+        
         new_state = state.copy()
         new_state["files"] = updated_files
         new_state["conflict_report"] = None

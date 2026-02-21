@@ -56,6 +56,12 @@ PRESET_MODELS = {
         "model_name": "claude-3-haiku-20240307",
         "max_completion_tokens": 4096,
     },
+    "gpt-5.2": {
+        "provider": "openai",
+        "model_name": "gpt-5.2",
+        "max_completion_tokens": 4096,
+        "temperature": 0.0,
+    },
 }
 
 
@@ -94,6 +100,7 @@ class ModelSwitcher:
                 provider=preset["provider"],
                 model_name=preset["model_name"],
                 max_completion_tokens=preset["max_completion_tokens"],
+                temperature=preset.get("temperature", 0.1),
             )
         
         # 5. 自定义配置

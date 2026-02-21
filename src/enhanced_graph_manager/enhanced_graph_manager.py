@@ -221,8 +221,11 @@ class EnhancedGraphManager:
                     self.graph.add_edge(
                         edge.requirement,
                         edge.code_node,
-                        type=edge.status,  # VIOLATES or SATISFIES
-                        data=edge
+                        type=edge.status,  # VIOLATES or ADVISORY
+                        data=edge,
+                        blocking=bool(getattr(edge, "blocking", False)),
+                        evidence_score=float(getattr(edge, "evidence_score", 0.0) or 0.0),
+                        evidence_tags=list(getattr(edge, "evidence_tags", []) or []),
                     )
                     added_edges += 1
             
@@ -255,46 +258,100 @@ class EnhancedGraphManager:
             Dictionary containing violation analysis results
         """
         try:
-            reports = self.violation_flagger.analyze_requirement_satisfaction(self.graph)
-            prioritized_violations = self.violation_flagger.prioritize_violations(reports)
-            
+            graph_reports = []
+            for source, target, edge_data in self.graph.edges(data=True):
+                edge_type = str(edge_data.get("type") or "")
+                if edge_type not in ("VIOLATES", "ADVISORY"):
+                    continue
+
+                payload = edge_data.get("data")
+                reason = edge_data.get("reason")
+                confidence = edge_data.get("confidence")
+                severity = edge_data.get("severity")
+                evidence_score = edge_data.get("evidence_score", 0.0)
+                evidence_tags = edge_data.get("evidence_tags", [])
+                blocking = edge_type == "VIOLATES"
+
+                if payload is not None:
+                    if reason is None:
+                        reason = getattr(payload, "reason", None)
+                    if confidence is None:
+                        confidence = getattr(payload, "confidence", None)
+                    if severity is None:
+                        severity = getattr(payload, "severity", None)
+                    if not evidence_tags:
+                        evidence_tags = getattr(payload, "evidence_tags", []) or []
+                    if not evidence_score:
+                        evidence_score = getattr(payload, "evidence_score", 0.0) or 0.0
+                    payload_blocking = getattr(payload, "blocking", None)
+                    if payload_blocking is not None:
+                        blocking = bool(payload_blocking)
+
+                try:
+                    confidence = float(confidence) if confidence is not None else 0.0
+                except Exception:
+                    confidence = 0.0
+                try:
+                    severity = int(severity) if severity is not None else 3
+                except Exception:
+                    severity = 3
+                try:
+                    evidence_score = float(evidence_score)
+                except Exception:
+                    evidence_score = 0.0
+
+                graph_reports.append(
+                    {
+                        "requirement_id": str(source),
+                        "code_node": str(target),
+                        "status": edge_type,
+                        "reason": str(reason or ""),
+                        "confidence": confidence,
+                        "severity": severity,
+                        "blocking": blocking,
+                        "evidence_score": evidence_score,
+                        "evidence_tags": list(evidence_tags or []),
+                    }
+                )
+
+            graph_reports.sort(
+                key=lambda r: (
+                    0 if r["status"] == "VIOLATES" else 1,
+                    r["severity"],
+                    -r["confidence"],
+                    -r["evidence_score"],
+                    r["requirement_id"],
+                    r["code_node"],
+                )
+            )
+            blocking_violations = [r for r in graph_reports if r["status"] == "VIOLATES"]
+            advisory_violations = [r for r in graph_reports if r["status"] == "ADVISORY"]
+
             return {
-                'total_reports': len(reports),
-                'total_violations': len([r for r in reports if r.status == 'VIOLATES']),
-                'total_satisfies': len([r for r in reports if r.status == 'SATISFIES']),
-                'total_unknown': len([r for r in reports if r.status == 'UNKNOWN']),
-                'prioritized_violations': [
-                    {
-                        'requirement_id': r.requirement_id,
-                        'code_node': r.code_node,
-                        'status': r.status,
-                        'reason': r.reason,
-                        'confidence': r.confidence,
-                        'severity': r.severity
-                    }
-                    for r in prioritized_violations
-                ],
-                'all_reports': [
-                    {
-                        'requirement_id': r.requirement_id,
-                        'code_node': r.code_node,
-                        'status': r.status,
-                        'reason': r.reason,
-                        'confidence': r.confidence,
-                        'severity': r.severity
-                    }
-                    for r in reports
-                ]
+                'total_reports': len(graph_reports),
+                'total_violations': len(blocking_violations),
+                'total_blocking_violations': len(blocking_violations),
+                'total_advisory_violations': len(advisory_violations),
+                'total_satisfies': 0,
+                'total_unknown': 0,
+                'prioritized_violations': graph_reports,
+                'all_reports': graph_reports,
+                'blocking_violations': blocking_violations,
+                'advisory_violations': advisory_violations,
             }
         except Exception as e:
             return {
                 'error': str(e),
                 'total_reports': 0,
                 'total_violations': 0,
+                'total_blocking_violations': 0,
+                'total_advisory_violations': 0,
                 'total_satisfies': 0,
                 'total_unknown': 0,
                 'prioritized_violations': [],
-                'all_reports': []
+                'all_reports': [],
+                'blocking_violations': [],
+                'advisory_violations': [],
             }
     
     def get_dependency_analysis(self) -> Dict[str, Any]:

@@ -184,7 +184,7 @@ class EnhancedGraphAdapter:
         start_time = asyncio.get_event_loop().time()
         
         self.logger.info(f"Starting unified analysis with strategy: {options.strategy}")
-        
+
         try:
             # Select analysis strategy
             selected_strategy = await self._select_strategy(
@@ -658,6 +658,15 @@ class EnhancedGraphAdapter:
         """
         if not self.graph_manager:
             raise AttributeError("EnhancedGraphManager is not available")
+
+        # FORCED BYPASS FOR VERIFICATION (disabled):
+        # print("DEBUG: !!! FORCED BYPASS OF ANALYSIS REPORT !!!")
+        # return {
+        #     "graph_statistics": {"total_nodes": 0, "total_edges": 0},
+        #     "dependency_analysis": {"most_dependent_nodes": [], "nodes_with_dependencies": 0},
+        #     "violation_report": {"total_violations": 0, "total_satisfies": 0},
+        #     "performance_metrics": {},
+        # }
 
         return {
             "graph_statistics": self.graph_manager.get_graph_statistics(),

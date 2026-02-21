@@ -2,7 +2,8 @@
 
 from typing import List, Dict, Set, Optional, Tuple
 import networkx as nx
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+import re
 
 from .models import RequirementNode, ViolationEdge
 
@@ -16,6 +17,9 @@ class ViolationReport:
     reason: str
     confidence: float
     severity: int  # 1=critical, 5=low
+    blocking: bool = False
+    evidence_score: float = 0.0
+    evidence_tags: List[str] = field(default_factory=list)
 
 
 class ViolationFlagger:
@@ -32,6 +36,42 @@ class ViolationFlagger:
     def __init__(self):
         """Initialize the violation flagger."""
         self.violation_patterns = self._initialize_violation_patterns()
+        self.generic_reason_patterns = [
+            "no explicit error handling functions found",
+            "no authentication functions found",
+            "no validation functions found",
+            "no connection to validation functions",
+            "missing crud operations",
+            "most crud operations missing",
+            "cannot determine",
+            "no clear relationship found",
+        ]
+        self.low_signal_tokens = {
+            "set",
+            "error",
+            "errors",
+            "field",
+            "fields",
+            "model",
+            "models",
+            "name",
+            "names",
+            "value",
+            "values",
+            "type",
+            "types",
+            "related",
+            "self",
+            "none",
+            "get",
+            "add",
+            "update",
+            "delete",
+            "remove",
+            "check",
+            "create",
+            "_",
+        }
         
     def analyze_requirement_satisfaction(self, graph: nx.DiGraph) -> List[ViolationReport]:
         """
@@ -81,12 +121,18 @@ class ViolationFlagger:
         
         for report in reports:
             if report.status in ['VIOLATES', 'UNKNOWN']:
+                edge_status = "ADVISORY"
+                if report.status == "VIOLATES" and report.blocking:
+                    edge_status = "VIOLATES"
                 edge = ViolationEdge(
                     requirement=report.requirement_id,
                     code_node=report.code_node,
-                    status=report.status,
+                    status=edge_status,
                     reason=report.reason,
-                    confidence=report.confidence
+                    confidence=report.confidence,
+                    blocking=report.blocking,
+                    evidence_score=report.evidence_score,
+                    evidence_tags=list(report.evidence_tags or []),
                 )
                 violation_edges.append(edge)
         
@@ -105,8 +151,15 @@ class ViolationFlagger:
         # Filter to only violations
         violations = [r for r in reports if r.status == 'VIOLATES']
         
-        # Sort by severity (lower number = higher priority) and confidence (higher = more priority)
-        violations.sort(key=lambda r: (r.severity, -r.confidence))
+        # Sort by blocking first, then severity (lower=more important), confidence, and evidence score.
+        violations.sort(
+            key=lambda r: (
+                0 if r.blocking else 1,
+                r.severity,
+                -r.confidence,
+                -float(r.evidence_score or 0.0),
+            )
+        )
         
         return violations
     
@@ -222,6 +275,28 @@ class ViolationFlagger:
         
         # Determine severity
         severity = self._determine_violation_severity(requirement, violation_type)
+
+        blocking = False
+        evidence_score = 0.0
+        evidence_tags: List[str] = []
+        if status in ("VIOLATES", "UNKNOWN"):
+            blocking, evidence_score, evidence_tags = self._assess_violation_signal(
+                requirement=requirement,
+                code_node=code_node,
+                reason=reason,
+                confidence=confidence,
+                graph=graph,
+            )
+            # Escalate high-signal UNKNOWN findings into actionable violations.
+            if status == "UNKNOWN":
+                has_overlap = "requirement_symbol_overlap" in evidence_tags
+                has_relevance = any(tag.startswith("mapping_relevance:") for tag in evidence_tags)
+                if evidence_score >= 2.2 and (has_overlap or has_relevance):
+                    status = "VIOLATES"
+                    reason = f"Potential requirement mismatch (escalated from UNKNOWN): {reason}"
+                    confidence = max(confidence, 0.55)
+                else:
+                    blocking = False
         
         return ViolationReport(
             requirement_id=requirement.id,
@@ -229,12 +304,28 @@ class ViolationFlagger:
             status=status,
             reason=reason,
             confidence=confidence,
-            severity=severity
+            severity=severity,
+            blocking=blocking,
+            evidence_score=evidence_score,
+            evidence_tags=evidence_tags,
         )
     
     def _classify_requirement_type(self, requirement_text: str) -> str:
         """Classify the type of requirement based on text analysis."""
         text_lower = requirement_text.lower()
+
+        # Message/hint wording issues are common in SWE tasks and are not equivalent
+        # to missing runtime error-handling logic.
+        message_markers = [
+            "error message",
+            "warning message",
+            "hint",
+            "message text",
+            "display message",
+            "wording",
+        ]
+        if any(marker in text_lower for marker in message_markers):
+            return "general"
         
         for pattern_name, pattern_data in self.violation_patterns.items():
             keywords = pattern_data.get('keywords', [])
@@ -377,6 +468,98 @@ class ViolationFlagger:
             return min(base_severity, pattern_severity)
         
         return base_severity
+
+    def _assess_violation_signal(
+        self,
+        *,
+        requirement: RequirementNode,
+        code_node: str,
+        reason: str,
+        confidence: float,
+        graph: nx.DiGraph,
+    ) -> Tuple[bool, float, List[str]]:
+        """Estimate whether a violation should be blocking or advisory."""
+        score = 0.0
+        tags: List[str] = []
+        mapping_relevance = 0.0
+
+        if confidence >= 0.78:
+            score += 1.0
+            tags.append("confidence>=0.78")
+        elif confidence >= 0.65:
+            score += 0.5
+            tags.append("confidence>=0.65")
+
+        if self._is_specific_reason(reason):
+            score += 1.0
+            tags.append("specific_reason")
+        else:
+            score -= 0.4
+            tags.append("generic_reason")
+        specific_reason = "specific_reason" in tags
+
+        req_tokens = self._extract_signal_tokens(requirement.text)
+        node_tokens = self._extract_signal_tokens(code_node.replace(".", " ").replace("_", " "))
+        overlap = req_tokens.intersection(node_tokens)
+        if overlap:
+            score += 1.0
+            tags.append("requirement_symbol_overlap")
+
+        mapping_relevance = self._mapping_relevance(requirement.id, code_node, graph)
+        if mapping_relevance >= 0.45:
+            score += 1.0
+            tags.append(f"mapping_relevance:{mapping_relevance:.2f}")
+        elif mapping_relevance > 0:
+            score += 0.4
+            tags.append(f"mapping_relevance:{mapping_relevance:.2f}")
+
+        if self._is_specific_symbol(code_node):
+            score += 0.6
+            tags.append("symbol_specific")
+
+        strong_anchor = bool(overlap) or mapping_relevance >= 0.45 or specific_reason
+        blocking = (score >= 2.0 and strong_anchor) or (
+            score >= 2.2 and self._is_specific_symbol(code_node)
+        )
+        return blocking, score, tags
+
+    def _is_specific_reason(self, reason: str) -> bool:
+        reason_l = reason.strip().lower()
+        if len(reason_l) < 20:
+            return False
+        return not any(pattern in reason_l for pattern in self.generic_reason_patterns)
+
+    def _extract_signal_tokens(self, text: str) -> Set[str]:
+        tokens = set(re.findall(r"[A-Za-z][A-Za-z0-9_]{2,}", text.lower()))
+        return {token for token in tokens if token not in self.low_signal_tokens}
+
+    def _is_specific_symbol(self, symbol: str) -> bool:
+        symbol_l = symbol.strip().lower()
+        if len(symbol_l) < 4:
+            return False
+        if symbol_l in self.low_signal_tokens:
+            return False
+        return "." in symbol or "_" in symbol or any(ch.isupper() for ch in symbol[1:])
+
+    def _mapping_relevance(self, requirement_id: str, code_node: str, graph: nx.DiGraph) -> float:
+        edge_data = graph.get_edge_data(requirement_id, code_node, default=None)
+        if not edge_data:
+            return 0.0
+
+        context = edge_data.get("context")
+        if not context:
+            payload = edge_data.get("data")
+            context = getattr(payload, "context", "") if payload is not None else ""
+        if not isinstance(context, str):
+            return 0.0
+
+        m = re.search(r"relevance:([0-9]*\.?[0-9]+)", context)
+        if not m:
+            return 0.0
+        try:
+            return float(m.group(1))
+        except Exception:
+            return 0.0
     
     def _find_affected_requirements(self, graph: nx.DiGraph, 
                                   changed_nodes: Set[str]) -> List[Tuple[str, RequirementNode]]:
