@@ -1,0 +1,4 @@
+interface:
+  display_name: "THEMIS SWE Memory"
+  short_description: "THEMIS SWE-bench experiment memory"
+  default_prompt: "Use $themis-swebench-memory to continue the THEMIS SWE-bench workflow with the saved experiment history and rollback rules."

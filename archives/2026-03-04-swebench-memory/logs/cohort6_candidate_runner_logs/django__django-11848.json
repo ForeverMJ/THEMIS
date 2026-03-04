@@ -1,0 +1,113 @@
+{
+  "instance_id": "django__django-11848",
+  "repo": "django/django",
+  "base_commit": "f0adf3b9b7a19cdee05368ff0c0c2d087f011180",
+  "selected_files": [
+    "django/utils/http.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 151.81803703308105,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow_conflict_only",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 9694,
+      "completion_tokens": 292,
+      "total_tokens": 9986,
+      "successful_requests": 2
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 135.7350618839264,
+      "findings_count": 8,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 41433,
+      "completion_tokens": 5818,
+      "total_tokens": 47251,
+      "successful_requests": 41
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 2440,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 8,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-013",
+      "target_symbol": "http_date",
+      "related_symbols": [
+        "parse_http_date",
+        "url_has_allowed_host_and_scheme"
+      ],
+      "issue_summary": "No validation functions found in codebase",
+      "expected_behavior": "Update `http_date` so `REQ-013` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Start from the smallest method related to `http_date`, especially `parse_http_date`.",
+      "blocking": false,
+      "confidence": 0.35,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-013",
+        "target_symbol": "http_date",
+        "related_symbols": [
+          "parse_http_date",
+          "url_has_allowed_host_and_scheme"
+        ],
+        "issue_summary": "No validation functions found in codebase",
+        "expected_behavior": "Update `http_date` so `REQ-013` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Start from the smallest method related to `http_date`, especially `parse_http_date`.",
+        "blocking": false,
+        "confidence": 0.35,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 1762
+}
