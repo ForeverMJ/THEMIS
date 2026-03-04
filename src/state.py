@@ -1,4 +1,9 @@
-from typing import Any, Dict, List, NotRequired, Optional, TypedDict
+from typing import Any, Dict, List, Optional, TypedDict
+
+try:
+    from typing import NotRequired
+except ImportError:
+    from typing_extensions import NotRequired
 
 import networkx as nx
 from langchain_core.messages import BaseMessage
@@ -32,6 +37,8 @@ class AgentState(TypedDict):
     conflict_metrics_history: NotRequired[List[Dict[str, Any]]]
     loop_summary: NotRequired[Dict[str, Any]]
     judge_advisory_report: NotRequired[str]
+    repair_brief: NotRequired[Dict[str, Any]]
+    repair_brief_history: NotRequired[List[Dict[str, Any]]]
     last_effective_files: NotRequired[Dict[str, str]]
     last_effective_revision: NotRequired[int]
     last_effective_meta: NotRequired[Dict[str, Any]]

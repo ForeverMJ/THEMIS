@@ -668,6 +668,14 @@ def _run_langgraph_workflow(
     if isinstance(loop_summary, dict):
         meta["loop_summary"] = loop_summary
 
+    repair_brief = final_state.get("repair_brief")
+    if isinstance(repair_brief, dict):
+        meta["repair_brief"] = repair_brief
+
+    repair_brief_history = final_state.get("repair_brief_history")
+    if isinstance(repair_brief_history, list):
+        meta["repair_brief_history"] = repair_brief_history
+
     fallback_files: Optional[Dict[str, str]] = None
     raw_last_effective = final_state.get("last_effective_files")
     if isinstance(raw_last_effective, dict):

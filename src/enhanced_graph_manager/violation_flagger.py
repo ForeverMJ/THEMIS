@@ -272,7 +272,7 @@ class ViolationFlagger:
         status, reason, confidence = self._check_requirement_satisfaction(
             requirement, code_node, code_node_data, violation_type, graph
         )
-        
+
         # Determine severity
         severity = self._determine_violation_severity(requirement, violation_type)
 
@@ -289,9 +289,11 @@ class ViolationFlagger:
             )
             # Escalate high-signal UNKNOWN findings into actionable violations.
             if status == "UNKNOWN":
-                has_overlap = "requirement_symbol_overlap" in evidence_tags
-                has_relevance = any(tag.startswith("mapping_relevance:") for tag in evidence_tags)
-                if evidence_score >= 2.2 and (has_overlap or has_relevance):
+                if self._should_escalate_unknown(
+                    reason=reason,
+                    evidence_score=evidence_score,
+                    evidence_tags=evidence_tags,
+                ):
                     status = "VIOLATES"
                     reason = f"Potential requirement mismatch (escalated from UNKNOWN): {reason}"
                     confidence = max(confidence, 0.55)
@@ -309,7 +311,7 @@ class ViolationFlagger:
             evidence_score=evidence_score,
             evidence_tags=evidence_tags,
         )
-    
+
     def _classify_requirement_type(self, requirement_text: str) -> str:
         """Classify the type of requirement based on text analysis."""
         text_lower = requirement_text.lower()
@@ -522,6 +524,24 @@ class ViolationFlagger:
             score >= 2.2 and self._is_specific_symbol(code_node)
         )
         return blocking, score, tags
+
+    def _should_escalate_unknown(
+        self,
+        *,
+        reason: str,
+        evidence_score: float,
+        evidence_tags: List[str],
+    ) -> bool:
+        """Promote UNKNOWN only when the rationale is concrete enough to edit against."""
+        if not self._is_specific_reason(reason):
+            return False
+
+        has_overlap = "requirement_symbol_overlap" in evidence_tags
+        has_relevance = any(tag.startswith("mapping_relevance:") for tag in evidence_tags)
+        has_specific_symbol = "symbol_specific" in evidence_tags
+
+        strong_anchor = (has_overlap and has_relevance) or (has_specific_symbol and has_relevance)
+        return evidence_score >= 2.4 and strong_anchor
 
     def _is_specific_reason(self, reason: str) -> bool:
         reason_l = reason.strip().lower()

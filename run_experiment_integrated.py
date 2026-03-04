@@ -62,6 +62,15 @@ def load_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
+def _should_apply_repair_brief(repair_brief: Any) -> bool:
+    if not isinstance(repair_brief, dict):
+        return False
+    target_symbol = str(repair_brief.get("target_symbol") or "").strip()
+    if not target_symbol:
+        return False
+    return bool(repair_brief.get("blocking"))
+
+
 def build_integrated_workflow(
     llm_model: str = "gpt-5-mini",
     *,
@@ -572,6 +581,7 @@ def build_integrated_workflow(
         conflict_report = state.get("conflict_report")
         advanced_analysis = state.get("advanced_analysis", {})
         analysis_report = state.get("analysis_report", {})
+        repair_brief = state.get("repair_brief") or {}
         
         # Enhance conflict report with advanced analysis insights
         enhanced_report = conflict_report or ""
@@ -642,8 +652,31 @@ def build_integrated_workflow(
                 f"{min(len(display_violations), 5)} item(s)"
             )
 
-        target_symbol_source = blocking_prioritized
-        target_symbols = _extract_target_symbols(conflict_report, target_symbol_source)
+        target_symbols: list[str] = []
+        if _should_apply_repair_brief(repair_brief):
+            primary_target = str(repair_brief.get("target_symbol") or "").strip()
+            if primary_target:
+                target_symbols = [primary_target]
+                enhanced_report += "\n\n=== Judge Repair Brief ===\n"
+                enhanced_report += f"Requirement: {repair_brief.get('requirement_id', 'REQ-?')}\n"
+                enhanced_report += f"Primary Target: {primary_target}\n"
+                related_symbols = list(repair_brief.get("related_symbols") or [])
+                if related_symbols:
+                    enhanced_report += f"Related Symbols: {', '.join(str(s) for s in related_symbols[:3])}\n"
+                issue_summary = str(repair_brief.get("issue_summary") or "").strip()
+                if issue_summary:
+                    enhanced_report += f"Issue Summary: {issue_summary}\n"
+                expected_behavior = str(repair_brief.get("expected_behavior") or "").strip()
+                if expected_behavior:
+                    enhanced_report += f"Expected Behavior: {expected_behavior}\n"
+                minimal_change_hint = str(repair_brief.get("minimal_change_hint") or "").strip()
+                if minimal_change_hint:
+                    enhanced_report += f"Minimal Change Hint: {minimal_change_hint}\n"
+                print(f"Using Judge repair brief target: {primary_target}")
+
+        if not target_symbols:
+            target_symbol_source = blocking_prioritized
+            target_symbols = _extract_target_symbols(conflict_report, target_symbol_source)
         if target_symbols:
             enhanced_report += "\n\n=== Conflict Target Symbols (must touch at least one) ===\n"
             enhanced_report += ", ".join(target_symbols) + "\n"
@@ -954,6 +987,12 @@ def build_integrated_workflow(
         advisory_report = getattr(judge, "last_advisory_report", None)
         if advisory_report:
             new_state["judge_advisory_report"] = advisory_report
+        repair_brief = getattr(judge, "last_repair_brief", None)
+        if repair_brief:
+            new_state["repair_brief"] = dict(repair_brief)
+            repair_brief_history = list(state.get("repair_brief_history", []))
+            repair_brief_history.append(dict(repair_brief))
+            new_state["repair_brief_history"] = repair_brief_history
         
         # Track code quality across iterations
         if "code_history" not in new_state:
