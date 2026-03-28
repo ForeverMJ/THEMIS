@@ -540,10 +540,48 @@ class SolveResult:
     duration_s: float = 0.0
 
 
+@dataclass(frozen=True)
+class ExperimentPreset:
+    name: str
+    workflow_builder: Optional[str] = None
+    analysis_strategy: Optional[str] = None
+    max_revisions: Optional[int] = None
+
+
 def _default_workflow_builder(mode: str) -> str:
     if mode == "integrated":
         return "run_experiment_integrated:build_integrated_workflow"
     return "src.main_enhanced:build_workflow"
+
+
+def _resolve_experiment_preset(name: str, *, mode: str) -> ExperimentPreset:
+    preset = str(name or "default").strip().lower()
+    if preset == "default":
+        return ExperimentPreset(name="default")
+    if mode != "integrated":
+        raise ValueError(f"Experiment preset '{preset}' requires --mode integrated")
+    if preset == "ablation1":
+        return ExperimentPreset(
+            name="ablation1",
+            workflow_builder="run_experiment_integrated:build_integrated_workflow_ablation1",
+            analysis_strategy=AnalysisStrategy.GRAPH_ONLY.value,
+            max_revisions=1,
+        )
+    if preset == "fault_space_fallback":
+        return ExperimentPreset(
+            name="fault_space_fallback",
+            workflow_builder="run_experiment_integrated:build_integrated_workflow_fault_space_fallback",
+            analysis_strategy=AnalysisStrategy.GRAPH_ONLY.value,
+            max_revisions=1,
+        )
+    if preset == "fault_space_neighborhood":
+        return ExperimentPreset(
+            name="fault_space_neighborhood",
+            workflow_builder="run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood",
+            analysis_strategy=AnalysisStrategy.GRAPH_ONLY.value,
+            max_revisions=1,
+        )
+    raise ValueError(f"Unknown experiment preset: {name}")
 
 
 def _import_symbol(path: str) -> Any:
@@ -723,6 +761,17 @@ def main() -> None:
     parser.add_argument("--analysis-model", default="gpt-5.1-codex-mini", help="LLM model for Advanced Analysis (LLMInterface)")
     parser.add_argument("--mode", choices=["integrated", "traditional"], default="integrated")
     parser.add_argument(
+        "--experiment-preset",
+        choices=["default", "ablation1", "fault_space_fallback", "fault_space_neighborhood"],
+        default="default",
+        help=(
+            "Optional reproducible experiment preset. "
+            "ablation1 = graph-only + conflict-only baseline; "
+            "fault_space_fallback = ablation1 plus bounded fallback target expansion; "
+            "fault_space_neighborhood = ablation1 plus file-local structural neighborhood expansion."
+        ),
+    )
+    parser.add_argument(
         "--workflow-builder",
         default=None,
         help=(
@@ -754,7 +803,10 @@ def main() -> None:
         pass
 
     load_dotenv(override=True)
-    workflow_builder = args.workflow_builder or _default_workflow_builder(args.mode)
+    preset = _resolve_experiment_preset(args.experiment_preset, mode=args.mode)
+    workflow_builder = preset.workflow_builder or args.workflow_builder or _default_workflow_builder(args.mode)
+    analysis_strategy = preset.analysis_strategy or args.analysis_strategy
+    max_revisions = preset.max_revisions if preset.max_revisions is not None else args.max_revisions
 
     workdir = Path(args.workdir)
     repos_dir = workdir / "repos"
@@ -844,8 +896,8 @@ def main() -> None:
                     requirements=requirements,
                     llm_model=args.model,
                     analysis_model=args.analysis_model,
-                    analysis_strategy=args.analysis_strategy,
-                    max_revisions=args.max_revisions,
+                    analysis_strategy=analysis_strategy,
+                    max_revisions=max_revisions,
                     recursion_limit=args.recursion_limit,
                 )
 
@@ -923,8 +975,12 @@ def main() -> None:
                         "base_commit": base_commit,
                         "selected_files": selected_paths,
                         "mode": args.mode,
+                        "experiment_preset": preset.name,
+                        "workflow_builder": workflow_builder,
                         "model": args.model,
                         "analysis_model": args.analysis_model,
+                        "analysis_strategy": analysis_strategy,
+                        "max_revisions": max_revisions,
                         "dry_run": args.dry_run,
                         "duration_s": duration,
                         "meta": meta,
@@ -957,12 +1013,16 @@ def main() -> None:
                             "repo": repo,
                             "base_commit": base_commit,
                             "selected_files": selected_paths,
-                            "mode": args.mode,
-                            "model": args.model,
-                            "analysis_model": args.analysis_model,
-                            "dry_run": args.dry_run,
-                            "duration_s": duration,
-                            "meta": meta,
+                        "mode": args.mode,
+                        "experiment_preset": preset.name,
+                        "workflow_builder": workflow_builder,
+                        "model": args.model,
+                        "analysis_model": args.analysis_model,
+                        "analysis_strategy": analysis_strategy,
+                        "max_revisions": max_revisions,
+                        "dry_run": args.dry_run,
+                        "duration_s": duration,
+                        "meta": meta,
                             "error": str(e),
                             "patch_chars": 0,
                         },
