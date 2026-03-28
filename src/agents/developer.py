@@ -8,14 +8,29 @@ from typing import Any, Dict, List
 from pydantic import BaseModel
 
 
+class SearchReplaceEdit(BaseModel):
+    filename: str
+    search: str  # Exact lines from original file
+    replacement: str  # New lines to replace with
+
+
 class SymbolRewrite(BaseModel):
     filename: str
     symbol: str
     replacement: str
 
 
+class RepairHypothesisChoice(BaseModel):
+    chosen_hypothesis_label: str = ""
+    hypothesis_root_cause: str = ""
+    expected_invariant: str = ""
+    patch_strategy: str = ""
+
+
 class DevOutput(BaseModel):
+    hypothesis: RepairHypothesisChoice = RepairHypothesisChoice()
     rewrites: List[SymbolRewrite]
+    search_replace_edits: List[SearchReplaceEdit] = []
 
 
 class DeveloperAgent:
@@ -122,12 +137,17 @@ class DeveloperAgent:
         requirements: str,
         conflict_text: str,
         force_full_files: set[str] | None = None,
+        max_files: int | None = None,
     ) -> str:
         # For large files, provide focused excerpts around likely-relevant tokens to make exact-copy edits easier.
         focus_tokens = self._extract_focus_tokens(requirements + "\n\n" + conflict_text)
         formatted_parts: list[str] = []
 
-        for name, content in files.items():
+        file_items = list(files.items())
+        if max_files is not None and max_files > 0:
+            file_items = file_items[:max_files]
+
+        for name, content in file_items:
             content = content.replace("\r\n", "\n").replace("\r", "\n")
             if force_full_files and name in force_full_files:
                 formatted_parts.append(f"## {name}\n{content}")
@@ -537,6 +557,81 @@ class DeveloperAgent:
             msg = e.msg or "SyntaxError"
             return f"{filename}:{lineno}:{offset}: {msg}"
 
+    def _apply_search_replace_edit(
+        self,
+        content: str,
+        *,
+        search: str,
+        replacement: str,
+        filename: str,
+    ) -> tuple[str, bool]:
+        normalized = content.replace("\r\n", "\n").replace("\r", "\n")
+        
+        if isinstance(search, (list, tuple)):
+            search = "\n".join(str(s) for s in search)
+        if isinstance(replacement, (list, tuple)):
+            replacement = "\n".join(str(s) for s in replacement)
+        
+        search_text = self._strip_code_fence(str(search))
+        replacement_text = self._strip_code_fence(str(replacement))
+
+        if not search_text.strip():
+            raise ValueError(f"Developer returned empty search block for {filename}")
+        if not replacement_text.strip():
+            raise ValueError(f"Developer returned empty replacement for {filename}")
+
+        search_lines = search_text.split("\n")
+        content_lines = normalized.split("\n")
+
+        best_start = None
+        best_ratio = 0.0
+
+        anchors = [
+            (i, line) for i, line in enumerate(search_lines) if line.strip() and len(line.strip()) >= 8
+        ]
+        anchors.sort(key=lambda x: -len(x[1]))
+
+        for before_idx, anchor_line in anchors:
+            anchor_stripped = anchor_line.strip()
+            positions = [i for i, line in enumerate(content_lines) if line.strip() == anchor_stripped]
+
+            for pos in positions:
+                start = pos - before_idx
+                if start < 0:
+                    continue
+                end = start + len(search_lines)
+                if end > len(content_lines):
+                    continue
+
+                window_lines = content_lines[start:end]
+                window = "\n".join(window_lines)
+                ratio = difflib.SequenceMatcher(
+                    None, self._norm_for_match(search_text), self._norm_for_match(window)
+                ).ratio()
+
+                if ratio > best_ratio:
+                    best_ratio = ratio
+                    best_start = start
+
+        if best_start is None or best_ratio < 0.85:
+            raise ValueError(
+                f"Search block not found in {filename} (best ratio: {best_ratio:.2f}). "
+                "Copy exact lines from the file."
+            )
+
+        delta = self._min_indent(replacement_text) - self._min_indent(search_text)
+        aligned_replacement = self._shift_indentation(replacement_text, delta=delta)
+        aligned_lines = aligned_replacement.split("\n")
+
+        new_lines = (
+            content_lines[:best_start]
+            + aligned_lines
+            + content_lines[best_start + len(search_lines):]
+        )
+        updated = "\n".join(new_lines)
+
+        return updated, True
+
     def revise(
         self,
         files: Dict[str, str],
@@ -544,8 +639,15 @@ class DeveloperAgent:
         conflict_report: str | None,
         *,
         force_full_files: set[str] | None = None,
+        preferred_edit_mode: str | None = None,
+        repair_hypotheses: List[Dict[str, Any]] | None = None,
+        preferred_hypothesis_label: str | None = None,
+        code_ingredients: List[Dict[str, Any]] | None = None,
     ) -> Dict[str, str]:
         conflict_text = conflict_report or "None"
+        mode = str(preferred_edit_mode or "auto").strip().lower()
+        if mode not in {"auto", "search_replace", "symbol_rewrite"}:
+            mode = "auto"
         forced_full_files = set(files.keys())
         if force_full_files:
             forced_full_files.update(force_full_files)
@@ -559,6 +661,51 @@ class DeveloperAgent:
         )
 
         allowed_files = ", ".join(sorted(files.keys())) if files else "(none)"
+        hypothesis_lines: list[str] = []
+        for hypothesis in list(repair_hypotheses or [])[:3]:
+            label = str(hypothesis.get("label") or "").strip()
+            target_symbol = str(hypothesis.get("target_symbol") or "").strip()
+            fault_mechanism = str(hypothesis.get("fault_mechanism") or "").strip()
+            expected_fix_behavior = str(hypothesis.get("expected_fix_behavior") or "").strip()
+            minimal_edit_scope = str(hypothesis.get("minimal_edit_scope") or "").strip()
+            change_operator = str(hypothesis.get("change_operator") or "").strip()
+            why_this_target = str(hypothesis.get("why_this_target") or "").strip()
+            confidence = hypothesis.get("confidence")
+            confidence_text = ""
+            if confidence is not None:
+                try:
+                    confidence_text = f" ({float(confidence):.2f})"
+                except Exception:
+                    confidence_text = f" ({confidence})"
+            if not label:
+                continue
+            hypothesis_lines.append(
+                f"- {label}: target={target_symbol}{confidence_text}; "
+                f"mechanism={fault_mechanism}; expected={expected_fix_behavior}; "
+                f"scope={minimal_edit_scope}; operator={change_operator}; why={why_this_target}"
+            )
+        repair_hypotheses_text = "\n".join(hypothesis_lines) if hypothesis_lines else "(none)"
+        preferred_hypothesis = str(preferred_hypothesis_label or "").strip()
+        if not preferred_hypothesis and hypothesis_lines:
+            first_line = hypothesis_lines[0]
+            match = re.match(r"-\s+([A-Za-z0-9_-]+):", first_line)
+            if match:
+                preferred_hypothesis = match.group(1)
+        if not preferred_hypothesis:
+            preferred_hypothesis = "H1"
+        ingredient_lines: list[str] = []
+        for item in list(code_ingredients or [])[:3]:
+            path = str(item.get("path") or "").strip()
+            symbol = str(item.get("symbol") or "").strip()
+            role = str(item.get("role") or "").strip()
+            snippet = str(item.get("snippet") or "").rstrip()
+            if not path or not snippet:
+                continue
+            ingredient_lines.append(
+                f"- {role or 'ingredient'} from {path} for {symbol}:\n"
+                f"```python\n{snippet}\n```"
+            )
+        code_ingredients_text = "\n".join(ingredient_lines) if ingredient_lines else "(none)"
         prompt = f"""
 You are a Senior Software Engineer specializing in fixing complex logical inconsistencies.
 
@@ -573,6 +720,15 @@ Conflict Focus Symbols (prioritize these):
 
 Allowed Files (edit ONLY these exact filenames):
 {allowed_files}
+
+Repair Operator Plans (use as candidate generation hints):
+{repair_hypotheses_text}
+
+Preferred Plan:
+{preferred_hypothesis}
+
+Relevant Code Ingredients (reuse local patterns when helpful):
+{code_ingredients_text}
 
 Current Files:
 {current_files}
@@ -593,10 +749,30 @@ Current Files:
    - If you cannot fully resolve all conflicts in one round, make one highest-impact conflict-reducing change.
    - Avoid broad cleanup; this round is judged only on conflict reduction.
 
-4. OUTPUT FORMAT (IMPORTANT)
-Return a list of SYMBOL rewrites. The list MUST be non-empty.
+4. OUTPUT FORMAT - CHOOSE ONE (IMPORTANT)
 
-Each rewrite must include:
+**OPTION A: Search/Replace Block (PREFERRED)**
+Use this for surgical edits. Return search_replace_edits with:
+- filename: target file
+- search: EXACT lines from the file you want to replace (min 3 lines, max 20 lines)
+- replacement: new lines to replace with
+
+Example:
+```
+<<<<<<< SEARCH
+def process_data(items):
+    for item in items:
+        print(item)
+=======
+def process_data(items):
+    for item in items:
+        if item is not None:
+            print(item)
+>>>>>>> REPLACE
+```
+
+**OPTION B: Symbol Rewrite (FALLBACK)**
+Use this for larger refactors. Return rewrites with:
 - filename: target file
 - symbol: exact Python symbol to replace
   Allowed forms:
@@ -607,127 +783,242 @@ Each rewrite must include:
 
 Rules:
 - Do NOT propose rewrites for files not listed in Allowed Files.
-- Do NOT use before/after snippets.
-- Do NOT return full-file content.
-- Do NOT use "..." or placeholders.
+- Do NOT use "..." or placeholders in search blocks.
 - Keep unrelated code/comments/docstrings unchanged.
 - Preserve indentation; the final file must be syntactically valid.
-- replacement MUST differ meaningfully from the current symbol body.
+- replacement MUST differ meaningfully from the current code.
 - Do NOT submit whitespace-only or formatting-only rewrites.
 
 5. SELF-CHECK BEFORE RETURN
 - Verify Python syntax is valid.
 - Verify you did not remove unrelated classes/functions/imports.
 - Verify each rewrite targets conflict-related logic, not just style.
+
+6. OPERATOR-PLAN ALIGNMENT (IMPORTANT)
+- First choose ONE repair plan label.
+- Default to the preferred plan unless the local code strongly contradicts it.
+- Keep the plan lightweight and actionable.
+- The final edits should directly follow the chosen plan and may reuse the provided code ingredients.
+
+7. EDIT MODE (STRICT)
+Current mode: {mode}
+- If mode is `search_replace`: return ONLY `search_replace_edits` and set `rewrites` to empty.
+- If mode is `symbol_rewrite`: return ONLY `rewrites` and set `search_replace_edits` to empty.
+- If mode is `auto`: choose one mode and do not mix both in the same response.
 """
         result: DevOutput = self.llm.invoke(prompt)
-        if not result.rewrites:
+
+        has_symbol_rewrites = result.rewrites and len(result.rewrites) > 0
+        has_search_replace = result.search_replace_edits and len(result.search_replace_edits) > 0
+
+        if mode == "search_replace":
+            if has_symbol_rewrites:
+                raise ValueError(
+                    "Developer mixed edit modes: search_replace mode requires empty rewrites."
+                )
+            if not has_search_replace:
+                raise ValueError(
+                    "Developer returned no rewrites; search_replace mode requires at least one search_replace_edit."
+                )
+        elif mode == "symbol_rewrite":
+            if has_search_replace:
+                raise ValueError(
+                    "Developer mixed edit modes: symbol_rewrite mode requires empty search_replace_edits."
+                )
+            if not has_symbol_rewrites:
+                raise ValueError(
+                    "Developer returned no rewrites; symbol_rewrite mode requires at least one symbol rewrite."
+                )
+        elif has_symbol_rewrites and has_search_replace:
+            raise ValueError("Developer mixed edit modes in auto mode; return one mode only.")
+
+        if not has_symbol_rewrites and not has_search_replace:
             print("DEBUG: Developer returned NO rewrites.")
-            raise ValueError("Developer returned no rewrites; please provide at least one symbol rewrite.")
+            raise ValueError("Developer returned no rewrites; please provide at least one edit.")
+
+        chosen_hypothesis_label = str(result.hypothesis.chosen_hypothesis_label or "").strip()
+        if chosen_hypothesis_label.lower() in {"auto", "(auto)"}:
+            chosen_hypothesis_label = preferred_hypothesis_label or preferred_hypothesis
+        valid_labels = {
+            str(item.get("label") or "").strip()
+            for item in list(repair_hypotheses or [])
+            if str(item.get("label") or "").strip()
+        }
+        if valid_labels and chosen_hypothesis_label and chosen_hypothesis_label not in valid_labels:
+            raise ValueError(
+                f"Developer selected unknown repair hypothesis `{chosen_hypothesis_label}`."
+            )
+        if valid_labels and not chosen_hypothesis_label:
+            raise ValueError("Developer must choose one repair plan label.")
 
         updated = dict(files)
         changed_any = False
         applied_symbols: list[str] = []
         failed_rewrites: list[dict[str, str]] = []
-        for rewrite in result.rewrites:
-            filename = rewrite.filename
-            if filename not in updated:
-                failed_rewrites.append(
-                    {
+        edits_processed = 0
+
+        if has_search_replace:
+            for edit in result.search_replace_edits:
+                filename = edit.filename
+                if filename not in updated:
+                    failed_rewrites.append({
                         "filename": filename,
-                        "symbol": str(rewrite.symbol or ""),
+                        "symbol": "[search/replace]",
                         "reason": "unknown file",
-                    }
-                )
-                continue
+                    })
+                    continue
 
-            symbol = rewrite.symbol.strip()
-            if not symbol:
-                failed_rewrites.append(
-                    {
-                        "filename": filename,
-                        "symbol": "",
-                        "reason": "empty symbol",
-                    }
-                )
-                continue
+                old_content = updated[filename].replace("\r\n", "\n").replace("\r", "\n")
 
-            old_content = updated[filename].replace("\r\n", "\n").replace("\r", "\n")
-            if not filename.endswith(".py"):
-                failed_rewrites.append(
-                    {
-                        "filename": filename,
-                        "symbol": symbol,
-                        "reason": "non-python file",
-                    }
-                )
-                continue
+                search_val = edit.search
+                replacement_val = edit.replacement
+                if isinstance(search_val, (list, tuple)):
+                    search_val = "\n".join(str(s) for s in search_val)
+                if isinstance(replacement_val, (list, tuple)):
+                    replacement_val = "\n".join(str(s) for s in replacement_val)
 
-            try:
-                new_content, resolved_symbol = self._apply_symbol_rewrite(
-                    old_content,
-                    symbol=symbol,
-                    replacement=rewrite.replacement,
-                    filename=filename,
-                )
-            except Exception as e:
-                failed_rewrites.append(
-                    {
+                try:
+                    new_content, success = self._apply_search_replace_edit(
+                        old_content,
+                        search=str(search_val),
+                        replacement=str(replacement_val),
+                        filename=filename,
+                    )
+                except Exception as e:
+                    failed_rewrites.append({
                         "filename": filename,
-                        "symbol": symbol,
+                        "symbol": "[search/replace]",
                         "reason": str(e),
-                    }
-                )
-                continue
-            if self._is_whitespace_only_change(old_content, new_content):
-                failed_rewrites.append(
-                    {
-                        "filename": filename,
-                        "symbol": symbol,
-                        "reason": "whitespace-only rewrite",
-                    }
-                )
-                continue
+                    })
+                    continue
 
-            changed_lines, total_lines = self._changed_line_stats(old_content, new_content)
-            if total_lines >= 200 and (changed_lines / total_lines) > 0.25:
-                failed_rewrites.append(
-                    {
+                if self._is_whitespace_only_change(old_content, new_content):
+                    failed_rewrites.append({
                         "filename": filename,
-                        "symbol": symbol,
-                        "reason": (
-                            "changed too much unrelated code "
-                            f"({changed_lines}/{total_lines} lines)"
-                        ),
-                    }
-                )
-                continue
+                        "symbol": "[search/replace]",
+                        "reason": "whitespace-only change",
+                    })
+                    continue
 
-            syntax_error = self._python_syntax_error(filename, new_content)
-            if syntax_error:
-                failed_rewrites.append(
-                    {
+                syntax_error = self._python_syntax_error(filename, new_content)
+                if syntax_error:
+                    failed_rewrites.append({
                         "filename": filename,
-                        "symbol": symbol,
-                        "reason": f"syntax error after rewrite: {syntax_error}",
-                    }
-                )
-                continue
+                        "symbol": "[search/replace]",
+                        "reason": f"syntax error: {syntax_error}",
+                    })
+                    continue
 
-            print(
-                f"DEBUG: Applying symbol rewrite {filename}:{symbol} "
-                f"(old={len(old_content)} chars, new={len(new_content)} chars)"
-            )
-            updated[filename] = new_content
-            if new_content != old_content:
-                changed_any = True
-                applied_symbols.append(resolved_symbol)
+                print(f"DEBUG: Applying search/replace edit {filename}")
+                updated[filename] = new_content
+                if new_content != old_content:
+                    changed_any = True
+                    edits_processed += 1
+
+        if has_symbol_rewrites:
+            for rewrite in result.rewrites:
+                filename = rewrite.filename
+                if filename not in updated:
+                    failed_rewrites.append(
+                        {
+                            "filename": filename,
+                            "symbol": str(rewrite.symbol or ""),
+                            "reason": "unknown file",
+                        }
+                    )
+                    continue
+
+                symbol = rewrite.symbol.strip()
+                if not symbol:
+                    failed_rewrites.append(
+                        {
+                            "filename": filename,
+                            "symbol": "",
+                            "reason": "empty symbol",
+                        }
+                    )
+                    continue
+
+                old_content = updated[filename].replace("\r\n", "\n").replace("\r", "\n")
+                if not filename.endswith(".py"):
+                    failed_rewrites.append(
+                        {
+                            "filename": filename,
+                            "symbol": symbol,
+                            "reason": "non-python file",
+                        }
+                    )
+                    continue
+
+                try:
+                    new_content, resolved_symbol = self._apply_symbol_rewrite(
+                        old_content,
+                        symbol=symbol,
+                        replacement=rewrite.replacement,
+                        filename=filename,
+                    )
+                except Exception as e:
+                    failed_rewrites.append(
+                        {
+                            "filename": filename,
+                            "symbol": symbol,
+                            "reason": str(e),
+                        }
+                    )
+                    continue
+                if self._is_whitespace_only_change(old_content, new_content):
+                    failed_rewrites.append(
+                        {
+                            "filename": filename,
+                            "symbol": symbol,
+                            "reason": "whitespace-only rewrite",
+                        }
+                    )
+                    continue
+
+                changed_lines, total_lines = self._changed_line_stats(old_content, new_content)
+                if total_lines >= 200 and (changed_lines / total_lines) > 0.25:
+                    failed_rewrites.append(
+                        {
+                            "filename": filename,
+                            "symbol": symbol,
+                            "reason": (
+                                "changed too much unrelated code "
+                                f"({changed_lines}/{total_lines} lines)"
+                            ),
+                        }
+                    )
+                    continue
+
+                syntax_error = self._python_syntax_error(filename, new_content)
+                if syntax_error:
+                    failed_rewrites.append(
+                        {
+                            "filename": filename,
+                            "symbol": symbol,
+                            "reason": f"syntax error after rewrite: {syntax_error}",
+                        }
+                    )
+                    continue
+
+                print(
+                    f"DEBUG: Applying symbol rewrite {filename}:{symbol} "
+                    f"(old={len(old_content)} chars, new={len(new_content)} chars)"
+                )
+                updated[filename] = new_content
+                if new_content != old_content:
+                    changed_any = True
+                    applied_symbols.append(resolved_symbol)
 
         self.last_revision_meta = {
             "proposed_rewrites": len(result.rewrites),
             "applied_rewrites": len(applied_symbols),
             "applied_symbols": sorted(set(applied_symbols)),
             "failed_rewrites": failed_rewrites,
+            "chosen_hypothesis_label": chosen_hypothesis_label or None,
+            "hypothesis_root_cause": str(result.hypothesis.hypothesis_root_cause or "").strip() or None,
+            "expected_invariant": str(result.hypothesis.expected_invariant or "").strip() or None,
+            "patch_strategy": str(result.hypothesis.patch_strategy or "").strip() or None,
         }
         if not changed_any:
             failure_preview = "; ".join(
