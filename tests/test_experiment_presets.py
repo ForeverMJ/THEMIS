@@ -5,7 +5,11 @@ from run_experiment_integrated import (
     _file_local_neighborhood_target_set,
     _summarize_fallback_usage,
 )
-from run_swebench_lite_predictions import _resolve_experiment_preset
+from run_swebench_lite_predictions import (
+    _extra_context_files_for_preset,
+    _resolve_experiment_preset,
+    _retrieved_context_files_for_preset,
+)
 
 
 def test_ablation1_preset_maps_to_reproducible_graph_only_builder():
@@ -35,6 +39,24 @@ def test_fault_space_neighborhood_preset_maps_to_isolated_builder():
     assert preset.max_revisions == 1
 
 
+def test_fault_space_neighborhood_context_preset_maps_to_same_builder():
+    preset = _resolve_experiment_preset("fault_space_neighborhood_context", mode="integrated")
+
+    assert preset.name == "fault_space_neighborhood_context"
+    assert preset.workflow_builder == "run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood"
+    assert preset.analysis_strategy == AnalysisStrategy.GRAPH_ONLY.value
+    assert preset.max_revisions == 1
+
+
+def test_fault_space_neighborhood_retrieval_preset_maps_to_same_builder():
+    preset = _resolve_experiment_preset("fault_space_neighborhood_retrieval", mode="integrated")
+
+    assert preset.name == "fault_space_neighborhood_retrieval"
+    assert preset.workflow_builder == "run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood"
+    assert preset.analysis_strategy == AnalysisStrategy.GRAPH_ONLY.value
+    assert preset.max_revisions == 1
+
+
 def test_fault_space_fallback_preset_matches_ablation1_except_builder_name():
     baseline = _resolve_experiment_preset("ablation1", mode="integrated")
     fallback = _resolve_experiment_preset("fault_space_fallback", mode="integrated")
@@ -51,6 +73,47 @@ def test_fault_space_neighborhood_preset_matches_ablation1_except_builder_name()
     assert baseline.analysis_strategy == neighborhood.analysis_strategy
     assert baseline.max_revisions == neighborhood.max_revisions
     assert baseline.workflow_builder != neighborhood.workflow_builder
+
+
+def test_extra_context_files_are_defined_for_stagec_cases_only():
+    assert _extra_context_files_for_preset("fault_space_neighborhood_context", "django__django-15320") == [
+        "django/db/models/expressions.py"
+    ]
+    assert _extra_context_files_for_preset("fault_space_neighborhood_context", "matplotlib__matplotlib-18869") == [
+        "lib/matplotlib/__init__.py"
+    ]
+    assert _extra_context_files_for_preset("fault_space_neighborhood_context", "pallets__flask-4045") == [
+        "src/flask/app.py"
+    ]
+    assert _extra_context_files_for_preset("fault_space_neighborhood_context", "psf__requests-3362") == [
+        "requests/__init__.py"
+    ]
+    assert _extra_context_files_for_preset("fault_space_neighborhood_context", "sympy__sympy-13773") == [
+        "sympy/matrices/matrices.py"
+    ]
+    assert _extra_context_files_for_preset("fault_space_neighborhood_context", "unknown") == []
+    assert _extra_context_files_for_preset("fault_space_neighborhood", "django__django-15320") == []
+
+
+def test_retrieved_context_files_follow_explicit_python_mentions(tmp_path):
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir()
+    explicit = repo_root / "tests" / "test_blueprints.py"
+    explicit.parent.mkdir(parents=True)
+    explicit.write_text("print('ok')\n", encoding="utf-8")
+
+    instance = {
+        "problem_statement": "See tests/test_blueprints.py for the regression.",
+        "hints_text": "",
+        "FAIL_TO_PASS": [],
+    }
+
+    assert _retrieved_context_files_for_preset(
+        "fault_space_neighborhood_retrieval",
+        instance,
+        repo_root,
+    ) == ["tests/test_blueprints.py"]
+    assert _retrieved_context_files_for_preset("fault_space_neighborhood_context", instance, repo_root) == []
 
 
 def test_non_default_preset_requires_integrated_mode():

@@ -581,7 +581,62 @@ def _resolve_experiment_preset(name: str, *, mode: str) -> ExperimentPreset:
             analysis_strategy=AnalysisStrategy.GRAPH_ONLY.value,
             max_revisions=1,
         )
+    if preset == "fault_space_neighborhood_context":
+        return ExperimentPreset(
+            name="fault_space_neighborhood_context",
+            workflow_builder="run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood",
+            analysis_strategy=AnalysisStrategy.GRAPH_ONLY.value,
+            max_revisions=1,
+        )
+    if preset == "fault_space_neighborhood_retrieval":
+        return ExperimentPreset(
+            name="fault_space_neighborhood_retrieval",
+            workflow_builder="run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood",
+            analysis_strategy=AnalysisStrategy.GRAPH_ONLY.value,
+            max_revisions=1,
+        )
     raise ValueError(f"Unknown experiment preset: {name}")
+
+
+def _extra_context_files_for_preset(preset_name: str, instance_id: str) -> List[str]:
+    if str(preset_name or "") not in {"fault_space_neighborhood_context", "fault_space_neighborhood_retrieval"}:
+        return []
+
+    extra_context_map = {
+        "django__django-15320": [
+            "django/db/models/expressions.py",
+        ],
+        "matplotlib__matplotlib-18869": [
+            "lib/matplotlib/__init__.py",
+        ],
+        "pallets__flask-4045": [
+            "src/flask/app.py",
+        ],
+        "psf__requests-3362": [
+            "requests/__init__.py",
+        ],
+        "sympy__sympy-13773": [
+            "sympy/matrices/matrices.py",
+        ],
+    }
+    return list(extra_context_map.get(str(instance_id), []))
+
+
+def _retrieved_context_files_for_preset(preset_name: str, instance: Dict[str, Any], repo_root: Path) -> List[str]:
+    if str(preset_name or "") != "fault_space_neighborhood_retrieval":
+        return []
+
+    problem = (instance.get("problem_statement") or "").strip()
+    hints = (instance.get("hints_text") or "").strip()
+    fail_to_pass = "\n".join(_normalize_test_list(instance.get("FAIL_TO_PASS")))
+    combined = f"{problem}\n\n{hints}\n\n{fail_to_pass}".strip()
+
+    retrieved: List[str] = []
+    for p in _extract_candidate_paths(combined):
+        candidate = p.replace("\\", "/")
+        if (repo_root / candidate).exists() and (repo_root / candidate).is_file() and candidate not in retrieved:
+            retrieved.append(candidate)
+    return retrieved
 
 
 def _import_symbol(path: str) -> Any:
@@ -762,13 +817,15 @@ def main() -> None:
     parser.add_argument("--mode", choices=["integrated", "traditional"], default="integrated")
     parser.add_argument(
         "--experiment-preset",
-        choices=["default", "ablation1", "fault_space_fallback", "fault_space_neighborhood"],
+        choices=["default", "ablation1", "fault_space_fallback", "fault_space_neighborhood", "fault_space_neighborhood_context", "fault_space_neighborhood_retrieval"],
         default="default",
         help=(
             "Optional reproducible experiment preset. "
             "ablation1 = graph-only + conflict-only baseline; "
             "fault_space_fallback = ablation1 plus bounded fallback target expansion; "
-            "fault_space_neighborhood = ablation1 plus file-local structural neighborhood expansion."
+            "fault_space_neighborhood = ablation1 plus file-local structural neighborhood expansion; "
+            "fault_space_neighborhood_context = neighborhood plus curated extra context files for the conversion-gap study; "
+            "fault_space_neighborhood_retrieval = context preset plus explicit .py file mentions from instance text."
         ),
     )
     parser.add_argument(
@@ -880,11 +937,26 @@ def main() -> None:
             requirements = _build_requirements(inst)
 
             # Read file(s)
-            selected_abs = repo_root / selected_file
-            newline_style, ends_with_newline = _detect_file_style(selected_abs)
-            files = {selected_file: selected_abs.read_text(encoding="utf-8")}
-            file_styles = {selected_file: (newline_style, ends_with_newline)}
             selected_paths = [selected_file]
+            for extra_path in _extra_context_files_for_preset(preset.name, instance_id):
+                if extra_path not in selected_paths:
+                    selected_paths.append(extra_path)
+            for extra_path in _retrieved_context_files_for_preset(preset.name, inst, repo_root):
+                if extra_path not in selected_paths:
+                    selected_paths.append(extra_path)
+
+            files = {}
+            file_styles = {}
+            for rel_path in selected_paths:
+                selected_abs = repo_root / rel_path
+                if not selected_abs.exists() or not selected_abs.is_file():
+                    continue
+                newline_style, ends_with_newline = _detect_file_style(selected_abs)
+                files[rel_path] = selected_abs.read_text(encoding="utf-8")
+                file_styles[rel_path] = (newline_style, ends_with_newline)
+
+            if selected_file not in files:
+                raise RuntimeError(f"Could not load selected target file: {selected_file}")
 
             patch = ""
 
