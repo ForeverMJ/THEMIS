@@ -1,0 +1,145 @@
+{
+  "instance_id": "django__django-15996",
+  "repo": "django/django",
+  "base_commit": "b30c0081d4d8a31ab7dc7f72a4c7099af606ef29",
+  "selected_files": [
+    "django/db/migrations/serializer.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "fault_space_fallback",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow_fault_space_fallback",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "graph_only",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 215.69209027290344,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow_fault_space_fallback",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=2, advisory=2\nBlocking conflicts (must fix):\nB1. REQ-010 -> decompose | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40\nB2. REQ-010 -> items | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50\n\nAdvisory conflicts (non-blocking): 2\nA1. REQ-009 -> EnumSerializer | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, symbol_specific\nA2. REQ-012 -> serialize | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 3
+    },
+    "advanced_summary": {
+      "strategy": "graph_only",
+      "confidence": 1.0,
+      "processing_time": 0.019930362701416016,
+      "findings_count": 3,
+      "recommendations_count": 3
+    },
+    "advanced_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 0
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 875,
+        "violates_count": 2,
+        "blocking_conflicts_count": 2,
+        "advisory_conflicts_count": 2,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 0,
+        "changed_line_count": 30,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/db/migrations/serializer.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "items"
+        ],
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "When the enum member has no name, decompose the value by calling enum._decompose, join the members with |, and if that fails fall back to constructing the enum from its underlying value using serializer_factory.",
+        "execution_result": {},
+        "hypothesis_root_cause": "EnumSerializer always used the enum member name and failed when a Flag combination has no single name (e.g., re.UNICODE | re.IGNORECASE).",
+        "expected_invariant": "Enum values used in migrations (even flag combinations) are serialized into valid Python expressions that can be deserialized back to the same value.",
+        "patch_strategy": "When the enum member has no name, decompose the value by calling enum._decompose, join the members with |, and if that fails fall back to constructing the enum from its underlying value using serializer_factory.",
+        "failure_class": "fault_space_weak",
+        "fault_space_signal": "weak",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 1,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-010",
+      "target_symbol": "EnumSerializer.serialize",
+      "related_symbols": [
+        "enum._decompose",
+        "EnumSerializer.deserialize"
+      ],
+      "issue_summary": "Serialization of enum flag combinations currently produces invalid default literals (e.g., `default=re.RegexFlag[None]`) because the serializer only emits single enum names and lacks decompose handling.",
+      "expected_behavior": "When serializing enums whose value is a combination of flags, `EnumSerializer.serialize` should detect that no single name exists, decompose the value via `enum._decompose`, and emit an expression that ORs the individual flag members.",
+      "minimal_change_hint": "Within `EnumSerializer.serialize`, add a branch that uses `enum._decompose` to render flag combinations rather than relying solely on `.name` lookup.",
+      "blocking": true,
+      "confidence": 0.57,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-010",
+        "target_symbol": "EnumSerializer.serialize",
+        "related_symbols": [
+          "enum._decompose",
+          "EnumSerializer.deserialize"
+        ],
+        "issue_summary": "Serialization of enum flag combinations currently produces invalid default literals (e.g., `default=re.RegexFlag[None]`) because the serializer only emits single enum names and lacks decompose handling.",
+        "expected_behavior": "When serializing enums whose value is a combination of flags, `EnumSerializer.serialize` should detect that no single name exists, decompose the value via `enum._decompose`, and emit an expression that ORs the individual flag members.",
+        "minimal_change_hint": "Within `EnumSerializer.serialize`, add a branch that uses `enum._decompose` to render flag combinations rather than relying solely on `.name` lookup.",
+        "blocking": true,
+        "confidence": 0.57,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 1779
+}

@@ -1,0 +1,24 @@
+diff --git a/django/template/defaulttags.py b/django/template/defaulttags.py
+index bc401853a..457af9adb 100644
+--- a/django/template/defaulttags.py
++++ b/django/template/defaulttags.py
+@@ -123,16 +123,16 @@ class FirstOfNode(Node):
+         self.asvar = asvar
+ 
+     def render(self, context):
+-        first = ''
++        first = None
+         for var in self.vars:
+             value = var.resolve(context, ignore_failures=True)
+             if value:
+                 first = render_value_in_context(value, context)
+                 break
+         if self.asvar:
+-            context[self.asvar] = first
++            context[self.asvar] = first or ''
+             return ''
+-        return first
++        return first or ''
+ 
+ 
+ class ForNode(Node):

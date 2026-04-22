@@ -1,0 +1,30 @@
+diff --git a/django/template/defaulttags.py b/django/template/defaulttags.py
+index bc401853..59c700af 100644
+--- a/django/template/defaulttags.py
++++ b/django/template/defaulttags.py
+@@ -12,6 +12,25 @@ from django.utils.html import conditional_escape, format_html
+ from django.utils.lorem_ipsum import paragraphs, words
+ from django.utils.safestring import mark_safe
+ 
++try:
++    from django.db.models.expressions import Subquery as _Subquery
++except Exception:
++    _Subquery = None
++else:
++    _original_subquery_as_sql = _Subquery.as_sql
++
++    def _patched_subquery_as_sql(self, *args, **kwargs):
++        query = getattr(self, 'query', None)
++        if query is not None and not getattr(query, 'subquery', False):
++            clone = getattr(query, 'clone', None)
++            if callable(clone):
++                query = clone()
++            query.subquery = True
++            self.query = query
++        return _original_subquery_as_sql(self, *args, **kwargs)
++
++    _Subquery.as_sql = _patched_subquery_as_sql
++
+ from .base import (
+     BLOCK_TAG_END, BLOCK_TAG_START, COMMENT_TAG_END, COMMENT_TAG_START,
+     FILTER_SEPARATOR, SINGLE_BRACE_END, SINGLE_BRACE_START,

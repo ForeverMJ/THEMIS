@@ -1,0 +1,16 @@
+{
+  "instance_id": "django__django-16139",
+  "repo": "django/django",
+  "base_commit": "d559cb02da30f74debbb1fc3a46de0df134d2d80",
+  "selected_files": [
+    "django/contrib/auth/forms.py"
+  ],
+  "mode": "traditional",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 4.376020669937134,
+  "meta": {},
+  "error": "The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable",
+  "patch_chars": 0
+}

@@ -1,0 +1,141 @@
+{
+  "instance_id": "django__django-15320",
+  "repo": "django/django",
+  "base_commit": "b55ebe32417e0884b6b8b3e1bc0379033aa221af",
+  "selected_files": [
+    "django/template/defaulttags.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "ablation1",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow_ablation1",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "graph_only",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 209.00462770462036,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow_ablation1",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "graph_only",
+      "confidence": 0.7,
+      "processing_time": 0.06368780136108398,
+      "findings_count": 2,
+      "recommendations_count": 0
+    },
+    "advanced_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 0
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1264,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 2,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/template/defaulttags.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [],
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "At import time, monkey-patch django.db.models.expressions.Subquery.as_sql from within django.template.defaulttags to mark the query as a subquery before invoking the original compiler output.",
+        "execution_result": {},
+        "hypothesis_root_cause": "Subquery.as_sql compiles its query without the subquery flag set, so the resulting SQL lacks the proper parentheses and characters.",
+        "expected_invariant": "After patching, every Subquery compilation will set query.subquery=True before delegating to the original as_sql implementation, producing fully formed SQL.",
+        "patch_strategy": "At import time, monkey-patch django.db.models.expressions.Subquery.as_sql from within django.template.defaulttags to mark the query as a subquery before invoking the original compiler output.",
+        "failure_class": "mixed_or_unknown",
+        "fault_space_signal": "unknown",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-021",
+      "target_symbol": "FirstOfNode",
+      "related_symbols": [
+        "firstof"
+      ],
+      "issue_summary": "No clear relationship found",
+      "expected_behavior": "Update `FirstOfNode` so `REQ-021` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Start from the smallest method related to `FirstOfNode`, especially `firstof`.",
+      "blocking": false,
+      "confidence": 0.2,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-021",
+        "target_symbol": "FirstOfNode",
+        "related_symbols": [
+          "firstof"
+        ],
+        "issue_summary": "No clear relationship found",
+        "expected_behavior": "Update `FirstOfNode` so `REQ-021` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Start from the smallest method related to `FirstOfNode`, especially `firstof`.",
+        "blocking": false,
+        "confidence": 0.2,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 920
+}

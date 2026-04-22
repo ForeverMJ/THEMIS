@@ -1,0 +1,12 @@
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8d..e5504a2d 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -249,6 +249,7 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+ 
+     If autoescape is True, autoescape the link text and URLs.
+     """
++    _validate_urlize_trim_limit(trim_url_limit)
+     safe_input = isinstance(text, SafeData)
+ 
+     def trim_url(x, limit=trim_url_limit):

@@ -1,0 +1,111 @@
+{
+  "instance_id": "sympy__sympy-13773",
+  "repo": "sympy/sympy",
+  "base_commit": "7121bdf1facdd90d05b6994b4c2e5b2865a4638a",
+  "selected_files": [
+    "sympy/matrices/common.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 122.56645631790161,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 33648,
+      "completion_tokens": 321,
+      "total_tokens": 33969,
+      "successful_requests": 2
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 101.50121212005615,
+      "findings_count": 17,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 33321,
+      "completion_tokens": 4861,
+      "total_tokens": 38182,
+      "successful_requests": 30
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 2434,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 10,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-009",
+      "target_symbol": "ValueError",
+      "related_symbols": [
+        "all"
+      ],
+      "issue_summary": "No explicit error handling functions found",
+      "expected_behavior": "Update `ValueError` so `REQ-009` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Start from the smallest method related to `ValueError`, especially `all`.",
+      "blocking": false,
+      "confidence": 0.8,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-009",
+        "target_symbol": "ValueError",
+        "related_symbols": [
+          "all"
+        ],
+        "issue_summary": "No explicit error handling functions found",
+        "expected_behavior": "Update `ValueError` so `REQ-009` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Start from the smallest method related to `ValueError`, especially `all`.",
+        "blocking": false,
+        "confidence": 0.8,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 504
+}

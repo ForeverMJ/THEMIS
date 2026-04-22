@@ -1,0 +1,114 @@
+{
+  "instance_id": "pydata__xarray-4248",
+  "repo": "pydata/xarray",
+  "base_commit": "98dc1f4ea18738492e074e9e51ddfed5cd30ab94",
+  "selected_files": [
+    "xarray/tests/test_formatting.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 148.80627417564392,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 22712,
+      "completion_tokens": 1349,
+      "total_tokens": 24061,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 121.13358902931213,
+      "findings_count": 15,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 39074,
+      "completion_tokens": 7016,
+      "total_tokens": 46090,
+      "successful_requests": 48
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 2257,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 7,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 3,
+        "effective_change": false,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: xarray/tests/test_formatting.py:[search/replace] -> 'tuple' object has no attribute 'strip'; xarray/tests/test_formatting.py:formatting.diff_dataset_repr -> Developer proposed unknown symbol: formatting.diff_dataset_repr",
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 0,
+      "effective_modification_rate": 0.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-008",
+      "target_symbol": "Dataset",
+      "related_symbols": [
+        "Variable",
+        "all",
+        "formatting.diff_dataset_repr"
+      ],
+      "issue_summary": "No clear relationship found",
+      "expected_behavior": "Update `Dataset` so `REQ-008` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Start from the smallest method related to `Dataset`, especially `Variable`.",
+      "blocking": false,
+      "confidence": 0.2,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-008",
+        "target_symbol": "Dataset",
+        "related_symbols": [
+          "Variable",
+          "all",
+          "formatting.diff_dataset_repr"
+        ],
+        "issue_summary": "No clear relationship found",
+        "expected_behavior": "Update `Dataset` so `REQ-008` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Start from the smallest method related to `Dataset`, especially `Variable`.",
+        "blocking": false,
+        "confidence": 0.2,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": false,
+    "patch_source": "final_files",
+    "empty_patch_reason": "no_effective_changes_in_workflow"
+  },
+  "patch_chars": 0
+}

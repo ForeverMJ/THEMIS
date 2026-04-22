@@ -1,0 +1,64 @@
+diff --git a/sympy/utilities/codegen.py b/sympy/utilities/codegen.py
+index 2b212a9..65c0218 100644
+--- a/sympy/utilities/codegen.py
++++ b/sympy/utilities/codegen.py
+@@ -1989,13 +1989,11 @@ def get_code_generator(language, project=None, standard=None, printer = None):
+ #
+ 
+ 
+-def codegen(name_expr, language=None, prefix=None, project="project",
+-            to_files=False, header=True, empty=True, argument_sequence=None,
+-            global_vars=None, standard=None, code_gen=None, printer = None):
++def codegen(name_expr, language=None, prefix=None, project="project", to_files=False, header=True, empty=True, argument_sequence=None, global_vars=None, standard=None, code_gen=None, printer=None):
+     """Generate source code for expressions in a given language.
+ 
+     Parameters
+-    ==========
++    ========== 
+ 
+     name_expr : tuple, or list of tuples
+         A single (name, expression) tuple or a list of (name, expression)
+@@ -2048,7 +2046,7 @@ def codegen(name_expr, language=None, prefix=None, project="project",
+         An instance of a CodeGen subclass. Overrides ``language``.
+ 
+     Examples
+-    ========
++    ======== 
+ 
+     >>> from sympy.utilities.codegen import codegen
+     >>> from sympy.abc import x, y, z
+@@ -2115,34 +2113,8 @@ def codegen(name_expr, language=None, prefix=None, project="project",
+     f = x + y*z
+     end function
+     <BLANKLINE>
+-
+     """
+ 
+-    # Initialize the code generator.
+-    if language is None:
+-        if code_gen is None:
+-            raise ValueError("Need either language or code_gen")
+-    else:
+-        if code_gen is not None:
+-            raise ValueError("You cannot specify both language and code_gen.")
+-        code_gen = get_code_generator(language, project, standard, printer)
+-
+-    if isinstance(name_expr[0], str):
+-        # single tuple is given, turn it into a singleton list with a tuple.
+-        name_expr = [name_expr]
+-
+-    if prefix is None:
+-        prefix = name_expr[0][0]
+-
+-    # Construct Routines appropriate for this code_gen from (name, expr) pairs.
+-    routines = []
+-    for name, expr in name_expr:
+-        routines.append(code_gen.routine(name, expr, argument_sequence,
+-                                         global_vars))
+-
+-    # Write the code.
+-    return code_gen.write(routines, prefix, to_files, header, empty)
+-
+ 
+ def make_routine(name, expr, argument_sequence=None,
+                  global_vars=None, language="F95"):

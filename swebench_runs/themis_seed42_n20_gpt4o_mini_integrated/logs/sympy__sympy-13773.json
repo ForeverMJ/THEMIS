@@ -1,0 +1,205 @@
+{
+  "instance_id": "sympy__sympy-13773",
+  "repo": "sympy/sympy",
+  "base_commit": "7121bdf1facdd90d05b6994b4c2e5b2865a4638a",
+  "selected_files": [
+    "sympy/matrices/common.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 137.95376873016357,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 3,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=1, advisory=9\nBlocking conflicts (must fix):\nB1. REQ-017 -> ValueError | reason: No explicit error handling functions found | confidence: 0.80 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\n\nAdvisory conflicts (non-blocking): 9\nA1. REQ-017 -> all | reason: No explicit error handling functions found | confidence: 0.80 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40\nA2. REQ-018 -> H | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA3. REQ-018 -> __matmul__ | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40, symbol_specific\nA4. REQ-018 -> any | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA5. REQ-018 -> f | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA6. REQ-018 -> mat | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA7. REQ-019 -> H | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA8. REQ-019 -> f | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA9. REQ-020 -> mat | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 58826,
+      "completion_tokens": 592,
+      "total_tokens": 59418,
+      "successful_requests": 6
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 117.4659776687622,
+      "findings_count": 24,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 37761,
+      "completion_tokens": 6323,
+      "total_tokens": 44084,
+      "successful_requests": 38
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1579,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 9,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      },
+      {
+        "conflict_len": 1579,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 9,
+        "metrics_source": "analysis_report",
+        "revision": 1,
+        "conflict_down": false,
+        "delta_violates": 0,
+        "delta_blocking_conflicts": 0,
+        "delta_advisory_conflicts": 0,
+        "delta_conflict_len": 0
+      },
+      {
+        "conflict_len": 1579,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 9,
+        "metrics_source": "analysis_report",
+        "revision": 2,
+        "conflict_down": false,
+        "delta_violates": 0,
+        "delta_blocking_conflicts": 0,
+        "delta_advisory_conflicts": 0,
+        "delta_conflict_len": 0
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 0,
+        "changed_line_count": 3,
+        "target_hit_via": null,
+        "applied_symbols_count": 1,
+        "applied_symbols": [
+          "MatrixArithmetic.__rmatmul__"
+        ],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      },
+      {
+        "revision": 1,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 0,
+        "changed_line_count": 5,
+        "target_hit_via": null,
+        "applied_symbols_count": 1,
+        "applied_symbols": [
+          "MatrixArithmetic.__rmatmul__"
+        ],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      },
+      {
+        "revision": 2,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": true,
+        "target_hit_rate": 1.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 1,
+        "changed_line_count": 4,
+        "target_hit_via": "applied_symbols",
+        "applied_symbols_count": 1,
+        "applied_symbols": [
+          "MatrixArithmetic.__matmul__"
+        ],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 3,
+      "effective_rounds": 3,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 1,
+      "target_rounds": 3,
+      "target_hit_rate": 0.3333333333333333
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-017",
+      "target_symbol": "__matmul__",
+      "related_symbols": [
+        "Matrix",
+        "__mul__"
+      ],
+      "issue_summary": "@ (__matmul__) should raise ValueError if one argument is not a matrix.",
+      "expected_behavior": "Update `__matmul__` to check if both operands are matrices and raise ValueError if not.",
+      "minimal_change_hint": "Implement type checking for the operands in the `__matmul__` method.",
+      "blocking": true,
+      "confidence": 0.8,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-009",
+        "target_symbol": "__matmul__",
+        "related_symbols": [
+          "Matrix",
+          "__mul__"
+        ],
+        "issue_summary": "@ (__matmul__) should raise ValueError if one argument is not a matrix.",
+        "expected_behavior": "Update `__matmul__` to check if both operands are matrices and raise ValueError if not.",
+        "minimal_change_hint": "Implement type checking for the operands in the `__matmul__` method.",
+        "blocking": true,
+        "confidence": 0.8,
+        "source": "llm"
+      },
+      {
+        "requirement_id": "REQ-013",
+        "target_symbol": "__matmul__",
+        "related_symbols": [
+          "Matrix",
+          "__mul__"
+        ],
+        "issue_summary": "@ (__matmul__) should fail if one argument is not a matrix.",
+        "expected_behavior": "Raise a ValueError when attempting to use @ with a non-matrix operand.",
+        "minimal_change_hint": "Implement type checking in the __matmul__ method to ensure both operands are matrices.",
+        "blocking": true,
+        "confidence": 0.8,
+        "source": "llm"
+      },
+      {
+        "requirement_id": "REQ-017",
+        "target_symbol": "__matmul__",
+        "related_symbols": [
+          "Matrix",
+          "__mul__"
+        ],
+        "issue_summary": "@ (__matmul__) should raise ValueError if one argument is not a matrix.",
+        "expected_behavior": "Update `__matmul__` to check if both operands are matrices and raise ValueError if not.",
+        "minimal_change_hint": "Implement type checking for the operands in the `__matmul__` method.",
+        "blocking": true,
+        "confidence": 0.8,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 2,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 1076
+}

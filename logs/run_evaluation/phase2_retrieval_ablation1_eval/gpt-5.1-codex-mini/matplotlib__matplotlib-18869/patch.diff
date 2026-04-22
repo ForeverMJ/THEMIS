@@ -1,0 +1,42 @@
+diff --git a/lib/matplotlib/tests/test_matplotlib.py b/lib/matplotlib/tests/test_matplotlib.py
+index cad9433..c89d7ef 100644
+--- a/lib/matplotlib/tests/test_matplotlib.py
++++ b/lib/matplotlib/tests/test_matplotlib.py
+@@ -1,12 +1,37 @@
+ import os
+ import subprocess
+ import sys
++from collections import namedtuple
+ 
+ import pytest
+ 
+ import matplotlib
+ 
+ 
++VersionInfo = namedtuple(
++    "VersionInfo", "major minor micro releaselevel serial")
++
++
++def parse_to_version_info(version):
++    normalized = version.split("+", 1)[0]
++    releaselevel = "final"
++    serial = 0
++    if ".post" in normalized:
++        normalized, post = normalized.split(".post", 1)
++        releaselevel = "post"
++        serial = int(post)
++    elif ".dev" in normalized:
++        normalized, dev = normalized.split(".dev", 1)
++        releaselevel = "dev"
++        serial = int(dev)
++    elif "rc" in normalized:
++        normalized, rc = normalized.split("rc", 1)
++        releaselevel = "candidate"
++        serial = int(rc)
++    major, minor, micro = map(int, normalized.split("."))
++    return VersionInfo(major, minor, micro, releaselevel, serial)
++
++
+ @pytest.mark.skipif(
+     os.name == "nt", reason="chmod() doesn't work as is on Windows")
+ @pytest.mark.skipif(os.name != "nt" and os.geteuid() == 0,

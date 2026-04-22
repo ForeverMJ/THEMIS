@@ -1,0 +1,33 @@
+diff --git a/xarray/tests/test_formatting.py b/xarray/tests/test_formatting.py
+index 82de808..6eda1dd 100644
+--- a/xarray/tests/test_formatting.py
++++ b/xarray/tests/test_formatting.py
+@@ -328,7 +328,7 @@ class TestFormatting:
+     def test_diff_dataset_repr(self):
+         ds_a = xr.Dataset(
+             data_vars={
+-                "var1": (("x", "y"), np.array([[1, 2, 3], [4, 5, 6]], dtype="int64")),
++                "var1": ("x", "y"),
+                 "var2": ("x", np.array([3, 4], dtype="int64")),
+             },
+             coords={
+@@ -349,7 +349,7 @@ class TestFormatting:
+ 
+         byteorder = "<" if sys.byteorder == "little" else ">"
+         expected = dedent(
+-            """\
++            """
+         Left and right Dataset objects are not identical
+         Differing dimensions:
+             (x: 2, y: 3) != (x: 2)
+@@ -377,6 +377,10 @@ class TestFormatting:
+         actual = formatting.diff_dataset_repr(ds_a, ds_b, "identical")
+         assert actual == expected
+ 
++        # Add unit information to the output
++        ds_a.attrs["units"] = "m"
++        ds_b.attrs["units"] = "kg"
++
+     def test_array_repr(self):
+         ds = xr.Dataset(coords={"foo": [1, 2, 3], "bar": [1, 2, 3]})
+         ds[(1, 2)] = xr.DataArray([0], dims="test")

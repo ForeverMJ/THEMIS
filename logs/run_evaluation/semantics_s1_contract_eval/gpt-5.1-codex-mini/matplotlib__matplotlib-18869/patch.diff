@@ -1,0 +1,60 @@
+diff --git a/lib/matplotlib/__init__.py b/lib/matplotlib/__init__.py
+index b657a35..1db5126 100644
+--- a/lib/matplotlib/__init__.py
++++ b/lib/matplotlib/__init__.py
+@@ -130,24 +130,50 @@ __bibtex__ = r"""@Article{Hunter:2007,
+ }"""
+ 
+ 
++def _parse_to_version_info(version):
++    version_str = str(version)
++    parsed_version = parse_version(version_str)
++    release = getattr(parsed_version, "release", None)
++    if release is None:
++        release = tuple(
++            int(part)
++            for part in re.split(r"[._-]+", version_str)
++            if part.isdigit()
++        )
++    else:
++        release = tuple(release)
++    pre = getattr(parsed_version, "pre", None)
++    if pre is not None:
++        releaselevel, serial = pre
++    elif getattr(parsed_version, "post", None) is not None:
++        releaselevel, serial = ("post", parsed_version.post)
++    elif getattr(parsed_version, "dev", None) is not None:
++        releaselevel, serial = ("dev", parsed_version.dev)
++    else:
++        releaselevel, serial = "final", 0
++    return (*release, releaselevel, serial)
++
++
+ def __getattr__(name):
+-    if name == "__version__":
++    if name in {"__version__", "__version_info__"}:
+         import setuptools_scm
+-        global __version__  # cache it.
++        global __version__, __version_info__  # cache it.
+         # Only shell out to a git subprocess if really needed, and not on a
+         # shallow clone, such as those used by CI, as the latter would trigger
+         # a warning from setuptools_scm.
+         root = Path(__file__).resolve().parents[2]
+         if (root / ".git").exists() and not (root / ".git/shallow").exists():
+-            __version__ = setuptools_scm.get_version(
++            version = setuptools_scm.get_version(
+                 root=root,
+                 version_scheme="post-release",
+                 local_scheme="node-and-date",
+                 fallback_version=_version.version,
+             )
+         else:  # Get the version from the _version.py setuptools_scm file.
+-            __version__ = _version.version
+-        return __version__
++            version = _version.version
++        __version__ = version
++        __version_info__ = _parse_to_version_info(version)
++        return __version__ if name == "__version__" else __version_info__
+     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+ 
+ 

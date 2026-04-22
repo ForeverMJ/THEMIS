@@ -1,0 +1,170 @@
+{
+  "instance_id": "django__django-15996",
+  "repo": "django/django",
+  "base_commit": "b30c0081d4d8a31ab7dc7f72a4c7099af606ef29",
+  "selected_files": [
+    "django/db/migrations/serializer.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "fault_space_neighborhood_context",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "graph_only",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 202.7025260925293,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=1, advisory=2\nBlocking conflicts (must fix):\nB1. REQ-022 -> items | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50\n\nAdvisory conflicts (non-blocking): 2\nA1. REQ-021 -> EnumSerializer | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, symbol_specific\nA2. REQ-024 -> serialize | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "graph_only",
+      "confidence": 1.0,
+      "processing_time": 0.021207571029663086,
+      "findings_count": 3,
+      "recommendations_count": 3
+    },
+    "advanced_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 0
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 655,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 2,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 4,
+        "target_symbols_hit": 0,
+        "changed_line_count": 12,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/db/migrations/serializer.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "BaseSerializer",
+          "BaseSerializer.__init__",
+          "BaseSerializer.serialize"
+        ],
+        "fallback_enabled": true,
+        "target_expansion_mode": "file_local_neighborhood",
+        "entered_fallback": true,
+        "primary_targets": [
+          "items"
+        ],
+        "expanded_targets": [
+          "items",
+          "BaseSerializer",
+          "BaseSerializer.__init__",
+          "BaseSerializer.serialize"
+        ],
+        "fallback_added_targets": [
+          "BaseSerializer",
+          "BaseSerializer.__init__",
+          "BaseSerializer.serialize"
+        ],
+        "fallback_target_hit": false,
+        "fallback_target_hit_rate": 0.0,
+        "fallback_targets_total": 3,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": "django/db/migrations/serializer.py",
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_targets_not_hit",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Enhance EnumSerializer to build the Enum reference path once, check for a name, otherwise decompose the value into components, OR them together, and fall back to using the raw integer value if decomposition yields nothing.",
+        "execution_result": {},
+        "hypothesis_root_cause": "EnumSerializer fails when serializing flag combinations because it always relies on a single .name value, which isn’t present for OR-ed flag values.",
+        "expected_invariant": "EnumSerializer should emit a valid import string for the enum module and either reference a single named member or OR together the decomposed flag members.",
+        "patch_strategy": "Enhance EnumSerializer to build the Enum reference path once, check for a name, otherwise decompose the value into components, OR them together, and fall back to using the raw integer value if decomposition yields nothing.",
+        "failure_class": "fault_space_weak",
+        "fault_space_signal": "weak",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 1,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-025",
+      "target_symbol": "EnumSerializer.to_representation",
+      "related_symbols": [
+        "EnumSerializer"
+      ],
+      "issue_summary": "Serialization currently assumes every enum value has a single `.name`, so combined flag values (e.g. `re.UNICODE | re.IGNORECASE`) fall back to `re.RegexFlag[None]` and the `test_serialize_enum_flags` migration test fails.",
+      "expected_behavior": "`EnumSerializer.to_representation` should detect when a value has no single name, decompose the flag combination, and emit an expression that ORs the enum members so flag defaults serialize correctly.",
+      "minimal_change_hint": "When `value.name` is unavailable, call `value._decompose()` and join the member names with `|` (e.g. `EnumClass.UNICODE | EnumClass.IGNORECASE`) instead of returning `None`.",
+      "blocking": true,
+      "confidence": 0.52,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-025",
+        "target_symbol": "EnumSerializer.to_representation",
+        "related_symbols": [
+          "EnumSerializer"
+        ],
+        "issue_summary": "Serialization currently assumes every enum value has a single `.name`, so combined flag values (e.g. `re.UNICODE | re.IGNORECASE`) fall back to `re.RegexFlag[None]` and the `test_serialize_enum_flags` migration test fails.",
+        "expected_behavior": "`EnumSerializer.to_representation` should detect when a value has no single name, decompose the flag combination, and emit an expression that ORs the enum members so flag defaults serialize correctly.",
+        "minimal_change_hint": "When `value.name` is unavailable, call `value._decompose()` and join the member names with `|` (e.g. `EnumClass.UNICODE | EnumClass.IGNORECASE`) instead of returning `None`.",
+        "blocking": true,
+        "confidence": 0.52,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 1129
+}

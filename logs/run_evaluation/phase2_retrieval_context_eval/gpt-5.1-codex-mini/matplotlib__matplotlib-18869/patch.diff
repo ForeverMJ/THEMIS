@@ -1,0 +1,55 @@
+diff --git a/lib/matplotlib/__init__.py b/lib/matplotlib/__init__.py
+index b657a35..c0df98f 100644
+--- a/lib/matplotlib/__init__.py
++++ b/lib/matplotlib/__init__.py
+@@ -114,6 +114,36 @@ from matplotlib.rcsetup import validate_backend, cycler
+ 
+ _log = logging.getLogger(__name__)
+ 
++VersionInfo = namedtuple(
++    "VersionInfo",
++    ["major", "minor", "micro", "releaselevel", "serial"],
++)
++
++def parse_to_version_info(version=None):
++    '''Return a :class:`VersionInfo` for *version*.'''
++    if version is None:
++        version = __version__
++    parsed = parse_version(str(version))
++    release = tuple(parsed.release) + (0, 0, 0)
++    major, minor, micro = release[:3]
++    releaselevel = "final"
++    serial = 0
++    if parsed.pre is not None:
++        pre_tag, pre_number = parsed.pre
++        releaselevel = {
++            "a": "alpha",
++            "b": "beta",
++            "rc": "candidate",
++        }.get(pre_tag, pre_tag)
++        serial = pre_number or 0
++    elif parsed.dev is not None:
++        releaselevel = "dev"
++        serial = parsed.dev or 0
++    elif parsed.post is not None:
++        releaselevel = "post"
++        serial = parsed.post or 0
++    return VersionInfo(major, minor, micro, releaselevel, serial)
++
+ __bibtex__ = r"""@Article{Hunter:2007,
+   Author    = {Hunter, J. D.},
+   Title     = {Matplotlib: A 2D graphics environment},
+@@ -148,6 +178,13 @@ def __getattr__(name):
+         else:  # Get the version from the _version.py setuptools_scm file.
+             __version__ = _version.version
+         return __version__
++    elif name == "__version_info__":
++        global __version_info__
++        if "__version_info__" not in globals():
++            if "__version__" not in globals():
++                __getattr__("__version__")
++            __version_info__ = parse_to_version_info(__version__)
++        return __version_info__
+     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+ 
+ 

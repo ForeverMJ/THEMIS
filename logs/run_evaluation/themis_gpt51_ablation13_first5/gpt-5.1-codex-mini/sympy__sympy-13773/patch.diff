@@ -1,0 +1,38 @@
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a291..195b15f 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1973,7 +1973,15 @@ def __div__(self, other):
+ 
+     @call_highest_priority('__rmatmul__')
+     def __matmul__(self, other):
+-        return self.__mul__(other)
++        other = _matrixify(other)
++        if not (getattr(other, 'is_Matrix', False) or
++                getattr(other, 'is_MatrixLike', False)):
++            raise ValueError("Scalar operands are not allowed, use '*' instead")
++        if hasattr(other, 'shape') and len(other.shape) == 2:
++            if self.shape[1] != other.shape[0]:
++                raise ShapeError("Matrix size mismatch: %s * %s." % (
++                    self.shape, other.shape))
++        return self._eval_matrix_mul(other)
+ 
+     @call_highest_priority('__rmul__')
+     def __mul__(self, other):
+@@ -2068,7 +2076,15 @@ def __radd__(self, other):
+ 
+     @call_highest_priority('__matmul__')
+     def __rmatmul__(self, other):
+-        return self.__rmul__(other)
++        other = _matrixify(other)
++        if not (getattr(other, 'is_Matrix', False) or
++                getattr(other, 'is_MatrixLike', False)):
++            raise ValueError("Scalar operands are not allowed, use '*' instead")
++        if hasattr(other, 'shape') and len(other.shape) == 2:
++            if other.shape[1] != self.shape[0]:
++                raise ShapeError("Matrix size mismatch: %s * %s." % (
++                    other.shape, self.shape))
++        return self._eval_matrix_rmul(other)
+ 
+     @call_highest_priority('__mul__')
+     def __rmul__(self, other):

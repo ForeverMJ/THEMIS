@@ -1,0 +1,59 @@
+2026-03-14 21:21:45,306 - INFO - Creating container for sympy__sympy-11897...
+2026-03-14 21:21:46,308 - INFO - Container for sympy__sympy-11897 created: de0baa7615132bf3cf1764d60da26f6c45a53c6de56e3ad088bf72fb9c6dcddc
+2026-03-14 21:21:46,460 - INFO - Container for sympy__sympy-11897 started: de0baa7615132bf3cf1764d60da26f6c45a53c6de56e3ad088bf72fb9c6dcddc
+2026-03-14 21:21:46,460 - INFO - Intermediate patch for sympy__sympy-11897 written to logs/run_evaluation/themis_gpt51_codex_mini_split_part1/gpt-5.1-codex-mini/sympy__sympy-11897/patch.diff, now applying to container...
+2026-03-14 21:21:46,614 - INFO - >>>>> Applied Patch:
+Checking patch sympy/stats/rv.py...
+Applied patch sympy/stats/rv.py cleanly.
+
+2026-03-14 21:21:46,816 - INFO - Git diff before:
+diff --git a/sympy/stats/rv.py b/sympy/stats/rv.py
+index 65e10de7bf..88c3f5f2a1 100644
+--- a/sympy/stats/rv.py
++++ b/sympy/stats/rv.py
+@@ -406,6 +406,14 @@ def as_boolean(self):
+ def random_symbols(expr):
+     """
+     Returns all RandomSymbols within a SymPy Expression.
++
++    Note: When printing expressions containing RandomSymbols the LaTeX
++    printer may produce a different layout than the pretty printer because
++    LatexPrinter applies additional canonicalization (for example, moving
++    negative powers into denominators or omitting parentheses around
++    Piecewise branches). When consistent console output is required the
++    pretty printer provides the preferred formatting, so comparing both
++    outputs can help diagnose intentional LaTeX-specific choices.
+     """
+     try:
+         return list(expr.atoms(RandomSymbol))
+2026-03-14 21:21:46,816 - INFO - Eval script for sympy__sympy-11897 written to logs/run_evaluation/themis_gpt51_codex_mini_split_part1/gpt-5.1-codex-mini/sympy__sympy-11897/eval.sh; copying to container...
+2026-03-14 21:21:49,735 - INFO - Test runtime: 2.83 seconds
+2026-03-14 21:21:49,735 - INFO - Test output for sympy__sympy-11897 written to logs/run_evaluation/themis_gpt51_codex_mini_split_part1/gpt-5.1-codex-mini/sympy__sympy-11897/test_output.txt
+2026-03-14 21:21:49,806 - INFO - Git diff after:
+diff --git a/sympy/stats/rv.py b/sympy/stats/rv.py
+index 65e10de7bf..88c3f5f2a1 100644
+--- a/sympy/stats/rv.py
++++ b/sympy/stats/rv.py
+@@ -406,6 +406,14 @@ def as_boolean(self):
+ def random_symbols(expr):
+     """
+     Returns all RandomSymbols within a SymPy Expression.
++
++    Note: When printing expressions containing RandomSymbols the LaTeX
++    printer may produce a different layout than the pretty printer because
++    LatexPrinter applies additional canonicalization (for example, moving
++    negative powers into denominators or omitting parentheses around
++    Piecewise branches). When consistent console output is required the
++    pretty printer provides the preferred formatting, so comparing both
++    outputs can help diagnose intentional LaTeX-specific choices.
+     """
+     try:
+         return list(expr.atoms(RandomSymbol))
+2026-03-14 21:21:49,806 - INFO - Grading answer for sympy__sympy-11897...
+2026-03-14 21:21:49,819 - INFO - report: {'sympy__sympy-11897': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_latex_Piecewise']}, 'PASS_TO_PASS': {'success': ['test_printmethod', 'test_latex_basic', 'test_latex_builtins', 'test_latex_SingularityFunction', 'test_latex_cycle', 'test_latex_permutation', 'test_latex_Float', 'test_latex_symbols', 'test_hyper_printing', 'test_latex_bessel', 'test_latex_fresnel', 'test_latex_brackets', 'test_latex_subs', 'test_latex_integrals', 'test_latex_sets', 'test_latex_Range', 'test_latex_sequences', 'test_latex_intervals', 'test_latex_AccumuBounds', 'test_latex_emptyset', 'test_latex_commutator', 'test_latex_union', 'test_latex_symmetric_difference', 'test_latex_Complement', 'test_latex_Complexes', 'test_latex_productset', 'test_latex_Naturals', 'test_latex_Naturals0', 'test_latex_Integers', 'test_latex_ImageSet', 'test_latex_ConditionSet', 'test_latex_ComplexRegion', 'test_latex_Contains', 'test_latex_sum', 'test_latex_product', 'test_latex_limits', 'test_issue_3568', 'test_latex', 'test_latex_dict', 'test_latex_list', 'test_latex_rational', 'test_latex_inverse', 'test_latex_DiracDelta', 'test_latex_Heaviside', 'test_latex_KroneckerDelta', 'test_latex_LeviCivita', 'test_mode', 'test_latex_Matrix', 'test_latex_mul_symbol', 'test_latex_issue_4381', 'test_latex_issue_4576', 'test_latex_pow_fraction', 'test_noncommutative', 'test_latex_order', 'test_latex_Lambda', 'test_latex_PolyElement', 'test_latex_FracElement', 'test_latex_Poly', 'test_latex_ComplexRootOf', 'test_latex_RootSum', 'test_settings', 'test_latex_numbers', 'test_lamda', 'test_custom_symbol_names', 'test_matAdd', 'test_matMul', 'test_latex_MatrixSlice', 'test_latex_RandomDomain', 'test_PrettyPoly', 'test_integral_transforms', 'test_PolynomialRingBase', 'test_categories', 'test_Modules', 'test_QuotientRing', 'test_Tr', 'test_Adjoint', 'test_Hadamard', 'test_ZeroMatrix', 'test_boolean_args_order', 'test_imaginary', 'test_builtins_without_args', 'test_latex_greek_functions', 'test_translate', 'test_other_symbols', 'test_modifiers', 'test_greek_symbols', 'test_builtin_no_args', 'test_issue_6853', 'test_Mul', 'test_Pow', 'test_issue_7180', 'test_issue_8409', 'test_issue_7117', 'test_issue_2934', 'test_issue_10489'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-11897: resolved: False
+2026-03-14 21:21:49,819 - INFO - Attempting to stop container sweb.eval.sympy__sympy-11897.themis_gpt51_codex_mini_split_part1...
+2026-03-14 21:22:07,227 - INFO - Attempting to remove container sweb.eval.sympy__sympy-11897.themis_gpt51_codex_mini_split_part1...
+2026-03-14 21:22:07,247 - INFO - Container sweb.eval.sympy__sympy-11897.themis_gpt51_codex_mini_split_part1 removed.
+2026-03-14 21:22:07,247 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sympy_1776_sympy-11897:latest...
+2026-03-14 21:22:07,297 - INFO - Image swebench/sweb.eval.x86_64.sympy_1776_sympy-11897:latest removed.

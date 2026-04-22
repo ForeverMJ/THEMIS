@@ -1,0 +1,35 @@
+diff --git a/django/template/defaulttags.py b/django/template/defaulttags.py
+index bc401853a..752448fd1 100644
+--- a/django/template/defaulttags.py
++++ b/django/template/defaulttags.py
+@@ -134,6 +134,30 @@ class FirstOfNode(Node):
+             return ''
+         return first
+ 
++    @staticmethod
++    def _apply_subquery_patch():
++        from django.db.models.expressions import Subquery
++
++        if getattr(Subquery, '_template_subquery_init_patched', False):
++            return
++
++        original_init = Subquery.__init__
++
++        def _patched_init(self, *args, **kwargs):
++            original_init(self, *args, **kwargs)
++            query = getattr(self, 'query', None)
++            if query is None:
++                return
++            clone_method = getattr(query, 'clone', None)
++            cloned_query = clone_method() if callable(clone_method) else query
++            cloned_query.subquery = True
++            self.query = cloned_query
++
++        Subquery.__init__ = _patched_init
++        Subquery._template_subquery_init_patched = True
++
++    _apply_subquery_patch()
++
+ 
+ class ForNode(Node):
+     child_nodelists = ('nodelist_loop', 'nodelist_empty')

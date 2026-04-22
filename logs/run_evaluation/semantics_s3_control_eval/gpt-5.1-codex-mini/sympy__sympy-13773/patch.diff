@@ -1,0 +1,34 @@
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a291..94a1caf 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1971,8 +1971,14 @@ def __add__(self, other):
+     def __div__(self, other):
+         return self * (S.One / other)
+ 
++    @call_highest_priority('__rmatmul__')
+     @call_highest_priority('__rmatmul__')
+     def __matmul__(self, other):
++        other = _matrixify(other)
++        other_shape = getattr(other, 'shape', None)
++        if other_shape is None or len(other_shape) != 2:
++            raise TypeError("Matrix operands are required for '@'; "
++                            "scalar operands should use '*'.")
+         return self.__mul__(other)
+ 
+     @call_highest_priority('__rmul__')
+@@ -2066,8 +2072,14 @@ def __pow__(self, num):
+     def __radd__(self, other):
+         return self + other
+ 
++    @call_highest_priority('__matmul__')
+     @call_highest_priority('__matmul__')
+     def __rmatmul__(self, other):
++        other = _matrixify(other)
++        other_shape = getattr(other, 'shape', None)
++        if other_shape is None or len(other_shape) != 2:
++            raise TypeError("Matrix operands are required for '@'; "
++                            "scalar operands should use '*'.")
+         return self.__rmul__(other)
+ 
+     @call_highest_priority('__mul__')

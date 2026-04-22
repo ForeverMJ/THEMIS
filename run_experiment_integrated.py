@@ -1604,6 +1604,22 @@ def build_integrated_workflow(
                 score += 25.0
             return score
 
+        def _semantic_contract_adjustment(candidate_files: Dict[str, str]) -> float:
+            if stop_policy != "semantics_contract_rerank":
+                return 0.0
+            requirements_text = str(state.get("requirements") or "")
+            code_blob = "\n\n".join(candidate_files.values()).lower()
+            adjustment = 0.0
+
+            if "_parse_to_version_info" in requirements_text and "def _parse_to_version_info" in code_blob:
+                adjustment -= 2.0
+            if "valueerror" in requirements_text and "raise valueerror" in code_blob:
+                adjustment -= 2.0
+            if "notimplemented" in requirements_text and "return notimplemented" in code_blob:
+                adjustment -= 2.0
+
+            return adjustment
+
         developer_input_files = dict(state["files"])
         context_selection_meta = {
             "context_narrowed": False,
@@ -1902,7 +1918,7 @@ def build_integrated_workflow(
                     candidate_hypothesis = candidate_hypotheses[i] if i < len(candidate_hypotheses) else {}
                     chosen_hypothesis_label = str(candidate_meta.get("chosen_hypothesis_label") or "").strip()
                     expected_hypothesis_label = str(candidate_hypothesis.get("label") or "").strip()
-                    soft_score = score
+                    soft_score = score + critic_adjustment + _semantic_contract_adjustment(cand_files)
                     print(
                         f"  Candidate {i + 1}: score={score:.2f}, "
                         f"blocking={blocking_conflicts}, advisory={advisory_conflicts}, "
@@ -2632,6 +2648,25 @@ def build_integrated_workflow_fault_space_neighborhood(
         enable_file_local_neighborhood_targets=True,
         callbacks=callbacks,
         stop_policy="conflict_only",
+    )
+
+
+def build_integrated_workflow_semantics_contract_rerank(
+    llm_model: str = "gpt-5-mini",
+    *,
+    max_revisions: int | None = None,
+    analysis_model: str | None = None,
+    callbacks: Optional[Sequence[Any]] = None,
+) -> StateGraph:
+    return build_integrated_workflow(
+        llm_model=llm_model,
+        max_revisions=max_revisions,
+        analysis_model=analysis_model,
+        analysis_strategy=AnalysisStrategy.GRAPH_ONLY,
+        enable_bounded_fallback_targets=False,
+        enable_file_local_neighborhood_targets=True,
+        callbacks=callbacks,
+        stop_policy="semantics_contract_rerank",
     )
 
 

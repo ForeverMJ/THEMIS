@@ -1,0 +1,17 @@
+diff --git a/sklearn/metrics/tests/test_classification.py b/sklearn/metrics/tests/test_classification.py
+index 222f445..c1cbac0 100644
+--- a/sklearn/metrics/tests/test_classification.py
++++ b/sklearn/metrics/tests/test_classification.py
+@@ -438,6 +438,12 @@ def test_confusion_matrix_binary():
+ 
+     test(y_true, y_pred)
+     test([str(y) for y in y_true], [str(y) for y in y_pred])
++    
++    # Adding support for nullable dtypes
++    for dtype in ["Int64", "Float64", "boolean"]:
++        y_true_nullable = pd.Series(y_true, dtype=dtype)
++        y_pred_nullable = pd.Series(y_pred, dtype="int64")
++        test(y_true_nullable, y_pred_nullable)
+ 
+ 
+ def test_multilabel_confusion_matrix_binary():

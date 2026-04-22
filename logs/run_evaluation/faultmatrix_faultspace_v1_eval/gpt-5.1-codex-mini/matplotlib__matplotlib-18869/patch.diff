@@ -1,0 +1,12 @@
+diff --git a/lib/matplotlib/tests/test_matplotlib.py b/lib/matplotlib/tests/test_matplotlib.py
+index cad9433..91b3ff5 100644
+--- a/lib/matplotlib/tests/test_matplotlib.py
++++ b/lib/matplotlib/tests/test_matplotlib.py
+@@ -3,6 +3,7 @@ import subprocess
+ import sys
+ 
+ import pytest
++from packaging.version import Version
+ 
+ import matplotlib
+ 

@@ -1,0 +1,200 @@
+{
+  "instance_id": "django__django-15996",
+  "repo": "django/django",
+  "base_commit": "b30c0081d4d8a31ab7dc7f72a4c7099af606ef29",
+  "selected_files": [
+    "django/db/migrations/serializer.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 160.7939968109131,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 3,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=1, advisory=2\nBlocking conflicts (must fix):\nB1. REQ-018 -> items | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50\n\nAdvisory conflicts (non-blocking): 2\nA1. REQ-017 -> EnumSerializer | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, symbol_specific\nA2. REQ-020 -> serialize | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 28624,
+      "completion_tokens": 1741,
+      "total_tokens": 30365,
+      "successful_requests": 10
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 121.6835343837738,
+      "findings_count": 11,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 23228,
+      "completion_tokens": 6985,
+      "total_tokens": 30213,
+      "successful_requests": 40
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 655,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 2,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      },
+      {
+        "conflict_len": 655,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 2,
+        "metrics_source": "analysis_report",
+        "revision": 1,
+        "conflict_down": false,
+        "delta_violates": 0,
+        "delta_blocking_conflicts": 0,
+        "delta_advisory_conflicts": 0,
+        "delta_conflict_len": 0
+      },
+      {
+        "conflict_len": 655,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 2,
+        "metrics_source": "analysis_report",
+        "revision": 2,
+        "conflict_down": false,
+        "delta_violates": 0,
+        "delta_blocking_conflicts": 0,
+        "delta_advisory_conflicts": 0,
+        "delta_conflict_len": 0
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 3,
+        "effective_change": true,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: django/db/migrations/serializer.py:class EnumSerializer -> Developer proposed unknown symbol: class EnumSerializer",
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 0,
+        "changed_line_count": 13,
+        "target_hit_via": null,
+        "applied_symbols_count": 1,
+        "applied_symbols": [
+          "EnumSerializer.serialize"
+        ],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      },
+      {
+        "revision": 1,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 0,
+        "changed_line_count": 3,
+        "target_hit_via": null,
+        "applied_symbols_count": 1,
+        "applied_symbols": [
+          "EnumSerializer.serialize"
+        ],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      },
+      {
+        "revision": 2,
+        "attempts_used": 3,
+        "effective_change": false,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: no rewrite produced a semantic code delta",
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 3,
+      "effective_rounds": 2,
+      "effective_modification_rate": 0.6666666666666666,
+      "target_hit_rounds": 0,
+      "target_rounds": 3,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-018",
+      "target_symbol": "enum._decompose",
+      "related_symbols": [
+        "EnumSerializer",
+        "serialize"
+      ],
+      "issue_summary": "Support for serialization of combination of Enum flags is missing.",
+      "expected_behavior": "Use `enum._decompose` to obtain a list of names and create an expression to OR the items together for serialization.",
+      "minimal_change_hint": "Implement logic in the EnumSerializer to handle the combination of Enum flags using `enum._decompose`.",
+      "blocking": true,
+      "confidence": 0.9,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-010",
+        "target_symbol": "re.RegexFlag._decompose",
+        "related_symbols": [],
+        "issue_summary": "EnumSerializer fails to serialize combination of Enum flags due to lack of handling for multiple flags.",
+        "expected_behavior": "Update `re.RegexFlag._decompose` to properly serialize combined Enum flags for migration.",
+        "minimal_change_hint": "Implement logic to use `_decompose` to extract flag names and combine them using bitwise OR.",
+        "blocking": true,
+        "confidence": 0.9,
+        "source": "llm"
+      },
+      {
+        "requirement_id": "REQ-014",
+        "target_symbol": "re._decompose",
+        "related_symbols": [
+          "EnumSerializer",
+          "serialize"
+        ],
+        "issue_summary": "The EnumSerializer fails to serialize combination of Enum flags due to lack of handling for multiple flags.",
+        "expected_behavior": "Update `re._decompose` to properly serialize combined Enum flags without introducing unrelated edits.",
+        "minimal_change_hint": "Implement logic in `re._decompose` to return a list of names for combined flags and adjust serialization accordingly.",
+        "blocking": true,
+        "confidence": 0.9,
+        "source": "llm"
+      },
+      {
+        "requirement_id": "REQ-018",
+        "target_symbol": "enum._decompose",
+        "related_symbols": [
+          "EnumSerializer",
+          "serialize"
+        ],
+        "issue_summary": "Support for serialization of combination of Enum flags is missing.",
+        "expected_behavior": "Use `enum._decompose` to obtain a list of names and create an expression to OR the items together for serialization.",
+        "minimal_change_hint": "Implement logic in the EnumSerializer to handle the combination of Enum flags using `enum._decompose`.",
+        "blocking": true,
+        "confidence": 0.9,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 1,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 1370
+}

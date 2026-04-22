@@ -1,0 +1,15 @@
+diff --git a/src/flask/app.py b/src/flask/app.py
+index f0f3148..d0f6c51 100644
+--- a/src/flask/app.py
++++ b/src/flask/app.py
+@@ -1020,6 +1020,10 @@ class Flask(Scaffold):
+ 
+         .. versionadded:: 0.7
+         """
++        if "." in blueprint.name:
++            raise AssertionError(
++                f"Blueprint name {blueprint.name!r} must not contain '.'"
++            )
+         blueprint.register(self, options)
+ 
+     def iter_blueprints(self) -> t.ValuesView["Blueprint"]:

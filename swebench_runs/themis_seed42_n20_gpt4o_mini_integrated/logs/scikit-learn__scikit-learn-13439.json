@@ -1,0 +1,82 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-13439",
+  "repo": "scikit-learn/scikit-learn",
+  "base_commit": "a62775e99f2a5ea3d51db7160fad783f6cd8a4c5",
+  "selected_files": [
+    "sklearn/tests/test_pipeline.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 135.73837065696716,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 44711,
+      "completion_tokens": 312,
+      "total_tokens": 45023,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 119.75012350082397,
+      "findings_count": 13,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 44869,
+      "completion_tokens": 6564,
+      "total_tokens": 51433,
+      "successful_requests": 57
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 847,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 0,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 3,
+        "effective_change": false,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: sklearn/tests/test_pipeline.py:Pipeline.__len__ -> Developer proposed unknown symbol: Pipeline.__len__",
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 0,
+      "effective_modification_rate": 0.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "last_effective_files_available": false,
+    "patch_source": "final_files",
+    "empty_patch_reason": "no_effective_changes_in_workflow"
+  },
+  "patch_chars": 0
+}

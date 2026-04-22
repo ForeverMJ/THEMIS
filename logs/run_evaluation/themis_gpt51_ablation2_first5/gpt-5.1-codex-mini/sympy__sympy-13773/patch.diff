@@ -1,0 +1,56 @@
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a291..317c00d 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1971,9 +1971,27 @@ def __add__(self, other):
+     def __div__(self, other):
+         return self * (S.One / other)
+ 
++    def _validate_matmul_operand(self, other):
++        mat = _matrixify(other)
++        if not (getattr(mat, 'is_Matrix', False) or getattr(mat, 'is_MatrixLike', False)):
++            raise ValueError("Scalar operands are not allowed, use '*' instead.")
++        return mat
++
++    @call_highest_priority('__rmatmul__')
+     @call_highest_priority('__rmatmul__')
+     def __matmul__(self, other):
+-        return self.__mul__(other)
++        mat = self._validate_matmul_operand(other)
++        if hasattr(mat, 'shape') and len(mat.shape) == 2:
++            other_rows, other_cols = mat.shape
++        else:
++            other_rows, other_cols = getattr(mat, 'rows', None), getattr(mat, 'cols', None)
++        if other_rows is None or other_cols is None:
++            raise ValueError("Scalar operands are not allowed, use '*' instead.")
++        if self.shape[1] != other_rows:
++            raise ShapeError("Matrix size mismatch: %s * %s." % (self.shape, (other_rows, other_cols)))
++        if getattr(mat, 'is_Matrix', False):
++            return self._eval_matrix_mul(mat)
++        return MatrixArithmetic._eval_matrix_mul(self, mat)
+ 
+     @call_highest_priority('__rmul__')
+     def __mul__(self, other):
+@@ -2066,9 +2084,21 @@ def __pow__(self, num):
+     def __radd__(self, other):
+         return self + other
+ 
++    @call_highest_priority('__matmul__')
+     @call_highest_priority('__matmul__')
+     def __rmatmul__(self, other):
+-        return self.__rmul__(other)
++        mat = self._validate_matmul_operand(other)
++        if hasattr(mat, 'shape') and len(mat.shape) == 2:
++            other_rows, other_cols = mat.shape
++        else:
++            other_rows, other_cols = getattr(mat, 'rows', None), getattr(mat, 'cols', None)
++        if other_rows is None or other_cols is None:
++            raise ValueError("Scalar operands are not allowed, use '*' instead.")
++        if other_cols != self.shape[0]:
++            raise ShapeError("Matrix size mismatch: %s * %s." % ((other_rows, other_cols), self.shape))
++        if getattr(mat, 'is_Matrix', False):
++            return self._eval_matrix_rmul(mat)
++        return MatrixArithmetic._eval_matrix_rmul(self, mat)
+ 
+     @call_highest_priority('__mul__')
+     def __rmul__(self, other):

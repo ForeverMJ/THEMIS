@@ -1,0 +1,110 @@
+diff --git a/lib/matplotlib/__init__.py b/lib/matplotlib/__init__.py
+index b657a35..dc1c8f6 100644
+--- a/lib/matplotlib/__init__.py
++++ b/lib/matplotlib/__init__.py
+@@ -102,7 +102,8 @@ import tempfile
+ import warnings
+ 
+ import numpy
+-from packaging.version import parse as parse_version
++from packaging.version import (InvalidVersion, Version,
++                               parse as parse_version)
+ 
+ # cbook must import matplotlib only within function
+ # definitions, so it is safe to import from it here.
+@@ -130,24 +131,38 @@ __bibtex__ = r"""@Article{Hunter:2007,
+ }"""
+ 
+ 
++def _compute_version():
++    import setuptools_scm
++    root = Path(__file__).resolve().parents[2]
++    if (root / ".git").exists() and not (root / ".git/shallow").exists():
++        return setuptools_scm.get_version(
++            root=root,
++            version_scheme="post-release",
++            local_scheme="node-and-date",
++            fallback_version=_version.version,
++        )
++    return _version.version
++
++
++def _get_version():
++    global __version__
++    if "__version__" not in globals():
++        __version__ = _compute_version()
++    return __version__
++
++
++def _get_version_info():
++    global __version_info__
++    if "__version_info__" not in globals():
++        __version_info__ = parse_to_version_info(_get_version())
++    return __version_info__
++
++
+ def __getattr__(name):
+     if name == "__version__":
+-        import setuptools_scm
+-        global __version__  # cache it.
+-        # Only shell out to a git subprocess if really needed, and not on a
+-        # shallow clone, such as those used by CI, as the latter would trigger
+-        # a warning from setuptools_scm.
+-        root = Path(__file__).resolve().parents[2]
+-        if (root / ".git").exists() and not (root / ".git/shallow").exists():
+-            __version__ = setuptools_scm.get_version(
+-                root=root,
+-                version_scheme="post-release",
+-                local_scheme="node-and-date",
+-                fallback_version=_version.version,
+-            )
+-        else:  # Get the version from the _version.py setuptools_scm file.
+-            __version__ = _version.version
+-        return __version__
++        return _get_version()
++    if name == "__version_info__":
++        return _get_version_info()
+     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+ 
+ 
+@@ -244,6 +259,40 @@ def _logged_cached(fmt, func=None):
+ 
+ 
+ _ExecInfo = namedtuple("_ExecInfo", "executable version")
++VersionInfo = namedtuple(
++    "VersionInfo", "major minor micro releaselevel serial")
++
++_PRE_RELEASE_LEVELS = {"a": "alpha", "b": "beta", "c": "rc", "rc": "rc"}
++
++
++def parse_to_version_info(version):
++    """
++    Return a version tuple similar to sys.version_info.
++    """
++    try:
++        parsed = Version(version)
++    except InvalidVersion:
++        return VersionInfo(0, 0, 0, "final", 0)
++    release = tuple(parsed.release) + (0, 0, 0)
++    major, minor, micro = release[:3]
++    releaselevel = "final"
++    serial = 0
++
++    if parsed.pre is not None:
++        tag, number = parsed.pre
++        releaselevel = _PRE_RELEASE_LEVELS.get(tag, tag)
++        serial = number or 0
++    elif parsed.post is not None:
++        releaselevel = "post"
++        serial = parsed.post or 0
++    elif parsed.dev is not None:
++        releaselevel = "dev"
++        serial = parsed.dev or 0
++
++    return VersionInfo(major, minor, micro, releaselevel, serial)
++
++
++_version.parse_to_version_info = parse_to_version_info
+ 
+ 
+ class ExecutableNotFoundError(FileNotFoundError):

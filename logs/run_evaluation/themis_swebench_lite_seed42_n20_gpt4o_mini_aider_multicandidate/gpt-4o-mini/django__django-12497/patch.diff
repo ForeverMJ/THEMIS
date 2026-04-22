@@ -1,0 +1,32 @@
+diff --git a/django/db/models/fields/related.py b/django/db/models/fields/related.py
+index 8ddbb5ba6..4c63d7f06 100644
+--- a/django/db/models/fields/related.py
++++ b/django/db/models/fields/related.py
+@@ -1245,8 +1245,7 @@ class ManyToManyField(RelatedField):
+             # The relationship model is not installed.
+             errors.append(
+                 checks.Error(
+-                    "Field specifies a many-to-many relation through model "
+-                    "'%s', which has not been installed." % qualified_model_name,
++                    "Field specifies a many-to-many relation through model '%s', which has not been installed." % qualified_model_name,
+                     obj=self,
+                     id='fields.E331',
+                 )
+@@ -1309,7 +1308,7 @@ class ManyToManyField(RelatedField):
+                              "through_fields keyword argument.") % (self, from_model_name),
+                             hint=(
+                                 'If you want to create a recursive relationship, '
+-                                'use ForeignKey("%s", symmetrical=False, through="%s").'
++                                'use ManyToManyField(to="%s", through="%s", through_fields=("field1", "field2")).'
+                             ) % (
+                                 RECURSIVE_RELATIONSHIP_CONSTANT,
+                                 relationship_model_name,
+@@ -1329,7 +1328,7 @@ class ManyToManyField(RelatedField):
+                             "through_fields keyword argument." % (self, to_model_name),
+                             hint=(
+                                 'If you want to create a recursive relationship, '
+-                                'use ForeignKey("%s", symmetrical=False, through="%s").'
++                                'use ManyToManyField(to="%s", through="%s", through_fields=("field1", "field2")).'
+                             ) % (
+                                 RECURSIVE_RELATIONSHIP_CONSTANT,
+                                 relationship_model_name,

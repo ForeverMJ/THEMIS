@@ -1,0 +1,49 @@
+diff --git a/django/db/models/fields/related.py b/django/db/models/fields/related.py
+index 8ddbb5ba6..d8179dc1c 100644
+--- a/django/db/models/fields/related.py
++++ b/django/db/models/fields/related.py
+@@ -1308,12 +1308,10 @@ class ManyToManyField(RelatedField):
+                              "which foreign key Django should use via the "
+                              "through_fields keyword argument.") % (self, from_model_name),
+                             hint=(
+-                                'If you want to create a recursive relationship, '
+-                                'use ForeignKey("%s", symmetrical=False, through="%s").'
+-                            ) % (
+-                                RECURSIVE_RELATIONSHIP_CONSTANT,
+-                                relationship_model_name,
+-                            ),
++                                'Define the ManyToManyField through "%s" and specify '
++                                'through_fields=("from_field", "to_field") to clarify which '
++                                'foreign keys Django should use.'
++                            ) % relationship_model_name,
+                             obj=self,
+                             id='fields.E334',
+                         )
+@@ -1322,18 +1320,16 @@ class ManyToManyField(RelatedField):
+                 if seen_to > 1 and not self.remote_field.through_fields:
+                     errors.append(
+                         checks.Error(
+-                            "The model is used as an intermediate model by "
+-                            "'%s', but it has more than one foreign key "
+-                            "to '%s', which is ambiguous. You must specify "
+-                            "which foreign key Django should use via the "
+-                            "through_fields keyword argument." % (self, to_model_name),
++                            ("The model is used as an intermediate model by "
++                             "'%s', but it has more than one foreign key "
++                             "to '%s', which is ambiguous. You must specify "
++                             "which foreign key Django should use via the "
++                             "through_fields keyword argument.") % (self, to_model_name),
+                             hint=(
+-                                'If you want to create a recursive relationship, '
+-                                'use ForeignKey("%s", symmetrical=False, through="%s").'
+-                            ) % (
+-                                RECURSIVE_RELATIONSHIP_CONSTANT,
+-                                relationship_model_name,
+-                            ),
++                                'Define the ManyToManyField through "%s" and specify '
++                                'through_fields=("from_field", "to_field") to clarify which '
++                                'foreign keys Django should use.'
++                            ) % relationship_model_name,
+                             obj=self,
+                             id='fields.E335',
+                         )

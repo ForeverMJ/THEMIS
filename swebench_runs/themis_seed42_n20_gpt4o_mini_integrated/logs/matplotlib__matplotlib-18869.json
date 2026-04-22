@@ -1,0 +1,106 @@
+{
+  "instance_id": "matplotlib__matplotlib-18869",
+  "repo": "matplotlib/matplotlib",
+  "base_commit": "b7d05919865fc0c37a0164cf467d5d5513bd0ede",
+  "selected_files": [
+    "lib/matplotlib/tests/test_matplotlib.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 91.46012687683105,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 7238,
+      "completion_tokens": 621,
+      "total_tokens": 7859,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 74.65851998329163,
+      "findings_count": 9,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 21883,
+      "completion_tokens": 4018,
+      "total_tokens": 25901,
+      "successful_requests": 35
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1792,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 1,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 3,
+        "effective_change": false,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: lib/matplotlib/tests/test_matplotlib.py:test_parse_to_version_info -> Developer proposed unknown symbol: test_parse_to_version_info",
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 0,
+      "effective_modification_rate": 0.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-005",
+      "target_symbol": "str",
+      "related_symbols": [],
+      "issue_summary": "No clear relationship found",
+      "expected_behavior": "Update `str` so `REQ-005` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Make the smallest logic change inside `str` for `REQ-005`.",
+      "blocking": false,
+      "confidence": 0.2,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-005",
+        "target_symbol": "str",
+        "related_symbols": [],
+        "issue_summary": "No clear relationship found",
+        "expected_behavior": "Update `str` so `REQ-005` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Make the smallest logic change inside `str` for `REQ-005`.",
+        "blocking": false,
+        "confidence": 0.2,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": false,
+    "patch_source": "final_files",
+    "empty_patch_reason": "no_effective_changes_in_workflow"
+  },
+  "patch_chars": 0
+}

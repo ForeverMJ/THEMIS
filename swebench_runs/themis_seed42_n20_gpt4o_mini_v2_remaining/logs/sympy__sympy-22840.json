@@ -1,0 +1,113 @@
+{
+  "instance_id": "sympy__sympy-22840",
+  "repo": "sympy/sympy",
+  "base_commit": "d822fcba181155b85ff2b29fe525adbafb22b448",
+  "selected_files": [
+    "sympy/utilities/codegen.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 497.6396803855896,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 36112,
+      "completion_tokens": 1514,
+      "total_tokens": 37626,
+      "successful_requests": 2
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 427.93020725250244,
+      "findings_count": 19,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 115598,
+      "completion_tokens": 14574,
+      "total_tokens": 130172,
+      "successful_requests": 110
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1724,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 3,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-006",
+      "target_symbol": "Symbol",
+      "related_symbols": [
+        "make_routine",
+        "name"
+      ],
+      "issue_summary": "No clear relationship found",
+      "expected_behavior": "Update `Symbol` so `REQ-006` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Start from the smallest method related to `Symbol`, especially `make_routine`.",
+      "blocking": false,
+      "confidence": 0.2,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-006",
+        "target_symbol": "Symbol",
+        "related_symbols": [
+          "make_routine",
+          "name"
+        ],
+        "issue_summary": "No clear relationship found",
+        "expected_behavior": "Update `Symbol` so `REQ-006` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Start from the smallest method related to `Symbol`, especially `make_routine`.",
+        "blocking": false,
+        "confidence": 0.2,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 2439
+}

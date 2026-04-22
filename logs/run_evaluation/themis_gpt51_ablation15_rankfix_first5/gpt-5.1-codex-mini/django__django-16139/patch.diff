@@ -1,0 +1,28 @@
+diff --git a/django/contrib/auth/forms.py b/django/contrib/auth/forms.py
+index b3cfc6723..71b536d88 100644
+--- a/django/contrib/auth/forms.py
++++ b/django/contrib/auth/forms.py
+@@ -14,6 +14,7 @@ from django.utils.http import urlsafe_base64_encode
+ from django.utils.text import capfirst
+ from django.utils.translation import gettext
+ from django.utils.translation import gettext_lazy as _
++from django.urls import reverse
+ 
+ UserModel = get_user_model()
+ 
+@@ -163,7 +164,14 @@ class UserChangeForm(forms.ModelForm):
+         super().__init__(*args, **kwargs)
+         password = self.fields.get("password")
+         if password:
+-            password.help_text = password.help_text.format("../password/")
++            if self.instance.pk:
++                password_url = reverse(
++                    "admin:auth_user_password_change",
++                    args=(self.instance.pk,),
++                )
++            else:
++                password_url = "../password/"
++            password.help_text = password.help_text.format(password_url)
+         user_permissions = self.fields.get("user_permissions")
+         if user_permissions:
+             user_permissions.queryset = user_permissions.queryset.select_related(

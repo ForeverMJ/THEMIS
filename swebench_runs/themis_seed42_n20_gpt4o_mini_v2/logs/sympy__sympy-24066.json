@@ -1,0 +1,82 @@
+{
+  "instance_id": "sympy__sympy-24066",
+  "repo": "sympy/sympy",
+  "base_commit": "514579c655bf22e2af14f0743376ae1d7befe345",
+  "selected_files": [
+    "sympy/physics/units/unitsystem.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 304.6693799495697,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 9319,
+      "completion_tokens": 1875,
+      "total_tokens": 11194,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 258.05579829216003,
+      "findings_count": 12,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 29325,
+      "completion_tokens": 9508,
+      "total_tokens": 38833,
+      "successful_requests": 48
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1099,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 0,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 3,
+        "effective_change": false,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: sympy/physics/units/unitsystem.py:UnitSystem._collect_factor_and_dimension -> syntax error after rewrite: sympy/physics/units/unitsystem.py:176:45: invalid syntax",
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 0,
+      "effective_modification_rate": 0.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "last_effective_files_available": false,
+    "patch_source": "final_files",
+    "empty_patch_reason": "no_effective_changes_in_workflow"
+  },
+  "patch_chars": 0
+}

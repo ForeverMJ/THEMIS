@@ -1,0 +1,107 @@
+{
+  "instance_id": "sphinx-doc__sphinx-8713",
+  "repo": "sphinx-doc/sphinx",
+  "base_commit": "3ed7590ed411bd93b26098faab4f23619cdb2267",
+  "selected_files": [
+    "tests/test_ext_napoleon_docstring.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 175.6767292022705,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 25843,
+      "completion_tokens": 501,
+      "total_tokens": 26344,
+      "successful_requests": 2
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 147.55021786689758,
+      "findings_count": 12,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 33028,
+      "completion_tokens": 7120,
+      "total_tokens": 40148,
+      "successful_requests": 38
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 2179,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 7,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-015",
+      "target_symbol": "NumpyDocstringTest",
+      "related_symbols": [],
+      "issue_summary": "No clear relationship found",
+      "expected_behavior": "Update `NumpyDocstringTest` so `REQ-015` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Make the smallest logic change inside `NumpyDocstringTest` for `REQ-015`.",
+      "blocking": false,
+      "confidence": 0.2,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-015",
+        "target_symbol": "NumpyDocstringTest",
+        "related_symbols": [],
+        "issue_summary": "No clear relationship found",
+        "expected_behavior": "Update `NumpyDocstringTest` so `REQ-015` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Make the smallest logic change inside `NumpyDocstringTest` for `REQ-015`.",
+        "blocking": false,
+        "confidence": 0.2,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 2068
+}

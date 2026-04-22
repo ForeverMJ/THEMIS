@@ -1,0 +1,22 @@
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.0.1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+DEBUG: sys.path: ['/home/taotao/workspace/dev/THEMIS', '/usr/lib/python312.zip', '/usr/lib/python3.12', '/usr/lib/python3.12/lib-dynload', '/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages']
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Selected 20 instances (seed=42) from SWE-bench/SWE-bench_Lite:test
+Predictions file: predictions/gpt-5.1-codex-mini.themis_swebench_lite_seed42_n20_aider_multicandidate.jsonl
+2026-03-14 18:45:00,658 - enhanced_graph_manager - INFO - Enhanced GraphManager initialized
+
+======================================================================
+STEP 1: Advanced LLM Analysis
+======================================================================
+2026-03-14 18:45:00,674 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-14 18:45:00,683 - enhanced_graph_manager - INFO - Structural extraction completed: 78 nodes, 73 edges in 0.009s
+2026-03-14 18:45:00,683 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-14 18:45:00,683 - enhanced_graph_manager - WARNING - Requirements text length (1544) exceeds recommended limit
+2026-03-14 18:45:00,688 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-14 18:45:00,688 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-14 18:45:00,692 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s
+2026-03-14 18:45:00,692 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-14 18:45:00,693 - enhanced_graph_manager - INFO - Violation flagging completed: 14 violations found, 14 edges added in 0.001s
+2026-03-14 18:45:00,693 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-14 18:45:00,697 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s

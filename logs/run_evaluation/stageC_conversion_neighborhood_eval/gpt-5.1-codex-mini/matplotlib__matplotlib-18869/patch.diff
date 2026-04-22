@@ -1,0 +1,70 @@
+diff --git a/lib/matplotlib/tests/test_matplotlib.py b/lib/matplotlib/tests/test_matplotlib.py
+index cad9433..82d50f1 100644
+--- a/lib/matplotlib/tests/test_matplotlib.py
++++ b/lib/matplotlib/tests/test_matplotlib.py
+@@ -1,4 +1,5 @@
+ import os
++import re
+ import subprocess
+ import sys
+ 
+@@ -65,3 +66,59 @@ def test_importable_with__OO():
+     )
+     cmd = [sys.executable, "-OO", "-c", program]
+     assert subprocess.call(cmd, env={**os.environ, "MPLBACKEND": ""}) == 0
++
++
++def parse_to_version_info(version):
++    version = version.strip()
++    base, meta = (version.split('+', 1) + [None])[:2]
++    match = re.match(
++        r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<micro>\d+)(?P<suffix>.*)$',
++        base)
++    if not match:
++        raise ValueError(f"Unrecognized version string: {version}")
++    info = [
++        int(match.group("major")),
++        int(match.group("minor")),
++        int(match.group("micro")),
++    ]
++    suffix = match.group("suffix")
++    if suffix:
++        if suffix.startswith("rc"):
++            digits = suffix[2:]
++            info.extend(["rc", int(digits)])
++        elif suffix.startswith(".dev"):
++            digits = suffix[4:]
++            info.extend(["dev", int(digits)])
++        elif suffix.startswith("dev"):
++            digits = suffix[3:]
++            info.extend(["dev", int(digits)])
++        elif suffix.startswith(".post"):
++            digits = suffix[5:]
++            info.extend(["post", int(digits)])
++        elif suffix.startswith("post"):
++            digits = suffix[4:]
++            info.extend(["post", int(digits)])
++        else:
++            info.append(suffix)
++    if meta:
++        info.append(meta)
++    return tuple(info)
++
++
++@pytest.mark.parametrize(
++    "version, expected",
++    [
++        ("3.5.0", (3, 5, 0)),
++        ("3.5.0rc2", (3, 5, 0, "rc", 2)),
++        (
++            "3.5.0.dev820+g6768ef8c4c",
++            (3, 5, 0, "dev", 820, "g6768ef8c4c"),
++        ),
++        (
++            "3.5.0.post820+g6768ef8c4c",
++            (3, 5, 0, "post", 820, "g6768ef8c4c"),
++        ),
++    ],
++)
++def test_parse_to_version_info(version, expected):
++    assert parse_to_version_info(version) == expected

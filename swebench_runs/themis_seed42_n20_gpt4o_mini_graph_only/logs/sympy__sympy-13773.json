@@ -1,0 +1,16 @@
+{
+  "instance_id": "sympy__sympy-13773",
+  "repo": "sympy/sympy",
+  "base_commit": "7121bdf1facdd90d05b6994b4c2e5b2865a4638a",
+  "selected_files": [
+    "sympy/matrices/common.py"
+  ],
+  "mode": "traditional",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 2.559375524520874,
+  "meta": {},
+  "error": "The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable",
+  "patch_chars": 0
+}

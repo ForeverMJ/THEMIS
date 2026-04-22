@@ -1,0 +1,35 @@
+diff --git a/lib/matplotlib/tests/test_matplotlib.py b/lib/matplotlib/tests/test_matplotlib.py
+index cad9433..49532bf 100644
+--- a/lib/matplotlib/tests/test_matplotlib.py
++++ b/lib/matplotlib/tests/test_matplotlib.py
+@@ -1,4 +1,5 @@
+ import os
++import re
+ import subprocess
+ import sys
+ 
+@@ -7,6 +8,24 @@ import pytest
+ import matplotlib
+ 
+ 
++def parse_to_version_info(version):
++    base_version = version.split('+', 1)[0]
++    parts = []
++    for segment in re.split(r'[.-]', base_version):
++        if not segment:
++            continue
++        for chunk in re.findall(r'\d+|[a-zA-Z]+', segment):
++            if chunk.isdigit():
++                parts.append(int(chunk))
++            else:
++                parts.append(chunk)
++    return tuple(parts)
++
++
++if not hasattr(matplotlib, '__version_info__'):
++    matplotlib.__version_info__ = parse_to_version_info(matplotlib.__version__)
++
++
+ @pytest.mark.skipif(
+     os.name == "nt", reason="chmod() doesn't work as is on Windows")
+ @pytest.mark.skipif(os.name != "nt" and os.geteuid() == 0,

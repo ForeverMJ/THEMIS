@@ -1,0 +1,32 @@
+diff --git a/sympy/core/add.py b/sympy/core/add.py
+index aebc468..d06cdb4 100644
+--- a/sympy/core/add.py
++++ b/sympy/core/add.py
+@@ -457,7 +457,6 @@ def _eval_power(self, e):
+         from .relational import is_eq
+         if len(self.args) == 2 and any(_.is_infinite for _ in self.args):
+             if e.is_zero is False and is_eq(e, S.One) is False:
+-                # looking for literal a + I*b
+                 a, b = self.args
+                 if a.coeff(S.ImaginaryUnit):
+                     a, b = b, a
+@@ -481,9 +480,9 @@ def _eval_power(self, e):
+                         from .function import expand_multinomial
+                         # (r, i, D) is a Pythagorean triple
+                         root = sqrt(factor_terms((D - r)/2))**e.p
+-                        return root*expand_multinomial((
++                        return root*expand_multinomial(
+                             # principle value
+-                            (D + r)/abs(i) + sign(i)*S.ImaginaryUnit)**e.p)
++                            (D + r)/abs(i) + sign(i)*S.ImaginaryUnit)**e.p
+                 elif e == -1:
+                     return _unevaluated_Mul(
+                         r - i*S.ImaginaryUnit,
+@@ -502,6 +501,7 @@ def _eval_power(self, e):
+                     c = [sign(i) if i in bigs else i/big for i in c]
+                     addpow = Add(*[c*m for c, m in zip(c, m)])**e
+                     return big**e*addpow
++        return super()._eval_power(e)
+ 
+     @cacheit
+     def _eval_derivative(self, s):

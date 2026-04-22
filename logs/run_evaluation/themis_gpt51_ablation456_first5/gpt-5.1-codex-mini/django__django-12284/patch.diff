@@ -1,0 +1,54 @@
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd..92251027b 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -231,7 +231,25 @@ def smart_urlquote(url):
+ 
+     return urlunsplit((scheme, netloc, path, query, fragment))
+ 
++def _urlize_link_from_word(middle, nofollow):
++    """
++    Return the URL to use for ``middle`` and the appropriate rel attribute.
++    """
++    nofollow_attr = ' rel="nofollow"' if nofollow else ''
++    if simple_url_re.match(middle):
++        return smart_urlquote(html.unescape(middle)), nofollow_attr, False
++    if simple_url_2_re.match(middle):
++        return smart_urlquote('http://%s' % html.unescape(middle)), nofollow_attr, False
++    if ':' not in middle and is_email_simple(middle):
++        local, domain = middle.rsplit('@', 1)
++        try:
++            domain = punycode(domain)
++        except UnicodeError:
++            return None, None, True
++        return 'mailto:%s@%s' % (local, domain), '', False
++    return None, None, False
+ 
++@keep_lazy_text
+ @keep_lazy_text
+ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+     """
+@@ -314,20 +332,9 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+             lead, middle, trail = trim_punctuation(lead, middle, trail)
+ 
+             # Make URL we want to point to.
+-            url = None
+-            nofollow_attr = ' rel="nofollow"' if nofollow else ''
+-            if simple_url_re.match(middle):
+-                url = smart_urlquote(html.unescape(middle))
+-            elif simple_url_2_re.match(middle):
+-                url = smart_urlquote('http://%s' % html.unescape(middle))
+-            elif ':' not in middle and is_email_simple(middle):
+-                local, domain = middle.rsplit('@', 1)
+-                try:
+-                    domain = punycode(domain)
+-                except UnicodeError:
+-                    continue
+-                url = 'mailto:%s@%s' % (local, domain)
+-                nofollow_attr = ''
++            url, nofollow_attr, skip = _urlize_link_from_word(middle, nofollow)
++            if skip:
++                continue
+ 
+             # Make link.
+             if url:

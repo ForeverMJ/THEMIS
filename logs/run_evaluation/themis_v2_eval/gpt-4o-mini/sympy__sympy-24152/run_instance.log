@@ -1,0 +1,85 @@
+2026-03-13 17:00:27,892 - INFO - Creating container for sympy__sympy-24152...
+2026-03-13 17:00:28,075 - INFO - Container for sympy__sympy-24152 created: a603fdea3e58b4d7eac13dd5815c7acdc8b60e95962a714e0d88068fe5c10fb9
+2026-03-13 17:00:28,217 - INFO - Container for sympy__sympy-24152 started: a603fdea3e58b4d7eac13dd5815c7acdc8b60e95962a714e0d88068fe5c10fb9
+2026-03-13 17:00:28,218 - INFO - Intermediate patch for sympy__sympy-24152 written to logs/run_evaluation/themis_v2_eval/gpt-4o-mini/sympy__sympy-24152/patch.diff, now applying to container...
+2026-03-13 17:00:28,362 - INFO - >>>>> Applied Patch:
+Checking patch sympy/core/add.py...
+Applied patch sympy/core/add.py cleanly.
+
+2026-03-13 17:00:28,735 - INFO - Git diff before:
+diff --git a/sympy/core/add.py b/sympy/core/add.py
+index aebc468ecd..d06cdb4abd 100644
+--- a/sympy/core/add.py
++++ b/sympy/core/add.py
+@@ -457,7 +457,6 @@ def _eval_power(self, e):
+         from .relational import is_eq
+         if len(self.args) == 2 and any(_.is_infinite for _ in self.args):
+             if e.is_zero is False and is_eq(e, S.One) is False:
+-                # looking for literal a + I*b
+                 a, b = self.args
+                 if a.coeff(S.ImaginaryUnit):
+                     a, b = b, a
+@@ -481,9 +480,9 @@ def _eval_power(self, e):
+                         from .function import expand_multinomial
+                         # (r, i, D) is a Pythagorean triple
+                         root = sqrt(factor_terms((D - r)/2))**e.p
+-                        return root*expand_multinomial((
++                        return root*expand_multinomial(
+                             # principle value
+-                            (D + r)/abs(i) + sign(i)*S.ImaginaryUnit)**e.p)
++                            (D + r)/abs(i) + sign(i)*S.ImaginaryUnit)**e.p
+                 elif e == -1:
+                     return _unevaluated_Mul(
+                         r - i*S.ImaginaryUnit,
+@@ -502,6 +501,7 @@ def _eval_power(self, e):
+                     c = [sign(i) if i in bigs else i/big for i in c]
+                     addpow = Add(*[c*m for c, m in zip(c, m)])**e
+                     return big**e*addpow
++        return super()._eval_power(e)
+ 
+     @cacheit
+     def _eval_derivative(self, s):
+2026-03-13 17:00:28,735 - INFO - Eval script for sympy__sympy-24152 written to logs/run_evaluation/themis_v2_eval/gpt-4o-mini/sympy__sympy-24152/eval.sh; copying to container...
+2026-03-13 17:00:31,580 - INFO - Test runtime: 2.77 seconds
+2026-03-13 17:00:31,580 - INFO - Test output for sympy__sympy-24152 written to logs/run_evaluation/themis_v2_eval/gpt-4o-mini/sympy__sympy-24152/test_output.txt
+2026-03-13 17:00:31,656 - INFO - Git diff after:
+diff --git a/sympy/core/add.py b/sympy/core/add.py
+index aebc468ecd..d06cdb4abd 100644
+--- a/sympy/core/add.py
++++ b/sympy/core/add.py
+@@ -457,7 +457,6 @@ def _eval_power(self, e):
+         from .relational import is_eq
+         if len(self.args) == 2 and any(_.is_infinite for _ in self.args):
+             if e.is_zero is False and is_eq(e, S.One) is False:
+-                # looking for literal a + I*b
+                 a, b = self.args
+                 if a.coeff(S.ImaginaryUnit):
+                     a, b = b, a
+@@ -481,9 +480,9 @@ def _eval_power(self, e):
+                         from .function import expand_multinomial
+                         # (r, i, D) is a Pythagorean triple
+                         root = sqrt(factor_terms((D - r)/2))**e.p
+-                        return root*expand_multinomial((
++                        return root*expand_multinomial(
+                             # principle value
+-                            (D + r)/abs(i) + sign(i)*S.ImaginaryUnit)**e.p)
++                            (D + r)/abs(i) + sign(i)*S.ImaginaryUnit)**e.p
+                 elif e == -1:
+                     return _unevaluated_Mul(
+                         r - i*S.ImaginaryUnit,
+@@ -502,6 +501,7 @@ def _eval_power(self, e):
+                     c = [sign(i) if i in bigs else i/big for i in c]
+                     addpow = Add(*[c*m for c, m in zip(c, m)])**e
+                     return big**e*addpow
++        return super()._eval_power(e)
+ 
+     @cacheit
+     def _eval_derivative(self, s):
+2026-03-13 17:00:31,656 - INFO - Grading answer for sympy__sympy-24152...
+2026-03-13 17:00:31,656 - INFO - report: {'sympy__sympy-24152': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_tensor_product_expand']}, 'PASS_TO_PASS': {'success': ['test_sparse_matrices', 'test_tensor_product_dagger', 'test_tensor_product_abstract', 'test_tensor_product_commutator', 'test_tensor_product_simp', 'test_issue_5923'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-24152: resolved: False
+2026-03-13 17:00:31,656 - INFO - Attempting to stop container sweb.eval.sympy__sympy-24152.themis_v2_eval...
+2026-03-13 17:00:45,183 - INFO - Attempting to remove container sweb.eval.sympy__sympy-24152.themis_v2_eval...
+2026-03-13 17:00:45,206 - INFO - Container sweb.eval.sympy__sympy-24152.themis_v2_eval removed.
+2026-03-13 17:00:45,206 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sympy_1776_sympy-24152:latest...
+2026-03-13 17:00:46,044 - INFO - Image swebench/sweb.eval.x86_64.sympy_1776_sympy-24152:latest removed.

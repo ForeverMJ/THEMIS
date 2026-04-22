@@ -1,0 +1,113 @@
+{
+  "instance_id": "django__django-12284",
+  "repo": "django/django",
+  "base_commit": "c5e373d48cbdd923575956fed477b63d66d9603f",
+  "selected_files": [
+    "django/utils/html.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "fault_space_fallback",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow_fault_space_fallback",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "graph_only",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 160.9301357269287,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow_fault_space_fallback",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 3
+    },
+    "advanced_summary": {
+      "strategy": "graph_only",
+      "confidence": 0.7,
+      "processing_time": 0.01912236213684082,
+      "findings_count": 2,
+      "recommendations_count": 0
+    },
+    "advanced_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 0
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 0,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 0,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/utils/html.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [],
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Introduce small helper validators adjacent to urlize and invoke them at the start of the function so that the parameters are vetted early.",
+        "execution_result": {},
+        "hypothesis_root_cause": "Auto-detected Graph violations flagged urlize for missing explicit validation helpers around its parameters.",
+        "expected_invariant": "urlize validates its trim_url_limit, nofollow, and autoescape arguments before proceeding, satisfying the advisory.",
+        "patch_strategy": "Introduce small helper validators adjacent to urlize and invoke them at the start of the function so that the parameters are vetted early.",
+        "failure_class": "mixed_or_unknown",
+        "fault_space_signal": "unknown",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 1260
+}

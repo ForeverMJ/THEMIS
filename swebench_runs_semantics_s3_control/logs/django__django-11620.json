@@ -1,0 +1,167 @@
+{
+  "instance_id": "django__django-11620",
+  "repo": "django/django",
+  "base_commit": "514efa3129792ec2abb2444f3e7aeb3f21a38386",
+  "selected_files": [
+    "django/views/debug.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "fault_space_neighborhood_context",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "graph_only",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 30.970379114151,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "graph_only",
+      "confidence": 0.7,
+      "processing_time": 0.03434324264526367,
+      "findings_count": 2,
+      "recommendations_count": 0
+    },
+    "advanced_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 0
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 2391,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 9,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 3,
+        "target_symbols_hit": 0,
+        "changed_line_count": 2,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/views/debug.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "CallableSettingWrapper",
+          "CallableSettingWrapper.__init__",
+          "CallableSettingWrapper.__repr__"
+        ],
+        "fallback_enabled": true,
+        "target_expansion_mode": "file_local_neighborhood",
+        "entered_fallback": true,
+        "primary_targets": [],
+        "expanded_targets": [
+          "CallableSettingWrapper",
+          "CallableSettingWrapper.__init__",
+          "CallableSettingWrapper.__repr__"
+        ],
+        "fallback_added_targets": [
+          "CallableSettingWrapper",
+          "CallableSettingWrapper.__init__",
+          "CallableSettingWrapper.__repr__"
+        ],
+        "fallback_target_hit": false,
+        "fallback_target_hit_rate": 0.0,
+        "fallback_targets_total": 3,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": "django/views/debug.py",
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_targets_not_hit",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Add Http404 to the imports and to the exception handler so both Resolver404 and Http404 are caught during the resolver retry.",
+        "execution_result": {},
+        "hypothesis_root_cause": "technical_404_response only handles Resolver404 when rerunning URL resolving, so a Http404 raised from a path converter bubbles out and triggers a generic server error in DEBUG.",
+        "expected_invariant": "technical_404_response should also catch Http404 from the resolver retry so the technical 404 page renders with the correct exception info when DEBUG is True.",
+        "patch_strategy": "Add Http404 to the imports and to the exception handler so both Resolver404 and Http404 are caught during the resolver retry.",
+        "failure_class": "fault_space_weak",
+        "fault_space_signal": "weak",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 1,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-029",
+      "target_symbol": "resolve",
+      "related_symbols": [
+        "technical_404_response"
+      ],
+      "issue_summary": "No validation functions found in codebase",
+      "expected_behavior": "Update `resolve` so `REQ-029` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Start from the smallest method related to `resolve`, especially `technical_404_response`.",
+      "blocking": false,
+      "confidence": 0.9,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-029",
+        "target_symbol": "resolve",
+        "related_symbols": [
+          "technical_404_response"
+        ],
+        "issue_summary": "No validation functions found in codebase",
+        "expected_behavior": "Update `resolve` so `REQ-029` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Start from the smallest method related to `resolve`, especially `technical_404_response`.",
+        "blocking": false,
+        "confidence": 0.9,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 793
+}

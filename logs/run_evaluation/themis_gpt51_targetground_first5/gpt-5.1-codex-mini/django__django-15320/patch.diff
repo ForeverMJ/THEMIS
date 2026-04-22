@@ -1,0 +1,25 @@
+diff --git a/django/template/defaulttags.py b/django/template/defaulttags.py
+index bc401853a..c855c4c76 100644
+--- a/django/template/defaulttags.py
++++ b/django/template/defaulttags.py
+@@ -12,6 +12,20 @@ from django.utils.html import conditional_escape, format_html
+ from django.utils.lorem_ipsum import paragraphs, words
+ from django.utils.safestring import mark_safe
+ 
++try:
++    from django.db.models.expressions import Subquery as _Subquery
++except ImportError:
++    _Subquery = None
++else:
++    _Subquery_init = _Subquery.__init__
++    def _defaulttags_subquery_init(self, *args, **kwargs):
++        _Subquery_init(self, *args, **kwargs)
++        query = getattr(self, 'query', None)
++        if query is not None:
++            # Ensure the query is marked as a subquery so SQL stays wrapped.
++            query.subquery = True
++    _Subquery.__init__ = _defaulttags_subquery_init
++
+ from .base import (
+     BLOCK_TAG_END, BLOCK_TAG_START, COMMENT_TAG_END, COMMENT_TAG_START,
+     FILTER_SEPARATOR, SINGLE_BRACE_END, SINGLE_BRACE_START,

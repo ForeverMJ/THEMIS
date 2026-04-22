@@ -1,0 +1,38 @@
+diff --git a/django/db/models/fields/related.py b/django/db/models/fields/related.py
+index 8ddbb5ba6..1ba2f3893 100644
+--- a/django/db/models/fields/related.py
++++ b/django/db/models/fields/related.py
+@@ -1308,10 +1308,13 @@ class ManyToManyField(RelatedField):
+                              "which foreign key Django should use via the "
+                              "through_fields keyword argument.") % (self, from_model_name),
+                             hint=(
+-                                'If you want to create a recursive relationship, '
+-                                'use ForeignKey("%s", symmetrical=False, through="%s").'
++                                'Disambiguate the "from" side ("%s") and the "to" side ("%s") by specifying '
++                                'through_fields=(<from_field>, <to_field>) for '
++                                'ManyToManyField("%s", through="%s").'
+                             ) % (
+-                                RECURSIVE_RELATIONSHIP_CONSTANT,
++                                from_model_name,
++                                to_model_name,
++                                to_model_name,
+                                 relationship_model_name,
+                             ),
+                             obj=self,
+@@ -1328,10 +1331,13 @@ class ManyToManyField(RelatedField):
+                             "which foreign key Django should use via the "
+                             "through_fields keyword argument." % (self, to_model_name),
+                             hint=(
+-                                'If you want to create a recursive relationship, '
+-                                'use ForeignKey("%s", symmetrical=False, through="%s").'
++                                'Disambiguate the "from" side ("%s") and the "to" side ("%s") by specifying '
++                                'through_fields=(<from_field>, <to_field>) for '
++                                'ManyToManyField("%s", through="%s").'
+                             ) % (
+-                                RECURSIVE_RELATIONSHIP_CONSTANT,
++                                from_model_name,
++                                to_model_name,
++                                to_model_name,
+                                 relationship_model_name,
+                             ),
+                             obj=self,

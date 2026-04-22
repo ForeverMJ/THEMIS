@@ -1,0 +1,1120 @@
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.0.1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+DEBUG: sys.path: ['/home/taotao/workspace/dev/THEMIS', '/usr/lib/python312.zip', '/usr/lib/python3.12', '/usr/lib/python3.12/lib-dynload', '/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages']
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Selected instances [0:5] (seed=42) from SWE-bench/SWE-bench_Lite:test
+Predictions file: predictions/gpt-5.1-codex-mini.themis_targetground_seed42_first5.jsonl
+2026-03-19 22:00:24,901 - enhanced_graph_manager - INFO - Enhanced GraphManager initialized
+
+======================================================================
+STEP 1: Advanced LLM Analysis
+======================================================================
+2026-03-19 22:00:24,924 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:00:24,934 - enhanced_graph_manager - INFO - Structural extraction completed: 78 nodes, 73 edges in 0.010s
+2026-03-19 22:00:24,934 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:00:24,934 - enhanced_graph_manager - WARNING - Requirements text length (1544) exceeds recommended limit
+2026-03-19 22:00:24,941 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.007s
+2026-03-19 22:00:24,941 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:00:24,945 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.005s
+2026-03-19 22:00:24,945 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:00:24,946 - enhanced_graph_manager - INFO - Violation flagging completed: 14 violations found, 14 edges added in 0.001s
+2026-03-19 22:00:24,946 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:00:24,951 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s
+Advanced analysis completed in 336.49s
+Strategy used: integrated
+Confidence: 0.50
+Findings: 14
+Recommendations: 1
+
+Key Findings:
+   1. Bug Location: django/contrib/auth/forms.py, inside UserChangeForm.__init__ where password.help_text is constructed.
+   2. Root Cause: The helper text in `UserChangeForm.__init__` hard‑codes `../password/`, which builds a relative path that never contains the UUID segment required when the change form is accessed with `_to_field=<uuid>`. Because the password change view resolves by primary key, the browser ends up requesting `user/<pk>/password/` for the wrong object (or no object), leading to a broken link even though the admin page itself represents the correct UUID record.
+   3. Bug location 'django/contrib/auth/forms.py, inside UserChangeForm.__init__ where password.help_text is constructed.' confirmed in code structure
+
+======================================================================
+STEP 2: Knowledge Graph Construction (Enhanced)
+======================================================================
+2026-03-19 22:06:01,411 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:06:01,421 - enhanced_graph_manager - INFO - Structural extraction completed: 78 nodes, 73 edges in 0.010s
+2026-03-19 22:06:01,421 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:06:01,421 - enhanced_graph_manager - WARNING - Requirements text length (1544) exceeds recommended limit
+2026-03-19 22:06:01,427 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.006s
+2026-03-19 22:06:01,427 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:06:01,432 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.005s
+2026-03-19 22:06:01,432 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:06:01,433 - enhanced_graph_manager - INFO - Violation flagging completed: 14 violations found, 14 edges added in 0.001s
+2026-03-19 22:06:01,433 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:06:01,437 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[], se...rmat(password_url)\n')]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...mat(password_url)\n')])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[], se...user_permissions")\n')]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...ser_permissions")\n')])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[], se...type"\n            )')]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...ype"\n            )')])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+Graph: 86 nodes, 122 edges
+Violations: 0
+Dependencies: 16 nodes
+Integrated 14 advanced findings into context
+
+======================================================================
+STEP 3: Developer Code Revision
+======================================================================
+Enhanced developer context with 3 findings and 1 recommendations
+Added prioritized graph violations to developer context: 5 item(s)
+DEBUG: Applying search/replace edit django/contrib/auth/forms.py
+DEBUG: Applying search/replace edit django/contrib/auth/forms.py
+Generating 2 additional candidates for best selection...
+DEBUG: Applying search/replace edit django/contrib/auth/forms.py
+DEBUG: Applying search/replace edit django/contrib/auth/forms.py
+DEBUG: Applying search/replace edit django/contrib/auth/forms.py
+DEBUG: Applying search/replace edit django/contrib/auth/forms.py
+Evaluating 3 candidates with Judge...
+2026-03-19 22:08:49,205 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:08:49,215 - enhanced_graph_manager - INFO - Structural extraction completed: 80 nodes, 75 edges in 0.010s
+2026-03-19 22:08:49,215 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:08:49,215 - enhanced_graph_manager - WARNING - Requirements text length (1544) exceeds recommended limit
+2026-03-19 22:08:49,220 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-19 22:08:49,220 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:08:49,226 - enhanced_graph_manager - INFO - Dependency tracing completed: 88 nodes analyzed in 0.006s
+2026-03-19 22:08:49,226 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:08:49,226 - enhanced_graph_manager - INFO - Violation flagging completed: 14 violations found, 14 edges added in 0.001s
+2026-03-19 22:08:49,227 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:08:49,231 - enhanced_graph_manager - INFO - Dependency tracing completed: 88 nodes analyzed in 0.005s
+  Candidate 1: score=10032.00, blocking=999, advisory=14, target_hit_rate=0.00, changed_ratio=0.000, apply_failures=0, pre_judge=pass
+2026-03-19 22:08:49,231 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:08:49,242 - enhanced_graph_manager - INFO - Structural extraction completed: 79 nodes, 75 edges in 0.010s
+2026-03-19 22:08:49,242 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:08:49,242 - enhanced_graph_manager - WARNING - Requirements text length (1544) exceeds recommended limit
+2026-03-19 22:08:49,247 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-19 22:08:49,247 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:08:49,252 - enhanced_graph_manager - INFO - Dependency tracing completed: 87 nodes analyzed in 0.005s
+2026-03-19 22:08:49,252 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:08:49,253 - enhanced_graph_manager - INFO - Violation flagging completed: 14 violations found, 14 edges added in 0.000s
+2026-03-19 22:08:49,253 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:08:49,258 - enhanced_graph_manager - INFO - Dependency tracing completed: 87 nodes analyzed in 0.005s
+  Candidate 2: score=10032.00, blocking=999, advisory=14, target_hit_rate=0.00, changed_ratio=0.000, apply_failures=0, pre_judge=pass
+2026-03-19 22:08:49,259 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:08:49,268 - enhanced_graph_manager - INFO - Structural extraction completed: 80 nodes, 75 edges in 0.010s
+2026-03-19 22:08:49,268 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:08:49,268 - enhanced_graph_manager - WARNING - Requirements text length (1544) exceeds recommended limit
+2026-03-19 22:08:49,274 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-19 22:08:49,274 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:08:49,279 - enhanced_graph_manager - INFO - Dependency tracing completed: 88 nodes analyzed in 0.005s
+2026-03-19 22:08:49,279 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:08:49,279 - enhanced_graph_manager - INFO - Violation flagging completed: 14 violations found, 14 edges added in 0.001s
+2026-03-19 22:08:49,280 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:08:49,285 - enhanced_graph_manager - INFO - Dependency tracing completed: 88 nodes analyzed in 0.005s
+  Candidate 3: score=10032.00, blocking=999, advisory=14, target_hit_rate=0.00, changed_ratio=0.000, apply_failures=0, pre_judge=pass
+Selected candidate 1 with score=10032.00 (blocking=999)
+Developer produced effective file changes in this revision.
+
+======================================================================
+STEP 4: Knowledge Graph Rebuild
+======================================================================
+2026-03-19 22:08:49,285 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:08:49,295 - enhanced_graph_manager - INFO - Structural extraction completed: 80 nodes, 75 edges in 0.010s
+2026-03-19 22:08:49,295 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:08:49,295 - enhanced_graph_manager - WARNING - Requirements text length (1544) exceeds recommended limit
+2026-03-19 22:08:49,300 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-19 22:08:49,300 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:08:49,305 - enhanced_graph_manager - INFO - Dependency tracing completed: 88 nodes analyzed in 0.005s
+2026-03-19 22:08:49,306 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:08:49,306 - enhanced_graph_manager - INFO - Violation flagging completed: 14 violations found, 14 edges added in 0.000s
+2026-03-19 22:08:49,306 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:08:49,311 - enhanced_graph_manager - INFO - Dependency tracing completed: 88 nodes analyzed in 0.005s
+Updated Graph: 88 nodes, 126 edges
+Updated Violations: 0
+Pre-judge advisory: pass (pass)
+
+======================================================================
+STEP 5: Judge Evaluation
+======================================================================
+Conflict metrics: len=3069, blocking=0, advisory=14, down=None, source=analysis_report
+Developer metrics: effective_rounds=1/1 (rate=1.00), target_hit=0/0 (rate=0.00)
+No conflicts detected - code satisfies requirements!
+Stopping: no blocking conflicts and no VIOLATES edges in graph.
+[ok] django__django-16139 (django/django) 513.6s patch=1716 chars tokens(chat=0, adv=83192)
+2026-03-19 22:08:56,654 - enhanced_graph_manager - INFO - Enhanced GraphManager initialized
+
+======================================================================
+STEP 1: Advanced LLM Analysis
+======================================================================
+2026-03-19 22:08:56,672 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:08:56,704 - enhanced_graph_manager - INFO - Structural extraction completed: 263 nodes, 312 edges in 0.032s
+2026-03-19 22:08:56,704 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:08:56,713 - enhanced_graph_manager - INFO - Semantic injection completed: 4 requirements injected in 0.009s
+2026-03-19 22:08:56,713 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:08:56,746 - enhanced_graph_manager - INFO - Dependency tracing completed: 267 nodes analyzed in 0.032s
+2026-03-19 22:08:56,746 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:08:56,746 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.000s
+2026-03-19 22:08:56,746 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:08:56,780 - enhanced_graph_manager - INFO - Dependency tracing completed: 267 nodes analyzed in 0.034s
+Advanced analysis completed in 208.61s
+Strategy used: integrated
+Confidence: 1.00
+Findings: 26
+Recommendations: 1
+
+Key Findings:
+   1. Bug Location: MatrixArithmetic.__matmul__ (and the shared helper invoked by MatrixArithmetic.__rmatmul__) in the arithmetic dispatch layer where operands are first inspected before dispatching to kernels.
+   2. Root Cause: MatrixArithmetic.__matmul__ currently defers to the scalar-aware __mul__ implementation, so the @ operator never validates that both operands are matrix-like. This allows scalars to bypass matrix-only expectations, especially since __mul__ internally promotes scalars. The correct behavior should be to validate both operands’ matrix-ness before invoking the dedicated matrix-matrix multiplication kernel, and __rmatmul__ must share that same validated path.
+   3. Bug location 'MatrixArithmetic.__matmul__ (and the shared helper invoked by MatrixArithmetic.__rmatmul__) in the arithmetic dispatch layer where operands are first inspected before dispatching to kernels.' confirmed in code structure
+
+======================================================================
+STEP 2: Knowledge Graph Construction (Enhanced)
+======================================================================
+2026-03-19 22:12:25,287 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:12:25,319 - enhanced_graph_manager - INFO - Structural extraction completed: 263 nodes, 312 edges in 0.032s
+2026-03-19 22:12:25,319 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:12:25,329 - enhanced_graph_manager - INFO - Semantic injection completed: 4 requirements injected in 0.010s
+2026-03-19 22:12:25,329 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:12:25,363 - enhanced_graph_manager - INFO - Dependency tracing completed: 267 nodes analyzed in 0.034s
+2026-03-19 22:12:25,363 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:12:25,364 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.001s
+2026-03-19 22:12:25,364 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:12:25,399 - enhanced_graph_manager - INFO - Dependency tracing completed: 267 nodes analyzed in 0.035s
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[], se...lf.__rmul__(other)\n')]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...f.__rmul__(other)\n')])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[], se...lf.__rmul__(other)\n")]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...f.__rmul__(other)\n")])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[], se...her), type(self)))\n')]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...er), type(self)))\n')])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+Graph: 267 nodes, 614 edges
+Violations: 1
+Dependencies: 87 nodes
+Integrated 26 advanced findings into context
+
+======================================================================
+STEP 3: Developer Code Revision
+======================================================================
+Enhanced developer context with 3 findings and 1 recommendations
+Added prioritized graph violations to developer context: 1 item(s)
+Target symbols for this revision: ValueError
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+WARNING: Developer changes did not hit target symbols this round (ValueError); keeping change as soft-constraint mode.
+Generating 2 additional candidates for best selection...
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+Evaluating 3 candidates with Judge...
+2026-03-19 22:15:44,015 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:15:44,048 - enhanced_graph_manager - INFO - Structural extraction completed: 263 nodes, 318 edges in 0.033s
+2026-03-19 22:15:44,048 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:15:44,057 - enhanced_graph_manager - INFO - Semantic injection completed: 4 requirements injected in 0.009s
+2026-03-19 22:15:44,057 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:15:44,092 - enhanced_graph_manager - INFO - Dependency tracing completed: 267 nodes analyzed in 0.035s
+2026-03-19 22:15:44,092 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:15:44,093 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.000s
+2026-03-19 22:15:44,093 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:15:44,127 - enhanced_graph_manager - INFO - Dependency tracing completed: 267 nodes analyzed in 0.035s
+  Candidate 1: score=37.01, blocking=1, advisory=9, target_hit_rate=0.00, changed_ratio=0.003, apply_failures=0, pre_judge=reject
+2026-03-19 22:15:44,130 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:15:44,164 - enhanced_graph_manager - INFO - Structural extraction completed: 265 nodes, 317 edges in 0.034s
+2026-03-19 22:15:44,164 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:15:44,174 - enhanced_graph_manager - INFO - Semantic injection completed: 4 requirements injected in 0.009s
+2026-03-19 22:15:44,174 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:15:44,209 - enhanced_graph_manager - INFO - Dependency tracing completed: 269 nodes analyzed in 0.035s
+2026-03-19 22:15:44,209 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:15:44,209 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.000s
+2026-03-19 22:15:44,210 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:15:44,245 - enhanced_graph_manager - INFO - Dependency tracing completed: 269 nodes analyzed in 0.036s
+  Candidate 2: score=37.02, blocking=1, advisory=9, target_hit_rate=0.00, changed_ratio=0.006, apply_failures=0, pre_judge=reject
+2026-03-19 22:15:44,248 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:15:44,283 - enhanced_graph_manager - INFO - Structural extraction completed: 262 nodes, 330 edges in 0.034s
+2026-03-19 22:15:44,283 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:15:44,292 - enhanced_graph_manager - INFO - Semantic injection completed: 4 requirements injected in 0.010s
+2026-03-19 22:15:44,292 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:15:44,327 - enhanced_graph_manager - INFO - Dependency tracing completed: 266 nodes analyzed in 0.034s
+2026-03-19 22:15:44,327 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:15:44,327 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.000s
+2026-03-19 22:15:44,327 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:15:44,362 - enhanced_graph_manager - INFO - Dependency tracing completed: 266 nodes analyzed in 0.035s
+  Candidate 3: score=31.04, blocking=1, advisory=9, target_hit_rate=1.00, changed_ratio=0.009, apply_failures=0, pre_judge=pass
+Selected candidate 3 with score=31.04 (blocking=1)
+Developer produced effective file changes in this revision.
+Target-hit metrics: hit=True, rate=1.00, symbols=1/1, via=changed_lines, applied_symbols=0
+
+======================================================================
+STEP 4: Knowledge Graph Rebuild
+======================================================================
+2026-03-19 22:15:44,368 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:15:44,401 - enhanced_graph_manager - INFO - Structural extraction completed: 262 nodes, 330 edges in 0.033s
+2026-03-19 22:15:44,401 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:15:44,410 - enhanced_graph_manager - INFO - Semantic injection completed: 4 requirements injected in 0.010s
+2026-03-19 22:15:44,410 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:15:44,447 - enhanced_graph_manager - INFO - Dependency tracing completed: 266 nodes analyzed in 0.037s
+2026-03-19 22:15:44,447 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:15:44,448 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.001s
+2026-03-19 22:15:44,448 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:15:44,483 - enhanced_graph_manager - INFO - Dependency tracing completed: 266 nodes analyzed in 0.035s
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=RepairBrief(requirement_i...3, source='user_report'), input_type=RepairBrief]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[..., source='user_report')), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[], se...other), type(self)))')]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...ther), type(self)))')])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[], se...x size mismatch.")\n')]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[... size mismatch.")\n')])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[], se...se \'*\' instead")\n')]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...e \'*\' instead")\n')])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+Updated Graph: 266 nodes, 632 edges
+Updated Violations: 1
+Pre-judge advisory: pass (pass)
+
+======================================================================
+STEP 5: Judge Evaluation
+======================================================================
+Conflict metrics: len=1579, blocking=1, advisory=9, down=None, source=analysis_report
+Developer metrics: effective_rounds=1/1 (rate=1.00), target_hit=1/1 (rate=1.00)
+Conflicts found, revision #1
+Continuing to revision #2
+
+======================================================================
+STEP 3: Developer Code Revision
+======================================================================
+Enhanced developer context with 3 findings and 1 recommendations
+Added prioritized graph violations to developer context: 1 item(s)
+Using Judge repair brief target: Matrix.__matmul__
+Target symbols for this revision: Matrix.__matmul__
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+WARNING: Developer changes did not hit target symbols this round (Matrix.__matmul__); keeping change as soft-constraint mode.
+Generating 2 additional candidates for best selection...
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+Evaluating 3 candidates with Judge...
+2026-03-19 22:24:33,520 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:24:33,554 - enhanced_graph_manager - INFO - Structural extraction completed: 264 nodes, 328 edges in 0.034s
+2026-03-19 22:24:33,554 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:24:33,563 - enhanced_graph_manager - INFO - Semantic injection completed: 4 requirements injected in 0.009s
+2026-03-19 22:24:33,563 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:24:33,601 - enhanced_graph_manager - INFO - Dependency tracing completed: 268 nodes analyzed in 0.037s
+2026-03-19 22:24:33,601 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:24:33,601 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.001s
+2026-03-19 22:24:33,602 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:24:33,639 - enhanced_graph_manager - INFO - Dependency tracing completed: 268 nodes analyzed in 0.037s
+  Candidate 1: score=37.01, blocking=1, advisory=9, target_hit_rate=0.00, changed_ratio=0.003, apply_failures=0, pre_judge=reject
+2026-03-19 22:24:33,642 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:24:33,676 - enhanced_graph_manager - INFO - Structural extraction completed: 262 nodes, 330 edges in 0.034s
+2026-03-19 22:24:33,677 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:24:33,688 - enhanced_graph_manager - INFO - Semantic injection completed: 4 requirements injected in 0.011s
+2026-03-19 22:24:33,688 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:24:33,726 - enhanced_graph_manager - INFO - Dependency tracing completed: 266 nodes analyzed in 0.038s
+2026-03-19 22:24:33,726 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:24:33,726 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.000s
+2026-03-19 22:24:33,727 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:24:33,762 - enhanced_graph_manager - INFO - Dependency tracing completed: 266 nodes analyzed in 0.035s
+  Candidate 2: score=37.01, blocking=1, advisory=9, target_hit_rate=0.00, changed_ratio=0.002, apply_failures=0, pre_judge=reject
+2026-03-19 22:24:33,765 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:24:33,798 - enhanced_graph_manager - INFO - Structural extraction completed: 262 nodes, 330 edges in 0.033s
+2026-03-19 22:24:33,798 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:24:33,808 - enhanced_graph_manager - INFO - Semantic injection completed: 4 requirements injected in 0.010s
+2026-03-19 22:24:33,808 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:24:33,845 - enhanced_graph_manager - INFO - Dependency tracing completed: 266 nodes analyzed in 0.037s
+2026-03-19 22:24:33,846 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:24:33,846 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.000s
+2026-03-19 22:24:33,846 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:24:33,882 - enhanced_graph_manager - INFO - Dependency tracing completed: 266 nodes analyzed in 0.036s
+  Candidate 3: score=37.01, blocking=1, advisory=9, target_hit_rate=0.00, changed_ratio=0.002, apply_failures=0, pre_judge=reject
+Selected candidate 2 with score=37.01 (blocking=1)
+Developer produced effective file changes in this revision.
+Target-hit metrics: hit=False, rate=0.00, symbols=0/1, via=None, applied_symbols=0
+
+======================================================================
+STEP 4: Knowledge Graph Rebuild
+======================================================================
+2026-03-19 22:24:33,888 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:24:33,925 - enhanced_graph_manager - INFO - Structural extraction completed: 262 nodes, 330 edges in 0.037s
+2026-03-19 22:24:33,925 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:24:33,935 - enhanced_graph_manager - INFO - Semantic injection completed: 4 requirements injected in 0.010s
+2026-03-19 22:24:33,935 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:24:33,973 - enhanced_graph_manager - INFO - Dependency tracing completed: 266 nodes analyzed in 0.038s
+2026-03-19 22:24:33,973 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:24:33,974 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.000s
+2026-03-19 22:24:33,974 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:24:34,011 - enhanced_graph_manager - INFO - Dependency tracing completed: 266 nodes analyzed in 0.037s
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=RepairBrief(requirement_i...nce=0.66, source='user'), input_type=RepairBrief]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...ce=0.66, source='user')), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+Updated Graph: 266 nodes, 632 edges
+Updated Violations: 1
+Pre-judge advisory: reject (missed_target_symbols)
+
+======================================================================
+STEP 5: Judge Evaluation
+======================================================================
+Conflict metrics: len=1579, blocking=1, advisory=9, down=False, source=analysis_report
+Developer metrics: effective_rounds=2/2 (rate=1.00), target_hit=1/2 (rate=0.50)
+Conflicts found, revision #2
+WARNING: Multiple revisions attempted - consider stopping to prevent degradation
+Continuing to revision #3
+
+======================================================================
+STEP 3: Developer Code Revision
+======================================================================
+Enhanced developer context with 3 findings and 1 recommendations
+Added prioritized graph violations to developer context: 1 item(s)
+Using Judge repair brief target: Matrix.__matmul__
+Target symbols for this revision: Matrix.__matmul__
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+WARNING: Developer changes did not hit target symbols this round (Matrix.__matmul__); keeping change as soft-constraint mode.
+Generating 2 additional candidates for best selection...
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+DEBUG: Applying search/replace edit sympy/matrices/common.py
+Evaluating 3 candidates with Judge...
+2026-03-19 22:31:50,950 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:31:50,983 - enhanced_graph_manager - INFO - Structural extraction completed: 264 nodes, 329 edges in 0.032s
+2026-03-19 22:31:50,983 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:31:50,996 - enhanced_graph_manager - INFO - Semantic injection completed: 4 requirements injected in 0.014s
+2026-03-19 22:31:50,996 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:31:51,032 - enhanced_graph_manager - INFO - Dependency tracing completed: 268 nodes analyzed in 0.035s
+2026-03-19 22:31:51,032 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:31:51,032 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.000s
+2026-03-19 22:31:51,032 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:31:51,068 - enhanced_graph_manager - INFO - Dependency tracing completed: 268 nodes analyzed in 0.036s
+  Candidate 1: score=37.01, blocking=1, advisory=9, target_hit_rate=0.00, changed_ratio=0.003, apply_failures=0, pre_judge=reject
+2026-03-19 22:31:51,071 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:31:51,104 - enhanced_graph_manager - INFO - Structural extraction completed: 264 nodes, 329 edges in 0.033s
+2026-03-19 22:31:51,104 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:31:51,114 - enhanced_graph_manager - INFO - Semantic injection completed: 4 requirements injected in 0.010s
+2026-03-19 22:31:51,114 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:31:51,149 - enhanced_graph_manager - INFO - Dependency tracing completed: 268 nodes analyzed in 0.035s
+2026-03-19 22:31:51,149 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:31:51,150 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.000s
+2026-03-19 22:31:51,150 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:31:51,187 - enhanced_graph_manager - INFO - Dependency tracing completed: 268 nodes analyzed in 0.038s
+  Candidate 2: score=37.01, blocking=1, advisory=9, target_hit_rate=0.00, changed_ratio=0.003, apply_failures=0, pre_judge=reject
+2026-03-19 22:31:51,190 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:31:51,224 - enhanced_graph_manager - INFO - Structural extraction completed: 264 nodes, 329 edges in 0.034s
+2026-03-19 22:31:51,224 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:31:51,234 - enhanced_graph_manager - INFO - Semantic injection completed: 4 requirements injected in 0.009s
+2026-03-19 22:31:51,234 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:31:51,269 - enhanced_graph_manager - INFO - Dependency tracing completed: 268 nodes analyzed in 0.035s
+2026-03-19 22:31:51,269 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:31:51,270 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.001s
+2026-03-19 22:31:51,270 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:31:51,308 - enhanced_graph_manager - INFO - Dependency tracing completed: 268 nodes analyzed in 0.038s
+  Candidate 3: score=37.02, blocking=1, advisory=9, target_hit_rate=0.00, changed_ratio=0.005, apply_failures=0, pre_judge=reject
+Selected candidate 1 with score=37.01 (blocking=1)
+Developer produced effective file changes in this revision.
+Target-hit metrics: hit=False, rate=0.00, symbols=0/1, via=None, applied_symbols=0
+
+======================================================================
+STEP 4: Knowledge Graph Rebuild
+======================================================================
+2026-03-19 22:31:51,314 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:31:51,348 - enhanced_graph_manager - INFO - Structural extraction completed: 264 nodes, 329 edges in 0.034s
+2026-03-19 22:31:51,348 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:31:51,358 - enhanced_graph_manager - INFO - Semantic injection completed: 4 requirements injected in 0.010s
+2026-03-19 22:31:51,358 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:31:51,395 - enhanced_graph_manager - INFO - Dependency tracing completed: 268 nodes analyzed in 0.037s
+2026-03-19 22:31:51,395 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:31:51,395 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.000s
+2026-03-19 22:31:51,395 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:31:51,431 - enhanced_graph_manager - INFO - Dependency tracing completed: 268 nodes analyzed in 0.036s
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=RepairBrief(requirement_i...nce=0.64, source='user'), input_type=RepairBrief]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...ce=0.64, source='user')), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+Updated Graph: 268 nodes, 633 edges
+Updated Violations: 1
+Pre-judge advisory: reject (missed_target_symbols)
+
+======================================================================
+STEP 5: Judge Evaluation
+======================================================================
+Conflict metrics: len=1579, blocking=1, advisory=9, down=False, source=analysis_report
+Developer metrics: effective_rounds=3/3 (rate=1.00), target_hit=1/3 (rate=0.33)
+Conflicts found, revision #3
+WARNING: Multiple revisions attempted - consider stopping to prevent degradation
+MAX_REVISIONS (3) reached - stopping.
+[ok] sympy__sympy-13773 (sympy/sympy) 1381.3s patch=2109 chars tokens(chat=0, adv=66266)
+2026-03-19 22:31:59,714 - enhanced_graph_manager - INFO - Enhanced GraphManager initialized
+
+======================================================================
+STEP 1: Advanced LLM Analysis
+======================================================================
+2026-03-19 22:31:59,732 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:31:59,771 - enhanced_graph_manager - INFO - Structural extraction completed: 218 nodes, 266 edges in 0.039s
+2026-03-19 22:31:59,771 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:31:59,779 - enhanced_graph_manager - INFO - Semantic injection completed: 5 requirements injected in 0.008s
+2026-03-19 22:31:59,779 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:31:59,801 - enhanced_graph_manager - INFO - Dependency tracing completed: 223 nodes analyzed in 0.022s
+2026-03-19 22:31:59,801 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:31:59,801 - enhanced_graph_manager - INFO - Violation flagging completed: 16 violations found, 16 edges added in 0.000s
+2026-03-19 22:31:59,801 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:31:59,821 - enhanced_graph_manager - INFO - Dependency tracing completed: 223 nodes analyzed in 0.020s
+Advanced analysis completed in 291.04s
+Strategy used: integrated
+Confidence: 0.15
+Findings: 7
+Recommendations: 1
+
+Key Findings:
+   1. Bug Location: django/db/models/fields/related.py, within the ambiguous relationship check in the ManyToManyField validation logic where the helper hint string is constructed.
+   2. Root Cause: The regression stems from the ManyToMany intermediary validation emitting a legacy helper hint that references `ForeignKey(..., symmetrical=False, through=...)` when it detects an ambiguous through model. The test expectations have been updated to require guidance tailored to the current `ManyToManyField` API (i.e., explicitly referencing `from`/`to` through fields). The rest of the exception is already correct, but the outdated hint now causes the tests to fail.
+   3. Bug location 'django/db/models/fields/related.py, within the ambiguous relationship check in the ManyToManyField validation logic where the helper hint string is constructed.' confirmed in code structure
+
+======================================================================
+STEP 2: Knowledge Graph Construction (Enhanced)
+======================================================================
+2026-03-19 22:36:50,770 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:36:50,805 - enhanced_graph_manager - INFO - Structural extraction completed: 218 nodes, 266 edges in 0.035s
+2026-03-19 22:36:50,805 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:36:50,813 - enhanced_graph_manager - INFO - Semantic injection completed: 5 requirements injected in 0.008s
+2026-03-19 22:36:50,813 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:36:50,833 - enhanced_graph_manager - INFO - Dependency tracing completed: 223 nodes analyzed in 0.020s
+2026-03-19 22:36:50,834 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:36:50,834 - enhanced_graph_manager - INFO - Violation flagging completed: 16 violations found, 16 edges added in 0.000s
+2026-03-19 22:36:50,834 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:36:50,856 - enhanced_graph_manager - INFO - Dependency tracing completed: 223 nodes analyzed in 0.022s
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[], se...                  ),')]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...                 ),')])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+Graph: 223 nodes, 440 edges
+Violations: 0
+Dependencies: 46 nodes
+Integrated 7 advanced findings into context
+
+======================================================================
+STEP 3: Developer Code Revision
+======================================================================
+Enhanced developer context with 3 findings and 1 recommendations
+Added prioritized graph violations to developer context: 5 item(s)
+DEBUG: Applying search/replace edit django/db/models/fields/related.py
+DEBUG: Applying search/replace edit django/db/models/fields/related.py
+Generating 2 additional candidates for best selection...
+DEBUG: Applying search/replace edit django/db/models/fields/related.py
+DEBUG: Applying search/replace edit django/db/models/fields/related.py
+DEBUG: Applying search/replace edit django/db/models/fields/related.py
+Evaluating 3 candidates with Judge...
+2026-03-19 22:39:14,714 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:39:14,747 - enhanced_graph_manager - INFO - Structural extraction completed: 218 nodes, 266 edges in 0.033s
+2026-03-19 22:39:14,748 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:39:14,756 - enhanced_graph_manager - INFO - Semantic injection completed: 5 requirements injected in 0.009s
+2026-03-19 22:39:14,756 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:39:14,778 - enhanced_graph_manager - INFO - Dependency tracing completed: 223 nodes analyzed in 0.022s
+2026-03-19 22:39:14,778 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:39:14,778 - enhanced_graph_manager - INFO - Violation flagging completed: 16 violations found, 16 edges added in 0.000s
+2026-03-19 22:39:14,779 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:39:14,800 - enhanced_graph_manager - INFO - Dependency tracing completed: 223 nodes analyzed in 0.021s
+  Candidate 1: score=10038.00, blocking=999, advisory=16, target_hit_rate=0.00, changed_ratio=0.000, apply_failures=0, pre_judge=pass
+2026-03-19 22:39:14,800 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:39:14,835 - enhanced_graph_manager - INFO - Structural extraction completed: 218 nodes, 266 edges in 0.035s
+2026-03-19 22:39:14,835 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:39:14,844 - enhanced_graph_manager - INFO - Semantic injection completed: 5 requirements injected in 0.009s
+2026-03-19 22:39:14,844 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:39:14,865 - enhanced_graph_manager - INFO - Dependency tracing completed: 223 nodes analyzed in 0.021s
+2026-03-19 22:39:14,865 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:39:14,866 - enhanced_graph_manager - INFO - Violation flagging completed: 16 violations found, 16 edges added in 0.000s
+2026-03-19 22:39:14,866 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:39:14,887 - enhanced_graph_manager - INFO - Dependency tracing completed: 223 nodes analyzed in 0.021s
+  Candidate 2: score=10038.00, blocking=999, advisory=16, target_hit_rate=0.00, changed_ratio=0.000, apply_failures=0, pre_judge=pass
+2026-03-19 22:39:14,887 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:39:14,922 - enhanced_graph_manager - INFO - Structural extraction completed: 218 nodes, 266 edges in 0.035s
+2026-03-19 22:39:14,922 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:39:14,931 - enhanced_graph_manager - INFO - Semantic injection completed: 5 requirements injected in 0.008s
+2026-03-19 22:39:14,931 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:39:14,952 - enhanced_graph_manager - INFO - Dependency tracing completed: 223 nodes analyzed in 0.021s
+2026-03-19 22:39:14,952 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:39:14,952 - enhanced_graph_manager - INFO - Violation flagging completed: 16 violations found, 16 edges added in 0.000s
+2026-03-19 22:39:14,953 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:39:14,974 - enhanced_graph_manager - INFO - Dependency tracing completed: 223 nodes analyzed in 0.021s
+  Candidate 3: score=10046.00, blocking=999, advisory=16, target_hit_rate=0.00, changed_ratio=0.000, apply_failures=1, pre_judge=pass
+Selected candidate 1 with score=10038.00 (blocking=999)
+Developer produced effective file changes in this revision.
+
+======================================================================
+STEP 4: Knowledge Graph Rebuild
+======================================================================
+2026-03-19 22:39:14,975 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:39:15,009 - enhanced_graph_manager - INFO - Structural extraction completed: 218 nodes, 266 edges in 0.035s
+2026-03-19 22:39:15,009 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:39:15,018 - enhanced_graph_manager - INFO - Semantic injection completed: 5 requirements injected in 0.009s
+2026-03-19 22:39:15,018 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:39:15,039 - enhanced_graph_manager - INFO - Dependency tracing completed: 223 nodes analyzed in 0.021s
+2026-03-19 22:39:15,039 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:39:15,040 - enhanced_graph_manager - INFO - Violation flagging completed: 16 violations found, 16 edges added in 0.000s
+2026-03-19 22:39:15,040 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:39:15,132 - enhanced_graph_manager - INFO - Dependency tracing completed: 223 nodes analyzed in 0.092s
+Updated Graph: 223 nodes, 440 edges
+Updated Violations: 0
+Pre-judge advisory: pass (pass)
+
+======================================================================
+STEP 5: Judge Evaluation
+======================================================================
+Conflict metrics: len=3117, blocking=0, advisory=16, down=None, source=analysis_report
+Developer metrics: effective_rounds=1/1 (rate=1.00), target_hit=0/0 (rate=0.00)
+No conflicts detected - code satisfies requirements!
+Stopping: no blocking conflicts and no VIOLATES edges in graph.
+[ok] django__django-12497 (django/django) 449.0s patch=2360 chars tokens(chat=0, adv=77357)
+2026-03-19 22:39:28,443 - enhanced_graph_manager - INFO - Enhanced GraphManager initialized
+
+======================================================================
+STEP 1: Advanced LLM Analysis
+======================================================================
+2026-03-19 22:39:28,461 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:39:28,483 - enhanced_graph_manager - INFO - Structural extraction completed: 180 nodes, 221 edges in 0.022s
+2026-03-19 22:39:28,483 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:39:28,491 - enhanced_graph_manager - INFO - Semantic injection completed: 5 requirements injected in 0.008s
+2026-03-19 22:39:28,491 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:39:28,506 - enhanced_graph_manager - INFO - Dependency tracing completed: 185 nodes analyzed in 0.015s
+2026-03-19 22:39:28,506 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:39:28,506 - enhanced_graph_manager - INFO - Violation flagging completed: 2 violations found, 2 edges added in 0.000s
+2026-03-19 22:39:28,506 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:39:28,523 - enhanced_graph_manager - INFO - Dependency tracing completed: 185 nodes analyzed in 0.016s
+Advanced analysis completed in 242.09s
+Strategy used: integrated
+Confidence: 0.20
+Findings: 8
+Recommendations: 1
+
+Key Findings:
+   1. Bug Location: django/db/models/expressions/subquery.py::Subquery.__init__ (and the Query reuse path that feeds into it)
+   2. Root Cause: The SQL trimming occurs because shared Query instances fed into Subquery.constructor lack the `subquery` flag, and compiler post-processing now assumes any Query reaching it is already marked and ready for single-use rendering. Without cloning and flagging, the same Query is reused without the right context, so the compiler strips leading/trailing characters when it mistakenly believes it’s rendering a standalone SQL fragment rather than a subquery.
+   3. Bug location 'django/db/models/expressions/subquery.py::Subquery.__init__ (and the Query reuse path that feeds into it)' confirmed in code structure
+
+======================================================================
+STEP 2: Knowledge Graph Construction (Enhanced)
+======================================================================
+2026-03-19 22:43:30,550 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:43:30,574 - enhanced_graph_manager - INFO - Structural extraction completed: 180 nodes, 221 edges in 0.023s
+2026-03-19 22:43:30,574 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:43:30,582 - enhanced_graph_manager - INFO - Semantic injection completed: 5 requirements injected in 0.008s
+2026-03-19 22:43:30,582 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:43:30,600 - enhanced_graph_manager - INFO - Dependency tracing completed: 185 nodes analyzed in 0.017s
+2026-03-19 22:43:30,600 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:43:30,600 - enhanced_graph_manager - INFO - Violation flagging completed: 2 violations found, 2 edges added in 0.000s
+2026-03-19 22:43:30,600 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:43:30,617 - enhanced_graph_manager - INFO - Dependency tracing completed: 185 nodes analyzed in 0.017s
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[], se...rom .base import (\n")]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...om .base import (\n")])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[], search_replace_edits=[]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...earch_replace_edits=[])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+Graph: 185 nodes, 408 edges
+Violations: 0
+Dependencies: 45 nodes
+Integrated 8 advanced findings into context
+
+======================================================================
+STEP 3: Developer Code Revision
+======================================================================
+Enhanced developer context with 3 findings and 1 recommendations
+Added prioritized graph violations to developer context: 2 item(s)
+DEBUG: Applying search/replace edit django/template/defaulttags.py
+Generating 2 additional candidates for best selection...
+  Candidate 2 generation failed: Developer returned no rewrites; search_replace mode requires at least one search_replace_edit.
+Developer produced effective file changes in this revision.
+
+======================================================================
+STEP 4: Knowledge Graph Rebuild
+======================================================================
+2026-03-19 22:44:16,149 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:44:16,173 - enhanced_graph_manager - INFO - Structural extraction completed: 182 nodes, 223 edges in 0.024s
+2026-03-19 22:44:16,173 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:44:16,182 - enhanced_graph_manager - INFO - Semantic injection completed: 5 requirements injected in 0.009s
+2026-03-19 22:44:16,182 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:44:16,199 - enhanced_graph_manager - INFO - Dependency tracing completed: 187 nodes analyzed in 0.017s
+2026-03-19 22:44:16,199 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:44:16,199 - enhanced_graph_manager - INFO - Violation flagging completed: 2 violations found, 2 edges added in 0.001s
+2026-03-19 22:44:16,199 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:44:16,216 - enhanced_graph_manager - INFO - Dependency tracing completed: 187 nodes analyzed in 0.016s
+Updated Graph: 187 nodes, 412 edges
+Updated Violations: 0
+Pre-judge advisory: pass (pass)
+
+======================================================================
+STEP 5: Judge Evaluation
+======================================================================
+Conflict metrics: len=1306, blocking=0, advisory=2, down=None, source=analysis_report
+Developer metrics: effective_rounds=1/1 (rate=1.00), target_hit=0/0 (rate=0.00)
+No conflicts detected - code satisfies requirements!
+Stopping: no blocking conflicts and no VIOLATES edges in graph.
+[ok] django__django-15320 (django/django) 306.5s patch=1043 chars tokens(chat=0, adv=78866)
+2026-03-19 22:44:34,978 - enhanced_graph_manager - INFO - Enhanced GraphManager initialized
+
+======================================================================
+STEP 1: Advanced LLM Analysis
+======================================================================
+2026-03-19 22:44:34,995 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:44:35,003 - enhanced_graph_manager - INFO - Structural extraction completed: 78 nodes, 93 edges in 0.008s
+2026-03-19 22:44:35,003 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:44:35,003 - enhanced_graph_manager - WARNING - Requirements text length (4775) exceeds recommended limit
+2026-03-19 22:44:35,008 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-19 22:44:35,008 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:44:35,012 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s
+2026-03-19 22:44:35,012 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:44:35,012 - enhanced_graph_manager - INFO - Violation flagging completed: 2 violations found, 2 edges added in 0.000s
+2026-03-19 22:44:35,012 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:44:35,016 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.003s
+Advanced analysis completed in 281.17s
+Strategy used: integrated
+Confidence: 0.25
+Findings: 9
+Recommendations: 1
+
+Key Findings:
+   1. Bug Location: django/db/models/fields/__init__.py – Field.contribute_to_class, with close attention to helper installation guard and interaction points where choices might be updated by subclasses, proxy models, or mixins.
+   2. Root Cause: Field.contribute_to_class currently short-circuits helper installation when an ancestor already defines `get_<field>_display`, so subclasses that update their own `choices` (e.g., via proxy contributions or mixin helpers) never get a helper tied to the new choices. Because the method neither rebinds nor clears the helper when `choices` mutate, the subclass ends up reusing the ancestor’s helper, which may rely on outdated choice tuples. Ensuring each concrete class has the helper bound to its current `choices` requires reinstalling it whenever the subclass has not explicitly overridden it but still needs its own binding, and providing contributors a reliable hook to request that reinstall after they mutate `choices`.
+   3. Bug location 'django/db/models/fields/__init__.py – Field.contribute_to_class, with close attention to helper installation guard and interaction points where choices might be updated by subclasses, proxy models, or mixins.' confirmed in code structure
+
+======================================================================
+STEP 2: Knowledge Graph Construction (Enhanced)
+======================================================================
+2026-03-19 22:49:16,163 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 22:49:16,171 - enhanced_graph_manager - INFO - Structural extraction completed: 78 nodes, 93 edges in 0.008s
+2026-03-19 22:49:16,171 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 22:49:16,171 - enhanced_graph_manager - WARNING - Requirements text length (4775) exceeds recommended limit
+2026-03-19 22:49:16,176 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-19 22:49:16,176 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:49:16,180 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s
+2026-03-19 22:49:16,180 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 22:49:16,180 - enhanced_graph_manager - INFO - Violation flagging completed: 2 violations found, 2 edges added in 0.000s
+2026-03-19 22:49:16,180 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 22:49:16,184 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[], search_replace_edits=[]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...earch_replace_edits=[])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[Symbo...search_replace_edits=[]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...earch_replace_edits=[])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(PydanticSerializationUnexpectedValue: Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[], se...imit(trim_url_limit)')]), input_type=DevOutput]
+PydanticSerializationUnexpectedValue: Expected `ResponseOutputRefusal` - serialized value may not be as expected [field_name='content', input_value=ParsedResponseOutputText[...mit(trim_url_limit)')])), input_type=ParsedResponseOutputText[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ParsedResponseFunctionToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFileSearchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionWebSearch` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseComputerToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseReasoningItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpApprovalRequest` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ImageGenerationCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `LocalShellCallAction` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `McpListTools` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCodeInterpreterToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCustomToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseCompactionItem` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseFunctionShellToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCall` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  PydanticSerializationUnexpectedValue(Expected `ResponseApplyPatchToolCallOutput` - serialized value may not be as expected [field_name='output', input_value=ParsedResponseOutputMessa...e='message', phase=None), input_type=ParsedResponseOutputMessage[TypeVar]])
+  return self.__pydantic_serializer__.to_python(
+Graph: 86 nodes, 121 edges
+Violations: 0
+Dependencies: 18 nodes
+Integrated 9 advanced findings into context
+
+======================================================================
+STEP 3: Developer Code Revision
+======================================================================
+Enhanced developer context with 3 findings and 1 recommendations
+Added prioritized graph violations to developer context: 2 item(s)
+WARNING: Developer output could not be applied (attempt 1/3): Developer returned no rewrites; search_replace mode requires at least one search_replace_edit.
+DEBUG: Applying symbol rewrite django/utils/html.py:urlize (old=13149 chars, new=13599 chars)
+Generating 2 additional candidates for best selection...
+DEBUG: Applying search/replace edit django/utils/html.py
+  Candidate 3 generation failed: 1 validation error for DevOutput
+  Invalid JSON: EOF while parsing an object at line 106177 column 3 [type=json_invalid, input_value='{"rewrites":[],"search_r...r\n\n\n \r\r\n\n\n \r\r', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid
+Evaluating 2 candidates with Judge...
+2026-03-19 23:04:07,319 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 23:04:07,328 - enhanced_graph_manager - INFO - Structural extraction completed: 79 nodes, 95 edges in 0.009s
+2026-03-19 23:04:07,328 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 23:04:07,328 - enhanced_graph_manager - WARNING - Requirements text length (4775) exceeds recommended limit
+2026-03-19 23:04:07,333 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-19 23:04:07,334 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 23:04:07,338 - enhanced_graph_manager - INFO - Dependency tracing completed: 87 nodes analyzed in 0.004s
+2026-03-19 23:04:07,338 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 23:04:07,338 - enhanced_graph_manager - INFO - Violation flagging completed: 2 violations found, 2 edges added in 0.000s
+2026-03-19 23:04:07,338 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 23:04:07,342 - enhanced_graph_manager - INFO - Dependency tracing completed: 87 nodes analyzed in 0.004s
+  Candidate 1: score=9996.00, blocking=999, advisory=2, target_hit_rate=0.00, changed_ratio=0.000, apply_failures=0, pre_judge=pass
+2026-03-19 23:04:07,342 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 23:04:07,350 - enhanced_graph_manager - INFO - Structural extraction completed: 79 nodes, 94 edges in 0.008s
+2026-03-19 23:04:07,350 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 23:04:07,350 - enhanced_graph_manager - WARNING - Requirements text length (4775) exceeds recommended limit
+2026-03-19 23:04:07,356 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.006s
+2026-03-19 23:04:07,356 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 23:04:07,360 - enhanced_graph_manager - INFO - Dependency tracing completed: 87 nodes analyzed in 0.004s
+2026-03-19 23:04:07,360 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 23:04:07,361 - enhanced_graph_manager - INFO - Violation flagging completed: 2 violations found, 2 edges added in 0.000s
+2026-03-19 23:04:07,361 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 23:04:07,365 - enhanced_graph_manager - INFO - Dependency tracing completed: 87 nodes analyzed in 0.004s
+  Candidate 2: score=10004.00, blocking=999, advisory=2, target_hit_rate=0.00, changed_ratio=0.000, apply_failures=1, pre_judge=pass
+Selected candidate 1 with score=9996.00 (blocking=999)
+Developer produced effective file changes in this revision.
+
+======================================================================
+STEP 4: Knowledge Graph Rebuild
+======================================================================
+2026-03-19 23:04:07,365 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-19 23:04:07,375 - enhanced_graph_manager - INFO - Structural extraction completed: 79 nodes, 95 edges in 0.009s
+2026-03-19 23:04:07,375 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-19 23:04:07,375 - enhanced_graph_manager - WARNING - Requirements text length (4775) exceeds recommended limit
+2026-03-19 23:04:07,380 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-19 23:04:07,380 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 23:04:07,384 - enhanced_graph_manager - INFO - Dependency tracing completed: 87 nodes analyzed in 0.004s
+2026-03-19 23:04:07,385 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-19 23:04:07,385 - enhanced_graph_manager - INFO - Violation flagging completed: 2 violations found, 2 edges added in 0.000s
+2026-03-19 23:04:07,385 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-19 23:04:07,390 - enhanced_graph_manager - INFO - Dependency tracing completed: 87 nodes analyzed in 0.005s
+Updated Graph: 87 nodes, 123 edges
+Updated Violations: 0
+Pre-judge advisory: pass (pass)
+
+======================================================================
+STEP 5: Judge Evaluation
+======================================================================
+Conflict metrics: len=1756, blocking=0, advisory=2, down=None, source=analysis_report
+Developer metrics: effective_rounds=1/1 (rate=1.00), target_hit=0/0 (rate=0.00)
+No conflicts detected - code satisfies requirements!
+Stopping: no blocking conflicts and no VIOLATES edges in graph.
+[ok] django__django-12284 (django/django) 1190.4s patch=864 chars tokens(chat=0, adv=102172)
+
+Done.
+Total tokens: chat=0, advanced=407853, combined=407853
+Next: run SWE-bench harness on Linux/WSL, e.g.:
+  python -m swebench.harness.run_evaluation --predictions_path predictions/gpt-5.1-codex-mini.themis_targetground_seed42_first5.jsonl --run_id gpt-5.1-codex-mini.themis_targetground_seed42_first5 --dataset_name SWE-bench/SWE-bench_Lite --split test --max_workers 1

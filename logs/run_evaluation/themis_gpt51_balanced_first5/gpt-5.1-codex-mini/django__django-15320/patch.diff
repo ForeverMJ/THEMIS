@@ -1,0 +1,14 @@
+diff --git a/django/template/defaulttags.py b/django/template/defaulttags.py
+index bc401853a..8675b225a 100644
+--- a/django/template/defaulttags.py
++++ b/django/template/defaulttags.py
+@@ -127,6 +127,9 @@ class FirstOfNode(Node):
+         for var in self.vars:
+             value = var.resolve(context, ignore_failures=True)
+             if value:
++                query_obj = getattr(value, 'query', None)
++                if query_obj is not None and not getattr(query_obj, 'subquery', False):
++                    query_obj.subquery = True
+                 first = render_value_in_context(value, context)
+                 break
+         if self.asvar:

@@ -1,0 +1,22 @@
+diff --git a/django/template/defaulttags.py b/django/template/defaulttags.py
+index bc401853..534ab9cc 100644
+--- a/django/template/defaulttags.py
++++ b/django/template/defaulttags.py
+@@ -35,12 +35,13 @@ class AutoEscapeControlNode(Node):
+     def render(self, context):
+         old_setting = context.autoescape
+         context.autoescape = self.setting
+-        output = self.nodelist.render(context)
+-        context.autoescape = old_setting
++        try:
++            output = self.nodelist.render(context)
++        finally:
++            context.autoescape = old_setting
+         if self.setting:
+             return mark_safe(output)
+-        else:
+-            return output
++        return output
+ 
+ 
+ class CommentNode(Node):

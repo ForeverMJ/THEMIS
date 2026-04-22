@@ -1,0 +1,13 @@
+diff --git a/sympy/core/add.py b/sympy/core/add.py
+index aebc468..2a88654 100644
+--- a/sympy/core/add.py
++++ b/sympy/core/add.py
+@@ -181,6 +181,8 @@ class Add(Expr, AssocOp):
+ 
+     _args_type = Expr
+ 
++    @classmethod
++    @classmethod
+     @classmethod
+     def flatten(cls, seq):
+         """

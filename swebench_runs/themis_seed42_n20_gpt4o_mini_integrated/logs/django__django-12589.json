@@ -1,0 +1,16 @@
+{
+  "instance_id": "django__django-12589",
+  "repo": "django/django",
+  "base_commit": "895f28f9cbed817c00ab68770433170d83132d90",
+  "selected_files": [
+    "django/db/models/sql/query.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 3.873448371887207,
+  "meta": {},
+  "error": "The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable",
+  "patch_chars": 0
+}

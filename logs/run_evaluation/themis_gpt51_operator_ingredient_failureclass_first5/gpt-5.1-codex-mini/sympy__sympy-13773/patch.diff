@@ -1,0 +1,52 @@
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a291..f48526a 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1971,9 +1971,22 @@ def __add__(self, other):
+     def __div__(self, other):
+         return self * (S.One / other)
+ 
++    @call_highest_priority('__rmatmul__')
++    @call_highest_priority('__rmatmul__')
++    @call_highest_priority('__rmatmul__')
+     @call_highest_priority('__rmatmul__')
+     def __matmul__(self, other):
+-        return self.__mul__(other)
++        other = _matrixify(other)
++        if not (getattr(other, 'is_Matrix', False) or
++                getattr(other, 'is_MatrixLike', False)):
++            raise ValueError("Matrix operands are required for '@'.")
++        if not hasattr(other, 'shape') or len(other.shape) != 2:
++            raise ValueError("Matrix operands are required for '@'.")
++        if self.shape[1] != other.shape[0]:
++            raise ShapeError("Matrix size mismatch: %s @ %s." % (self.shape, other.shape))
++        if getattr(other, 'is_Matrix', False):
++            return self._eval_matrix_mul(other)
++        return MatrixArithmetic._eval_matrix_mul(self, other)
+ 
+     @call_highest_priority('__rmul__')
+     def __mul__(self, other):
+@@ -2066,9 +2079,22 @@ def __pow__(self, num):
+     def __radd__(self, other):
+         return self + other
+ 
++    @call_highest_priority('__matmul__')
++    @call_highest_priority('__matmul__')
++    @call_highest_priority('__matmul__')
+     @call_highest_priority('__matmul__')
+     def __rmatmul__(self, other):
+-        return self.__rmul__(other)
++        other = _matrixify(other)
++        if not (getattr(other, 'is_Matrix', False) or
++                getattr(other, 'is_MatrixLike', False)):
++            raise ValueError("Matrix operands are required for '@'.")
++        if not hasattr(other, 'shape') or len(other.shape) != 2:
++            raise ValueError("Matrix operands are required for '@'.")
++        if other.shape[1] != self.shape[0]:
++            raise ShapeError("Matrix size mismatch: %s @ %s." % (other.shape, self.shape))
++        if getattr(other, 'is_Matrix', False):
++            return other._eval_matrix_mul(self)
++        return MatrixArithmetic._eval_matrix_rmul(self, other)
+ 
+     @call_highest_priority('__mul__')
+     def __rmul__(self, other):

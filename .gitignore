@@ -43,5 +43,4 @@ Thumbs.db
 *.txt
 !requirements.txt
 .hypothesis/
-logs/
-predictions/
+.env

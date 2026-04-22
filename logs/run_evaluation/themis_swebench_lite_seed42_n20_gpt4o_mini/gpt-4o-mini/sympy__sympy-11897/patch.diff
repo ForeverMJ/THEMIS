@@ -1,0 +1,29 @@
+diff --git a/sympy/stats/rv.py b/sympy/stats/rv.py
+index 65e10de..b752059 100644
+--- a/sympy/stats/rv.py
++++ b/sympy/stats/rv.py
+@@ -209,14 +209,6 @@ class RandomSymbol(Expr):
+     The symbol is a standard SymPy Symbol that is used in that probability space
+     for example in defining a density.
+ 
+-    You can form normal SymPy expressions using RandomSymbols and operate on
+-    those expressions with the Functions
+-
+-    E - Expectation of a random expression
+-    P - Probability of a condition
+-    density - Probability Density of an expression
+-    given - A new random expression (with new random symbols) given a condition
+-
+     An object of the RandomSymbol type should almost never be created by the
+     user. They tend to be created instead by the PSpace class's value method.
+     Traditionally a user doesn't even do this but instead calls one of the
+@@ -264,6 +256,9 @@ def _hashable_content(self):
+     def free_symbols(self):
+         return {self}
+ 
++    def __repr__(self):
++        return f"RandomSymbol({self.symbol}, {self.pspace})"
++
+ 
+ class ProductPSpace(PSpace):
+     """

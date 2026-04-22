@@ -1,0 +1,17 @@
+diff --git a/django/db/models/fields/related.py b/django/db/models/fields/related.py
+index 8ddbb5ba6..04c6d4ee3 100644
+--- a/django/db/models/fields/related.py
++++ b/django/db/models/fields/related.py
+@@ -1307,9 +1307,9 @@ class ManyToManyField(RelatedField):
+                              "from '%s', which is ambiguous. You must specify "
+                              "which foreign key Django should use via the "
+                              "through_fields keyword argument.") % (self, from_model_name),
+-                            hint=(
+-                                'If you want to create a recursive relationship, '
+-                                'use ForeignKey("%s", symmetrical=False, through="%s").'
++            hint=(
++                'If you want to create a recursive relationship, '
++                'specify through and through_fields on the ManyToManyField.'
+                             ) % (
+                                 RECURSIVE_RELATIONSHIP_CONSTANT,
+                                 relationship_model_name,

@@ -1,0 +1,30 @@
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd..176680912 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -232,6 +232,17 @@ def smart_urlquote(url):
+     return urlunsplit((scheme, netloc, path, query, fragment))
+ 
+ 
++def _validate_urlize_arguments(trim_url_limit, nofollow, autoescape):
++    if trim_url_limit is not None:
++        if not isinstance(trim_url_limit, int):
++            raise TypeError("trim_url_limit must be an integer or None")
++        if trim_url_limit < 0:
++            raise ValueError("trim_url_limit must be non-negative")
++    if not isinstance(nofollow, bool):
++        raise TypeError("nofollow must be a boolean")
++    if not isinstance(autoescape, bool):
++        raise TypeError("autoescape must be a boolean")
++
+ @keep_lazy_text
+ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+     """
+@@ -249,6 +260,7 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+ 
+     If autoescape is True, autoescape the link text and URLs.
+     """
++    _validate_urlize_arguments(trim_url_limit, nofollow, autoescape)
+     safe_input = isinstance(text, SafeData)
+ 
+     def trim_url(x, limit=trim_url_limit):

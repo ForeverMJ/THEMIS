@@ -1,0 +1,16 @@
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd..17d9fe402 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -354,7 +354,10 @@ def avoid_wrapping(value):
+     Avoid text wrapping in the middle of a phrase by adding non-breaking
+     spaces where there previously were normal spaces.
+     """
+-    return value.replace(" ", "\xa0")
++    text = value
++    if not isinstance(value, str):
++        text = str(value)
++    return text.replace(" ", "\xa0")
+ 
+ 
+ def html_safe(klass):

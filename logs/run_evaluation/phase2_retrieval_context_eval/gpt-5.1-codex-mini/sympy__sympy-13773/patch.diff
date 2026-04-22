@@ -1,0 +1,28 @@
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a291..e29f057 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1973,6 +1973,11 @@ def __div__(self, other):
+ 
+     @call_highest_priority('__rmatmul__')
+     def __matmul__(self, other):
++        other = _matrixify(other)
++        if not (getattr(other, 'is_Matrix', False) or
++                getattr(other, 'is_MatrixLike', False)):
++            raise TypeError(
++                "Matrix multiplication requires both operands to be matrices.")
+         return self.__mul__(other)
+ 
+     @call_highest_priority('__rmul__')
+@@ -2068,6 +2073,11 @@ def __radd__(self, other):
+ 
+     @call_highest_priority('__matmul__')
+     def __rmatmul__(self, other):
++        other = _matrixify(other)
++        if not (getattr(other, 'is_Matrix', False) or
++                getattr(other, 'is_MatrixLike', False)):
++            raise TypeError(
++                "Matrix multiplication requires both operands to be matrices.")
+         return self.__rmul__(other)
+ 
+     @call_highest_priority('__mul__')

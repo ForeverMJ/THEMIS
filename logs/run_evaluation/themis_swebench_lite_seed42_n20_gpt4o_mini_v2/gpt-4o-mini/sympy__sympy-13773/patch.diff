@@ -1,0 +1,13 @@
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a291..f3c1fa0 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -2068,6 +2068,8 @@ def __radd__(self, other):
+ 
+     @call_highest_priority('__matmul__')
+     def __rmatmul__(self, other):
++        if not isinstance(other, MatrixRequired):
++            raise TypeError("Both operands must be matrices for matrix multiplication.")
+         return self.__rmul__(other)
+ 
+     @call_highest_priority('__mul__')

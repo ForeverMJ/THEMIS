@@ -1,0 +1,19 @@
+diff --git a/sympy/stats/rv.py b/sympy/stats/rv.py
+index 65e10de..88c3f5f 100644
+--- a/sympy/stats/rv.py
++++ b/sympy/stats/rv.py
+@@ -406,6 +406,14 @@ def as_boolean(self):
+ def random_symbols(expr):
+     """
+     Returns all RandomSymbols within a SymPy Expression.
++
++    Note: When printing expressions containing RandomSymbols the LaTeX
++    printer may produce a different layout than the pretty printer because
++    LatexPrinter applies additional canonicalization (for example, moving
++    negative powers into denominators or omitting parentheses around
++    Piecewise branches). When consistent console output is required the
++    pretty printer provides the preferred formatting, so comparing both
++    outputs can help diagnose intentional LaTeX-specific choices.
+     """
+     try:
+         return list(expr.atoms(RandomSymbol))

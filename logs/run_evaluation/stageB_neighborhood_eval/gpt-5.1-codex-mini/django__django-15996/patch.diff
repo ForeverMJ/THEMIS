@@ -1,0 +1,68 @@
+diff --git a/django/db/migrations/serializer.py b/django/db/migrations/serializer.py
+index 38da1e6e..67bb6363 100644
+--- a/django/db/migrations/serializer.py
++++ b/django/db/migrations/serializer.py
+@@ -125,10 +125,59 @@ class EnumSerializer(BaseSerializer):
+     def serialize(self):
+         enum_class = self.value.__class__
+         module = enum_class.__module__
+-        return (
+-            "%s.%s[%r]" % (module, enum_class.__qualname__, self.value.name),
+-            {"import %s" % module},
+-        )
++        name = getattr(self.value, "name", None)
++        default = "%s.%s[%r]" % (module, enum_class.__qualname__, name)
++        imports = {"import %s" % module}
++        if name is not None or not isinstance(self.value, enum.Flag):
++            return default, imports
++
++        def flatten(value):
++            if isinstance(value, (list, tuple)):
++                for item in value:
++                    yield from flatten(item)
++            elif value is not None:
++                yield value
++
++        def call_decompose(decomposer):
++            for args in ((self.value,), (enum_class, self.value)):
++                try:
++                    return decomposer(*args)
++                except TypeError:
++                    continue
++                except ValueError:
++                    return ()
++            return ()
++
++        def decompress_names(result):
++            names = []
++            for component in flatten(result or ()):  # noqa: B305
++                if isinstance(component, enum.Enum):
++                    member = component
++                else:
++                    try:
++                        member = enum_class(component)
++                    except (TypeError, ValueError):
++                        continue
++                member_name = getattr(member, "name", None)
++                if member_name is not None:
++                    names.append(member_name)
++            return names
++
++        for decomposer in (
++            getattr(enum, "_decompose", None),
++            getattr(enum_class, "_decompose", None),
++        ):
++            if decomposer is None:
++                continue
++            components = call_decompose(decomposer)
++            names = decompress_names(components)
++            if names:
++                value = " | ".join(
++                    "%s.%s[%r]" % (module, enum_class.__qualname__, part)
++                    for part in names
++                )
++                return value, imports
++        return default, imports
+ 
+ 
+ class FloatSerializer(BaseSimpleSerializer):

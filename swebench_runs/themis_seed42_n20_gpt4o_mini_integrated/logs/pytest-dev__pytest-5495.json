@@ -1,0 +1,16 @@
+{
+  "instance_id": "pytest-dev__pytest-5495",
+  "repo": "pytest-dev/pytest",
+  "base_commit": "1aefb24b37c30fba8fd79a744829ca16e252f340",
+  "selected_files": [
+    "testing/test_assertion.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 0.9814999103546143,
+  "meta": {},
+  "error": "The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable",
+  "patch_chars": 0
+}

@@ -1,0 +1,201 @@
+{
+  "instance_id": "django__django-11848",
+  "repo": "django/django",
+  "base_commit": "f0adf3b9b7a19cdee05368ff0c0c2d087f011180",
+  "selected_files": [
+    "django/utils/http.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 203.47589445114136,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 3,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=2, advisory=6\nBlocking conflicts (must fix - limited to top 3):\nB1. REQ-025 -> http_date | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\nB2. REQ-025 -> parse_http_date | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\n\nAdvisory conflicts (non-blocking): 6\nA1. REQ-025 -> url_has_allowed_host_and_scheme | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.30, symbol_specific\nA2. REQ-028 -> quote | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50\nA3. REQ-029 -> urlencode | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason\nA4. REQ-029 -> urlsafe_base64_decode | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, symbol_specific\nA5. REQ-029 -> urlsafe_base64_encode | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, symbol_specific\nA6. REQ-026 -> format | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, requirement_symbol_overlap, mapping_relevance:0.50\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 44504,
+      "completion_tokens": 1473,
+      "total_tokens": 45977,
+      "successful_requests": 10
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 152.82000946998596,
+      "findings_count": 7,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 44852,
+      "completion_tokens": 6737,
+      "total_tokens": 51589,
+      "successful_requests": 45
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1733,
+        "violates_count": 2,
+        "blocking_conflicts_count": 2,
+        "advisory_conflicts_count": 6,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      },
+      {
+        "conflict_len": 1733,
+        "violates_count": 2,
+        "blocking_conflicts_count": 2,
+        "advisory_conflicts_count": 6,
+        "metrics_source": "analysis_report",
+        "revision": 1,
+        "conflict_down": false,
+        "delta_violates": 0,
+        "delta_blocking_conflicts": 0,
+        "delta_advisory_conflicts": 0,
+        "delta_conflict_len": 0
+      },
+      {
+        "conflict_len": 1733,
+        "violates_count": 2,
+        "blocking_conflicts_count": 2,
+        "advisory_conflicts_count": 6,
+        "metrics_source": "analysis_report",
+        "revision": 2,
+        "conflict_down": false,
+        "delta_violates": 0,
+        "delta_blocking_conflicts": 0,
+        "delta_advisory_conflicts": 0,
+        "delta_conflict_len": 0
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": true,
+        "target_hit_rate": 0.5,
+        "target_symbols_total": 2,
+        "target_symbols_hit": 1,
+        "changed_line_count": 5,
+        "target_hit_via": "applied_symbols",
+        "applied_symbols_count": 1,
+        "applied_symbols": [
+          "parse_http_date"
+        ],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      },
+      {
+        "revision": 1,
+        "attempts_used": 3,
+        "effective_change": false,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: django/utils/http.py:parse_http_date -> Developer proposed unknown symbol: parse_http_date",
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 1
+      },
+      {
+        "revision": 2,
+        "attempts_used": 3,
+        "effective_change": false,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: django/utils/http.py:parse_http_date -> Developer proposed unknown symbol: parse_http_date",
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 3,
+      "effective_rounds": 1,
+      "effective_modification_rate": 0.3333333333333333,
+      "target_hit_rounds": 1,
+      "target_rounds": 3,
+      "target_hit_rate": 0.3333333333333333
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-025",
+      "target_symbol": "parse_http_date",
+      "related_symbols": [
+        "http_date",
+        "url_has_allowed_host_and_scheme"
+      ],
+      "issue_summary": "No validation functions found in codebase",
+      "expected_behavior": "Update `parse_http_date` to correctly interpret two-digit years based on the current year, satisfying `REQ-025` without introducing unrelated edits.",
+      "minimal_change_hint": "Focus on modifying the year interpretation logic in `parse_http_date` to align with RFC 7231 requirements.",
+      "blocking": true,
+      "confidence": 0.9,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-013",
+        "target_symbol": "parse_http_date",
+        "related_symbols": [
+          "http_date",
+          "url_has_allowed_host_and_scheme"
+        ],
+        "issue_summary": "No validation functions found in codebase",
+        "expected_behavior": "Update `parse_http_date` to correctly interpret two-digit years relative to the current year, satisfying `REQ-013` without introducing unrelated edits.",
+        "minimal_change_hint": "Focus on modifying the year interpretation logic in `parse_http_date` to align with RFC 7231 requirements.",
+        "blocking": true,
+        "confidence": 0.9,
+        "source": "llm"
+      },
+      {
+        "requirement_id": "REQ-019",
+        "target_symbol": "parse_http_date",
+        "related_symbols": [
+          "http_date",
+          "url_has_allowed_host_and_scheme"
+        ],
+        "issue_summary": "No validation functions found in codebase",
+        "expected_behavior": "Update `parse_http_date` to correctly handle two-digit years based on the current year, satisfying `REQ-019` without introducing unrelated edits.",
+        "minimal_change_hint": "Focus on modifying the year handling logic in `parse_http_date` to compare against the current year.",
+        "blocking": true,
+        "confidence": 0.9,
+        "source": "llm"
+      },
+      {
+        "requirement_id": "REQ-025",
+        "target_symbol": "parse_http_date",
+        "related_symbols": [
+          "http_date",
+          "url_has_allowed_host_and_scheme"
+        ],
+        "issue_summary": "No validation functions found in codebase",
+        "expected_behavior": "Update `parse_http_date` to correctly interpret two-digit years based on the current year, satisfying `REQ-025` without introducing unrelated edits.",
+        "minimal_change_hint": "Focus on modifying the year interpretation logic in `parse_http_date` to align with RFC 7231 requirements.",
+        "blocking": true,
+        "confidence": 0.9,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 1762
+}

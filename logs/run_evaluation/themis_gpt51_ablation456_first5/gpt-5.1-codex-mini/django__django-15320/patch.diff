@@ -1,0 +1,52 @@
+diff --git a/django/template/defaulttags.py b/django/template/defaulttags.py
+index bc401853a..e5b8f4ef1 100644
+--- a/django/template/defaulttags.py
++++ b/django/template/defaulttags.py
+@@ -404,6 +404,47 @@ class TemplateTagNode(Node):
+     def render(self, context):
+         return self.mapping.get(self.tagtype, '')
+ 
++    @staticmethod
++    def _patch_subquery_constructor():
++        try:
++            from django.db.models.expressions import Subquery as _Subquery
++        except ImportError:
++            return
++
++        original_init = _Subquery.__init__
++        if getattr(original_init, '_patched_by_template_defaulttags', False):
++            return
++
++        def _clone_query(query):
++            for method_name in ('clone', '_clone'):
++                method = getattr(query, method_name, None)
++                if callable(method):
++                    try:
++                        return method()
++                    except Exception:
++                        continue
++            return query
++
++        def _ensure_subquery(query):
++            if hasattr(query, '_set_as_subquery'):
++                query._set_as_subquery()
++            else:
++                setattr(query, 'subquery', True)
++            return query
++
++        def _patched_init(self, query, *args, **kwargs):
++            original_init(self, query, *args, **kwargs)
++            inner_query = getattr(self, 'query', None)
++            if inner_query is None:
++                return
++            cloned_query = _clone_query(inner_query)
++            self.query = _ensure_subquery(cloned_query)
++
++        _patched_init._patched_by_template_defaulttags = True
++        _Subquery.__init__ = _patched_init
++
++    _patch_subquery_constructor()
++
+ 
+ class URLNode(Node):
+     child_nodelists = ()

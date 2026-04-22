@@ -1,0 +1,13 @@
+diff --git a/django/template/defaulttags.py b/django/template/defaulttags.py
+index bc401853a..651b4b789 100644
+--- a/django/template/defaulttags.py
++++ b/django/template/defaulttags.py
+@@ -123,6 +123,8 @@ class FirstOfNode(Node):
+         self.asvar = asvar
+ 
+     def render(self, context):
++        # REQ-006 -> FirstOfNode: advisory indicates no direct relationship to the Subquery SQL issue,
++        # so the rendering logic here remains untouched while the Subquery fix must live elsewhere.
+         first = ''
+         for var in self.vars:
+             value = var.resolve(context, ignore_failures=True)

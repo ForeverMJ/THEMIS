@@ -1,0 +1,135 @@
+2026-04-01 20:29:09,929 - INFO - Creating container for matplotlib__matplotlib-18869...
+2026-04-01 20:29:10,752 - INFO - Container for matplotlib__matplotlib-18869 created: 64b69112a29a7338d3c877e9150d8db1b935c8ff45baf15a05deb13ea2d6a6bd
+2026-04-01 20:29:10,961 - INFO - Container for matplotlib__matplotlib-18869 started: 64b69112a29a7338d3c877e9150d8db1b935c8ff45baf15a05deb13ea2d6a6bd
+2026-04-01 20:29:10,961 - INFO - Intermediate patch for matplotlib__matplotlib-18869 written to logs/run_evaluation/semantics_s3_control_eval/gpt-5.1-codex-mini/matplotlib__matplotlib-18869/patch.diff, now applying to container...
+2026-04-01 20:29:11,061 - INFO - >>>>> Applied Patch:
+Checking patch lib/matplotlib/__init__.py...
+Applied patch lib/matplotlib/__init__.py cleanly.
+
+2026-04-01 20:29:11,841 - INFO - Git diff before:
+diff --git a/lib/matplotlib/__init__.py b/lib/matplotlib/__init__.py
+index b657a35cf7..169cfee138 100644
+--- a/lib/matplotlib/__init__.py
++++ b/lib/matplotlib/__init__.py
+@@ -130,10 +130,34 @@ __bibtex__ = r"""@Article{Hunter:2007,
+ }"""
+ 
+ 
+-def __getattr__(name):
+-    if name == "__version__":
++_PRE_RELEASE_LEVELS = {
++    "a": "alpha",
++    "b": "beta",
++    "c": "rc",
++    "rc": "rc",
++}
++
++def _parse_version_info(version):
++    version_obj = parse_version(version)
++    major, minor, micro = (version_obj.release + (0, 0, 0))[:3]
++    releaselevel = "final"
++    serial = 0
++    if version_obj.pre is not None:
++        pre_tag, pre_number = version_obj.pre
++        releaselevel = _PRE_RELEASE_LEVELS.get(pre_tag, pre_tag)
++        serial = pre_number if pre_number is not None else 0
++    elif version_obj.post is not None:
++        releaselevel = "post"
++        serial = version_obj.post if version_obj.post is not None else 0
++    elif version_obj.dev is not None:
++        releaselevel = "dev"
++        serial = version_obj.dev if version_obj.dev is not None else 0
++    return _VersionInfo(major, minor, micro, releaselevel, serial)
++
++def _get_version():
++    global __version__, __version_info__
++    if __version__ is None:
+         import setuptools_scm
+-        global __version__  # cache it.
+         # Only shell out to a git subprocess if really needed, and not on a
+         # shallow clone, such as those used by CI, as the latter would trigger
+         # a warning from setuptools_scm.
+@@ -147,7 +171,15 @@ def __getattr__(name):
+             )
+         else:  # Get the version from the _version.py setuptools_scm file.
+             __version__ = _version.version
+-        return __version__
++        __version_info__ = _parse_version_info(__version__)
++    return __version__
++
++def __getattr__(name):
++    if name == "__version__":
++        return _get_version()
++    if name == "__version_info__":
++        _get_version()
++        return __version_info__
+     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+2026-04-01 20:29:11,841 - INFO - Eval script for matplotlib__matplotlib-18869 written to logs/run_evaluation/semantics_s3_control_eval/gpt-5.1-codex-mini/matplotlib__matplotlib-18869/eval.sh; copying to container...
+2026-04-01 20:29:19,554 - INFO - Test runtime: 7.64 seconds
+2026-04-01 20:29:19,554 - INFO - Test output for matplotlib__matplotlib-18869 written to logs/run_evaluation/semantics_s3_control_eval/gpt-5.1-codex-mini/matplotlib__matplotlib-18869/test_output.txt
+2026-04-01 20:29:19,616 - INFO - Git diff after:
+diff --git a/lib/matplotlib/__init__.py b/lib/matplotlib/__init__.py
+index b657a35cf7..169cfee138 100644
+--- a/lib/matplotlib/__init__.py
++++ b/lib/matplotlib/__init__.py
+@@ -130,10 +130,34 @@ __bibtex__ = r"""@Article{Hunter:2007,
+ }"""
+ 
+ 
+-def __getattr__(name):
+-    if name == "__version__":
++_PRE_RELEASE_LEVELS = {
++    "a": "alpha",
++    "b": "beta",
++    "c": "rc",
++    "rc": "rc",
++}
++
++def _parse_version_info(version):
++    version_obj = parse_version(version)
++    major, minor, micro = (version_obj.release + (0, 0, 0))[:3]
++    releaselevel = "final"
++    serial = 0
++    if version_obj.pre is not None:
++        pre_tag, pre_number = version_obj.pre
++        releaselevel = _PRE_RELEASE_LEVELS.get(pre_tag, pre_tag)
++        serial = pre_number if pre_number is not None else 0
++    elif version_obj.post is not None:
++        releaselevel = "post"
++        serial = version_obj.post if version_obj.post is not None else 0
++    elif version_obj.dev is not None:
++        releaselevel = "dev"
++        serial = version_obj.dev if version_obj.dev is not None else 0
++    return _VersionInfo(major, minor, micro, releaselevel, serial)
++
++def _get_version():
++    global __version__, __version_info__
++    if __version__ is None:
+         import setuptools_scm
+-        global __version__  # cache it.
+         # Only shell out to a git subprocess if really needed, and not on a
+         # shallow clone, such as those used by CI, as the latter would trigger
+         # a warning from setuptools_scm.
+@@ -147,7 +171,15 @@ def __getattr__(name):
+             )
+         else:  # Get the version from the _version.py setuptools_scm file.
+             __version__ = _version.version
+-        return __version__
++        __version_info__ = _parse_version_info(__version__)
++    return __version__
++
++def __getattr__(name):
++    if name == "__version__":
++        return _get_version()
++    if name == "__version_info__":
++        _get_version()
++        return __version_info__
+     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+2026-04-01 20:29:19,616 - INFO - Grading answer for matplotlib__matplotlib-18869...
+2026-04-01 20:29:19,616 - INFO - report: {'matplotlib__matplotlib-18869': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['lib/matplotlib/tests/test_matplotlib.py::test_parse_to_version_info[3.5.0-version_tuple0]', 'lib/matplotlib/tests/test_matplotlib.py::test_parse_to_version_info[3.5.0rc2-version_tuple1]', 'lib/matplotlib/tests/test_matplotlib.py::test_parse_to_version_info[3.5.0.dev820+g6768ef8c4c-version_tuple2]', 'lib/matplotlib/tests/test_matplotlib.py::test_parse_to_version_info[3.5.0.post820+g6768ef8c4c-version_tuple3]']}, 'PASS_TO_PASS': {'success': ['lib/matplotlib/tests/test_matplotlib.py::test_importable_with_no_home', 'lib/matplotlib/tests/test_matplotlib.py::test_use_doc_standard_backends', 'lib/matplotlib/tests/test_matplotlib.py::test_importable_with__OO'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for matplotlib__matplotlib-18869: resolved: False
+2026-04-01 20:29:19,616 - INFO - Attempting to stop container sweb.eval.matplotlib__matplotlib-18869.semantics_s3_control_eval...
+2026-04-01 20:29:39,851 - INFO - Attempting to remove container sweb.eval.matplotlib__matplotlib-18869.semantics_s3_control_eval...
+2026-04-01 20:29:39,874 - INFO - Container sweb.eval.matplotlib__matplotlib-18869.semantics_s3_control_eval removed.
+2026-04-01 20:29:39,874 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-18869:latest...
+2026-04-01 20:29:39,884 - INFO - Image swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-18869:latest removed.
