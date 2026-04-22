@@ -9,6 +9,7 @@ from run_swebench_lite_predictions import (
     _extra_context_files_for_preset,
     _resolve_experiment_preset,
     _retrieved_context_files_for_preset,
+    _build_requirements,
 )
 
 
@@ -53,6 +54,24 @@ def test_fault_space_neighborhood_retrieval_preset_maps_to_same_builder():
 
     assert preset.name == "fault_space_neighborhood_retrieval"
     assert preset.workflow_builder == "run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood"
+    assert preset.analysis_strategy == AnalysisStrategy.GRAPH_ONLY.value
+    assert preset.max_revisions == 1
+
+
+def test_semantics_contract_prompt_preset_maps_to_same_builder():
+    preset = _resolve_experiment_preset("semantics_contract_prompt", mode="integrated")
+
+    assert preset.name == "semantics_contract_prompt"
+    assert preset.workflow_builder == "run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood"
+    assert preset.analysis_strategy == AnalysisStrategy.GRAPH_ONLY.value
+    assert preset.max_revisions == 1
+
+
+def test_semantics_contract_rerank_preset_maps_to_dedicated_builder():
+    preset = _resolve_experiment_preset("semantics_contract_rerank", mode="integrated")
+
+    assert preset.name == "semantics_contract_rerank"
+    assert preset.workflow_builder == "run_experiment_integrated:build_integrated_workflow_semantics_contract_rerank"
     assert preset.analysis_strategy == AnalysisStrategy.GRAPH_ONLY.value
     assert preset.max_revisions == 1
 
@@ -114,6 +133,56 @@ def test_retrieved_context_files_follow_explicit_python_mentions(tmp_path):
         repo_root,
     ) == ["tests/test_blueprints.py"]
     assert _retrieved_context_files_for_preset("fault_space_neighborhood_context", instance, repo_root) == []
+
+
+def test_build_requirements_includes_semantic_contract_for_preset():
+    instance = {
+        "instance_id": "sympy__sympy-13773",
+        "problem_statement": "Fix matrix multiplication semantics.",
+        "hints_text": "",
+        "FAIL_TO_PASS": ["test_matmul"],
+    }
+
+    requirements = _build_requirements(instance, preset_name="semantics_contract_prompt")
+
+    assert "Semantic repair contract:" in requirements
+    assert "NotImplemented" in requirements
+    assert "test_matmul" in requirements
+
+
+def test_build_requirements_includes_added_semantic_contract_cases():
+    django_instance = {
+        "instance_id": "django__django-11620",
+        "problem_statement": "Fix technical 404 converter behavior.",
+        "hints_text": "",
+        "FAIL_TO_PASS": ["test_technical_404_converter_raise_404"],
+    }
+    sympy_instance = {
+        "instance_id": "sympy__sympy-11897",
+        "problem_statement": "Fix Piecewise latex rendering.",
+        "hints_text": "",
+        "FAIL_TO_PASS": ["test_latex_Piecewise"],
+    }
+
+    django_requirements = _build_requirements(django_instance, preset_name="semantics_contract_prompt")
+    sympy_requirements = _build_requirements(sympy_instance, preset_name="semantics_contract_prompt")
+
+    assert "technical 404 response" in django_requirements
+    assert "test_latex_Piecewise" in sympy_requirements
+    assert "Piecewise formatting semantics" in sympy_requirements
+
+
+def test_build_requirements_omits_semantic_contract_for_default_preset():
+    instance = {
+        "instance_id": "sympy__sympy-13773",
+        "problem_statement": "Fix matrix multiplication semantics.",
+        "hints_text": "",
+        "FAIL_TO_PASS": ["test_matmul"],
+    }
+
+    requirements = _build_requirements(instance, preset_name="default")
+
+    assert "Semantic repair contract:" not in requirements
 
 
 def test_non_default_preset_requires_integrated_mode():

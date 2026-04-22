@@ -1,0 +1,24 @@
+diff --git a/django/db/migrations/serializer.py b/django/db/migrations/serializer.py
+index 38da1e6e..86b11f33 100644
+--- a/django/db/migrations/serializer.py
++++ b/django/db/migrations/serializer.py
+@@ -125,10 +125,15 @@ class EnumSerializer(BaseSerializer):
+     def serialize(self):
+         enum_class = self.value.__class__
+         module = enum_class.__module__
+-        return (
+-            "%s.%s[%r]" % (module, enum_class.__qualname__, self.value.name),
+-            {"import %s" % module},
+-        )
++        name = "%s.%s" % (module, enum_class.__qualname__)
++        imports = {"import %s" % module}
++        if self.value.name is not None:
++            return "%s[%r]" % (name, self.value.name), imports
++        member_strings = [
++            "%s[%r]" % (name, member.name)
++            for member in enum_class._decompose(self.value)
++        ]
++        return " | ".join(member_strings), imports
+ 
+ 
+ class FloatSerializer(BaseSimpleSerializer):

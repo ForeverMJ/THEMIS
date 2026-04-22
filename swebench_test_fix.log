@@ -1,0 +1,187 @@
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.0.1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+DEBUG: sys.path: ['/home/taotao/workspace/dev/THEMIS', '/usr/lib/python312.zip', '/usr/lib/python3.12', '/usr/lib/python3.12/lib-dynload', '/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages']
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Selected 1 instances (seed=42) from SWE-bench/SWE-bench_Lite:test
+Predictions file: predictions/gpt-4o-mini.themis_swebench_lite_seed42_n1_test_fix.jsonl
+2026-03-13 13:27:27,146 - enhanced_graph_manager - INFO - Enhanced GraphManager initialized
+
+======================================================================
+STEP 1: Advanced LLM Analysis
+======================================================================
+2026-03-13 13:27:27,162 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-13 13:27:27,171 - enhanced_graph_manager - INFO - Structural extraction completed: 78 nodes, 73 edges in 0.009s
+2026-03-13 13:27:27,171 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-13 13:27:27,171 - enhanced_graph_manager - WARNING - Requirements text length (1544) exceeds recommended limit
+2026-03-13 13:27:27,176 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-13 13:27:27,176 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:27:27,180 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s
+2026-03-13 13:27:27,180 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-13 13:27:27,181 - enhanced_graph_manager - INFO - Violation flagging completed: 14 violations found, 14 edges added in 0.001s
+2026-03-13 13:27:27,181 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:27:27,185 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s
+OpenAI API error: Error code: 400 - {'error': {'message': "We could not parse the JSON body of your request. (HINT: This likely means you aren't using your HTTP library correctly. The OpenAI API expects a JSON payload, but what was sent was not valid JSON. If you have trouble figuring out how to fix this, please contact us through our help center at help.openai.com.)", 'type': 'invalid_request_error', 'param': None, 'code': None}}
+LLM request failed: OpenAI API error: Error code: 400 - {'error': {'message': "We could not parse the JSON body of your request. (HINT: This likely means you aren't using your HTTP library correctly. The OpenAI API expects a JSON payload, but what was sent was not valid JSON. If you have trouble figuring out how to fix this, please contact us through our help center at help.openai.com.)", 'type': 'invalid_request_error', 'param': None, 'code': None}}
+Semantic pattern detection failed: OpenAI API error: Error code: 400 - {'error': {'message': "We could not parse the JSON body of your request. (HINT: This likely means you aren't using your HTTP library correctly. The OpenAI API expects a JSON payload, but what was sent was not valid JSON. If you have trouble figuring out how to fix this, please contact us through our help center at help.openai.com.)", 'type': 'invalid_request_error', 'param': None, 'code': None}}
+Advanced analysis completed in 132.04s
+Strategy used: integrated
+Confidence: 1.00
+Findings: 12
+Recommendations: 1
+
+Key Findings:
+   1. Bug Location: The bug is located in the UserChangeForm class, specifically within the __init__ method where the help_text for the password field is set, particularly in the line that formats the URL for the password reset.
+   2. Root Cause: The bug in the UserChangeForm class is caused by the incorrect construction of the password reset URL when the UserAdmin is accessed via a field other than the primary key (pk), such as uuid. This leads to a 404 error when attempting to access the password reset form.
+   3. Bug location 'The bug is located in the UserChangeForm class, specifically within the __init__ method where the help_text for the password field is set, particularly in the line that formats the URL for the password reset.' confirmed in code structure
+
+======================================================================
+STEP 2: Knowledge Graph Construction (Enhanced)
+======================================================================
+2026-03-13 13:29:39,198 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-13 13:29:39,206 - enhanced_graph_manager - INFO - Structural extraction completed: 78 nodes, 73 edges in 0.008s
+2026-03-13 13:29:39,206 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-13 13:29:39,206 - enhanced_graph_manager - WARNING - Requirements text length (1544) exceeds recommended limit
+2026-03-13 13:29:39,211 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-13 13:29:39,211 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:29:39,216 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.005s
+2026-03-13 13:29:39,216 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-13 13:29:39,216 - enhanced_graph_manager - INFO - Violation flagging completed: 14 violations found, 14 edges added in 0.001s
+2026-03-13 13:29:39,216 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:29:39,221 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.005s
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[Symbo...ance.pk}/password/')")]), input_type=DevOutput])
+  return self.__pydantic_serializer__.to_python(
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/pydantic/main.py:464: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `none` - serialized value may not be as expected [field_name='parsed', input_value=DevOutput(rewrites=[Symbo...search_replace_edits=[]), input_type=DevOutput])
+  return self.__pydantic_serializer__.to_python(
+Graph: 86 nodes, 122 edges
+Violations: 0
+Dependencies: 16 nodes
+Integrated 12 advanced findings into context
+
+======================================================================
+STEP 3: Developer Code Revision
+======================================================================
+Enhanced developer context with 3 findings and 1 recommendations
+Added prioritized graph violations to developer context: 5 item(s)
+DEBUG: Applying symbol rewrite django/contrib/auth/forms.py:UserChangeForm.__init__ (old=16397 chars, new=16420 chars)
+Generating 2 additional candidates for best selection...
+DEBUG: Applying symbol rewrite django/contrib/auth/forms.py:UserChangeForm.__init__ (old=16397 chars, new=16420 chars)
+DEBUG: Applying symbol rewrite django/contrib/auth/forms.py:UserChangeForm.__init__ (old=16397 chars, new=16420 chars)
+Evaluating 3 candidates with Judge...
+2026-03-13 13:29:54,334 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-13 13:29:54,343 - enhanced_graph_manager - INFO - Structural extraction completed: 78 nodes, 73 edges in 0.009s
+2026-03-13 13:29:54,343 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-13 13:29:54,343 - enhanced_graph_manager - WARNING - Requirements text length (1544) exceeds recommended limit
+2026-03-13 13:29:54,348 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-13 13:29:54,348 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:29:54,352 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s
+2026-03-13 13:29:54,352 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-13 13:29:54,352 - enhanced_graph_manager - INFO - Violation flagging completed: 14 violations found, 14 edges added in 0.000s
+2026-03-13 13:29:54,352 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:29:54,357 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.005s
+  Candidate 1: 0 blocking conflicts
+2026-03-13 13:29:54,357 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-13 13:29:54,366 - enhanced_graph_manager - INFO - Structural extraction completed: 78 nodes, 73 edges in 0.008s
+2026-03-13 13:29:54,366 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-13 13:29:54,366 - enhanced_graph_manager - WARNING - Requirements text length (1544) exceeds recommended limit
+2026-03-13 13:29:54,371 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-13 13:29:54,371 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:29:54,375 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.005s
+2026-03-13 13:29:54,375 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-13 13:29:54,376 - enhanced_graph_manager - INFO - Violation flagging completed: 14 violations found, 14 edges added in 0.000s
+2026-03-13 13:29:54,376 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:29:54,380 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s
+  Candidate 2: 0 blocking conflicts
+2026-03-13 13:29:54,380 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-13 13:29:54,389 - enhanced_graph_manager - INFO - Structural extraction completed: 78 nodes, 73 edges in 0.008s
+2026-03-13 13:29:54,389 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-13 13:29:54,389 - enhanced_graph_manager - WARNING - Requirements text length (1544) exceeds recommended limit
+2026-03-13 13:29:54,394 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-13 13:29:54,394 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:29:54,398 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s
+2026-03-13 13:29:54,398 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-13 13:29:54,398 - enhanced_graph_manager - INFO - Violation flagging completed: 14 violations found, 14 edges added in 0.000s
+2026-03-13 13:29:54,398 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:29:54,402 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s
+  Candidate 3: 0 blocking conflicts
+Selected candidate 1 with 0 conflicts (best)
+Developer produced effective file changes in this revision.
+
+======================================================================
+STEP 4: Knowledge Graph Rebuild
+======================================================================
+2026-03-13 13:29:54,403 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-13 13:29:54,411 - enhanced_graph_manager - INFO - Structural extraction completed: 78 nodes, 73 edges in 0.008s
+2026-03-13 13:29:54,411 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-13 13:29:54,411 - enhanced_graph_manager - WARNING - Requirements text length (1544) exceeds recommended limit
+2026-03-13 13:29:54,416 - enhanced_graph_manager - INFO - Semantic injection completed: 8 requirements injected in 0.005s
+2026-03-13 13:29:54,416 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:29:54,421 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s
+2026-03-13 13:29:54,421 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-13 13:29:54,421 - enhanced_graph_manager - INFO - Violation flagging completed: 14 violations found, 14 edges added in 0.000s
+2026-03-13 13:29:54,421 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:29:54,426 - enhanced_graph_manager - INFO - Dependency tracing completed: 86 nodes analyzed in 0.004s
+Updated Graph: 86 nodes, 122 edges
+Updated Violations: 0
+
+======================================================================
+STEP 5: Judge Evaluation
+======================================================================
+Conflict metrics: len=2769, blocking=0, advisory=14, down=None, source=analysis_report
+Developer metrics: effective_rounds=1/1 (rate=1.00), target_hit=0/0 (rate=0.00)
+No conflicts detected - code satisfies requirements!
+Stopping: Judge conflict report is empty.
+[ok] django__django-16139 (django/django) 156.2s patch=701 chars tokens(chat=18424, adv=35712)
+
+Done.
+Total tokens: chat=18424, advanced=35712, combined=54136
+Next: run SWE-bench harness on Linux/WSL, e.g.:
+  python -m swebench.harness.run_evaluation --predictions_path predictions/gpt-4o-mini.themis_swebench_lite_seed42_n1_test_fix.jsonl --run_id gpt-4o-mini.themis_swebench_lite_seed42_n1_test_fix --dataset_name SWE-bench/SWE-bench_Lite --split test --max_workers 1
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.0.1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+DEBUG: sys.path: ['/home/taotao/workspace/dev/THEMIS', '/usr/lib/python312.zip', '/usr/lib/python3.12', '/usr/lib/python3.12/lib-dynload', '/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages']
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Selected 2 instances (seed=43) from SWE-bench/SWE-bench_Lite:test
+Predictions file: predictions/gpt-4o-mini.themis_swebench_lite_seed43_n2_test_fix.jsonl
+2026-03-13 13:30:18,080 - enhanced_graph_manager - INFO - Enhanced GraphManager initialized
+
+======================================================================
+STEP 1: Advanced LLM Analysis
+======================================================================
+2026-03-13 13:30:18,095 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-13 13:30:19,102 - enhanced_graph_manager - INFO - Structural extraction completed: 230 nodes, 489 edges in 1.007s
+2026-03-13 13:30:19,102 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-13 13:30:19,103 - enhanced_graph_manager - WARNING - Requirements text length (2901) exceeds recommended limit
+2026-03-13 13:30:19,108 - enhanced_graph_manager - INFO - Semantic injection completed: 3 requirements injected in 0.005s
+2026-03-13 13:30:19,108 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:30:19,142 - enhanced_graph_manager - INFO - Dependency tracing completed: 233 nodes analyzed in 0.034s
+2026-03-13 13:30:19,143 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-13 13:30:19,143 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.001s
+2026-03-13 13:30:19,143 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:30:19,177 - enhanced_graph_manager - INFO - Dependency tracing completed: 233 nodes analyzed in 0.034s
+Advanced analysis completed in 156.73s
+Strategy used: integrated
+Confidence: 1.00
+Findings: 13
+Recommendations: 1
+
+Key Findings:
+   1. Bug Location: The bug is located in the _RepeatedSplits class within the sklearn.model_selection._split module, specifically in the absence of a defined __repr__ method.
+   2. Root Cause: The lack of a __repr__ method in the _RepeatedSplits class leads to an inadequate string representation for its subclasses, RepeatedKFold and RepeatedStratifiedKFold, which results in the default representation being used instead of a detailed one that reflects the class parameters.
+   3. Bug location 'The bug is located in the _RepeatedSplits class within the sklearn.model_selection._split module, specifically in the absence of a defined __repr__ method.' confirmed in code structure
+
+======================================================================
+STEP 2: Knowledge Graph Construction (Enhanced)
+======================================================================
+2026-03-13 13:32:54,827 - enhanced_graph_manager - INFO - Starting structural extraction
+2026-03-13 13:32:54,877 - enhanced_graph_manager - INFO - Structural extraction completed: 230 nodes, 489 edges in 0.050s
+2026-03-13 13:32:54,877 - enhanced_graph_manager - INFO - Starting semantic injection
+2026-03-13 13:32:54,877 - enhanced_graph_manager - WARNING - Requirements text length (2901) exceeds recommended limit
+2026-03-13 13:32:54,881 - enhanced_graph_manager - INFO - Semantic injection completed: 3 requirements injected in 0.004s
+2026-03-13 13:32:54,881 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:32:54,913 - enhanced_graph_manager - INFO - Dependency tracing completed: 233 nodes analyzed in 0.032s
+2026-03-13 13:32:54,913 - enhanced_graph_manager - INFO - Starting violation flagging
+2026-03-13 13:32:54,914 - enhanced_graph_manager - INFO - Violation flagging completed: 10 violations found, 10 edges added in 0.000s
+2026-03-13 13:32:54,914 - enhanced_graph_manager - INFO - Starting dependency tracing
+2026-03-13 13:32:54,946 - enhanced_graph_manager - INFO - Dependency tracing completed: 233 nodes analyzed in 0.033s

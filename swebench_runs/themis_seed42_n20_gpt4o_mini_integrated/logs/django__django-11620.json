@@ -1,0 +1,111 @@
+{
+  "instance_id": "django__django-11620",
+  "repo": "django/django",
+  "base_commit": "514efa3129792ec2abb2444f3e7aeb3f21a38386",
+  "selected_files": [
+    "django/views/debug.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 146.42472624778748,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 10722,
+      "completion_tokens": 802,
+      "total_tokens": 11524,
+      "successful_requests": 2
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 126.57409262657166,
+      "findings_count": 13,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 37052,
+      "completion_tokens": 7668,
+      "total_tokens": 44720,
+      "successful_requests": 45
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 2412,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 9,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-014",
+      "target_symbol": "resolve",
+      "related_symbols": [
+        "technical_404_response"
+      ],
+      "issue_summary": "No validation functions found in codebase",
+      "expected_behavior": "Update `resolve` so `REQ-014` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Start from the smallest method related to `resolve`, especially `technical_404_response`.",
+      "blocking": false,
+      "confidence": 0.9,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-014",
+        "target_symbol": "resolve",
+        "related_symbols": [
+          "technical_404_response"
+        ],
+        "issue_summary": "No validation functions found in codebase",
+        "expected_behavior": "Update `resolve` so `REQ-014` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Start from the smallest method related to `resolve`, especially `technical_404_response`.",
+        "blocking": false,
+        "confidence": 0.9,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 451
+}

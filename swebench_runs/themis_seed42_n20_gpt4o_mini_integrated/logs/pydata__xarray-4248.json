@@ -1,0 +1,16 @@
+{
+  "instance_id": "pydata__xarray-4248",
+  "repo": "pydata/xarray",
+  "base_commit": "98dc1f4ea18738492e074e9e51ddfed5cd30ab94",
+  "selected_files": [
+    "xarray/tests/test_formatting.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 1.2742345333099365,
+  "meta": {},
+  "error": "The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable",
+  "patch_chars": 0
+}

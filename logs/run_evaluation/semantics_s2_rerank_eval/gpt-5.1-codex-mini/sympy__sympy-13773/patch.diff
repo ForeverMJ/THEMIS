@@ -1,0 +1,39 @@
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a291..536554a 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1973,7 +1973,16 @@ def __div__(self, other):
+ 
+     @call_highest_priority('__rmatmul__')
+     def __matmul__(self, other):
+-        return self.__mul__(other)
++        other = _matrixify(other)
++        if hasattr(other, 'shape') and len(other.shape) == 2:
++            if self.shape[1] != other.shape[0]:
++                raise ShapeError("Matrix size mismatch: %s * %s." % (
++                    self.shape, other.shape))
++        if getattr(other, 'is_Matrix', False):
++            return self._eval_matrix_mul(other)
++        if getattr(other, 'is_MatrixLike', False):
++            return MatrixArithmetic._eval_matrix_mul(self, other)
++        return NotImplemented
+ 
+     @call_highest_priority('__rmul__')
+     def __mul__(self, other):
+@@ -2068,7 +2077,15 @@ def __radd__(self, other):
+ 
+     @call_highest_priority('__matmul__')
+     def __rmatmul__(self, other):
+-        return self.__rmul__(other)
++        other = _matrixify(other)
++        if hasattr(other, 'shape') and len(other.shape) == 2:
++            if other.shape[1] != self.shape[0]:
++                raise ShapeError("Matrix size mismatch.")
++        if getattr(other, 'is_Matrix', False):
++            return other._eval_matrix_mul(self)
++        if getattr(other, 'is_MatrixLike', False):
++            return MatrixArithmetic._eval_matrix_rmul(self, other)
++        return NotImplemented
+ 
+     @call_highest_priority('__mul__')
+     def __rmul__(self, other):

@@ -1,0 +1,129 @@
+2026-03-17 22:33:52,723 - INFO - Creating container for django__django-12284...
+2026-03-17 22:33:52,882 - INFO - Container for django__django-12284 created: bd13da2b3f1356a3ad7fc1d6dbdb602bf3f20856a052fb144570082537be7d00
+2026-03-17 22:33:53,160 - INFO - Container for django__django-12284 started: bd13da2b3f1356a3ad7fc1d6dbdb602bf3f20856a052fb144570082537be7d00
+2026-03-17 22:33:53,160 - INFO - Intermediate patch for django__django-12284 written to logs/run_evaluation/themis_gpt51_ablation456_first5/gpt-5.1-codex-mini/django__django-12284/patch.diff, now applying to container...
+2026-03-17 22:33:53,294 - INFO - >>>>> Applied Patch:
+Checking patch django/utils/html.py...
+Applied patch django/utils/html.py cleanly.
+
+2026-03-17 22:33:53,920 - INFO - Git diff before:
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd3..92251027b3 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -231,7 +231,25 @@ def smart_urlquote(url):
+ 
+     return urlunsplit((scheme, netloc, path, query, fragment))
+ 
++def _urlize_link_from_word(middle, nofollow):
++    """
++    Return the URL to use for ``middle`` and the appropriate rel attribute.
++    """
++    nofollow_attr = ' rel="nofollow"' if nofollow else ''
++    if simple_url_re.match(middle):
++        return smart_urlquote(html.unescape(middle)), nofollow_attr, False
++    if simple_url_2_re.match(middle):
++        return smart_urlquote('http://%s' % html.unescape(middle)), nofollow_attr, False
++    if ':' not in middle and is_email_simple(middle):
++        local, domain = middle.rsplit('@', 1)
++        try:
++            domain = punycode(domain)
++        except UnicodeError:
++            return None, None, True
++        return 'mailto:%s@%s' % (local, domain), '', False
++    return None, None, False
+ 
++@keep_lazy_text
+ @keep_lazy_text
+ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+     """
+@@ -314,20 +332,9 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+             lead, middle, trail = trim_punctuation(lead, middle, trail)
+ 
+             # Make URL we want to point to.
+-            url = None
+-            nofollow_attr = ' rel="nofollow"' if nofollow else ''
+-            if simple_url_re.match(middle):
+-                url = smart_urlquote(html.unescape(middle))
+-            elif simple_url_2_re.match(middle):
+-                url = smart_urlquote('http://%s' % html.unescape(middle))
+-            elif ':' not in middle and is_email_simple(middle):
+-                local, domain = middle.rsplit('@', 1)
+-                try:
+-                    domain = punycode(domain)
+-                except UnicodeError:
+-                    continue
+-                url = 'mailto:%s@%s' % (local, domain)
+-                nofollow_attr = ''
++            url, nofollow_attr, skip = _urlize_link_from_word(middle, nofollow)
++            if skip:
++                continue
+ 
+             # Make link.
+             if url:
+2026-03-17 22:33:53,920 - INFO - Eval script for django__django-12284 written to logs/run_evaluation/themis_gpt51_ablation456_first5/gpt-5.1-codex-mini/django__django-12284/eval.sh; copying to container...
+2026-03-17 22:33:58,261 - INFO - Test runtime: 4.27 seconds
+2026-03-17 22:33:58,261 - INFO - Test output for django__django-12284 written to logs/run_evaluation/themis_gpt51_ablation456_first5/gpt-5.1-codex-mini/django__django-12284/test_output.txt
+2026-03-17 22:33:58,322 - INFO - Git diff after:
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd3..92251027b3 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -231,7 +231,25 @@ def smart_urlquote(url):
+ 
+     return urlunsplit((scheme, netloc, path, query, fragment))
+ 
++def _urlize_link_from_word(middle, nofollow):
++    """
++    Return the URL to use for ``middle`` and the appropriate rel attribute.
++    """
++    nofollow_attr = ' rel="nofollow"' if nofollow else ''
++    if simple_url_re.match(middle):
++        return smart_urlquote(html.unescape(middle)), nofollow_attr, False
++    if simple_url_2_re.match(middle):
++        return smart_urlquote('http://%s' % html.unescape(middle)), nofollow_attr, False
++    if ':' not in middle and is_email_simple(middle):
++        local, domain = middle.rsplit('@', 1)
++        try:
++            domain = punycode(domain)
++        except UnicodeError:
++            return None, None, True
++        return 'mailto:%s@%s' % (local, domain), '', False
++    return None, None, False
+ 
++@keep_lazy_text
+ @keep_lazy_text
+ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+     """
+@@ -314,20 +332,9 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+             lead, middle, trail = trim_punctuation(lead, middle, trail)
+ 
+             # Make URL we want to point to.
+-            url = None
+-            nofollow_attr = ' rel="nofollow"' if nofollow else ''
+-            if simple_url_re.match(middle):
+-                url = smart_urlquote(html.unescape(middle))
+-            elif simple_url_2_re.match(middle):
+-                url = smart_urlquote('http://%s' % html.unescape(middle))
+-            elif ':' not in middle and is_email_simple(middle):
+-                local, domain = middle.rsplit('@', 1)
+-                try:
+-                    domain = punycode(domain)
+-                except UnicodeError:
+-                    continue
+-                url = 'mailto:%s@%s' % (local, domain)
+-                nofollow_attr = ''
++            url, nofollow_attr, skip = _urlize_link_from_word(middle, nofollow)
++            if skip:
++                continue
+ 
+             # Make link.
+             if url:
+2026-03-17 22:33:58,322 - INFO - Grading answer for django__django-12284...
+2026-03-17 22:33:58,323 - INFO - report: {'django__django-12284': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_overriding_inherited_FIELD_display (model_fields.tests.GetFieldDisplayTests)']}, 'PASS_TO_PASS': {'success': ['test_blank_in_choices (model_fields.tests.GetChoicesTests)', 'test_blank_in_grouped_choices (model_fields.tests.GetChoicesTests)', 'test_empty_choices (model_fields.tests.GetChoicesTests)', 'test_lazy_strings_not_evaluated (model_fields.tests.GetChoicesTests)', 'test_choices_and_field_display (model_fields.tests.GetFieldDisplayTests)', 'test_empty_iterator_choices (model_fields.tests.GetFieldDisplayTests)', 'A translated display value is coerced to str.', 'test_iterator_choices (model_fields.tests.GetFieldDisplayTests)', 'test_overriding_FIELD_display (model_fields.tests.GetFieldDisplayTests)', 'test_check (model_fields.tests.ChoicesTests)', 'test_choices (model_fields.tests.ChoicesTests)', 'test_flatchoices (model_fields.tests.ChoicesTests)', 'test_formfield (model_fields.tests.ChoicesTests)', 'test_invalid_choice (model_fields.tests.ChoicesTests)', 'test_get_choices (model_fields.tests.GetChoicesLimitChoicesToTests)', 'test_get_choices_reverse_related_field (model_fields.tests.GetChoicesLimitChoicesToTests)', 'Can supply a custom choices form class to Field.formfield()', 'deconstruct() uses __qualname__ for nested class support.', 'Field instances can be pickled.', 'test_field_name (model_fields.tests.BasicFieldTests)', 'Fields are ordered based on their creation.', 'test_field_repr (model_fields.tests.BasicFieldTests)', '__repr__() uses __qualname__ for nested class support.', 'test_field_str (model_fields.tests.BasicFieldTests)', 'test_field_verbose_name (model_fields.tests.BasicFieldTests)', 'Field.formfield() sets disabled for fields with choices.', 'test_show_hidden_initial (model_fields.tests.BasicFieldTests)', 'test_get_choices (model_fields.tests.GetChoicesOrderingTests)', 'test_get_choices_default_ordering (model_fields.tests.GetChoicesOrderingTests)', 'test_get_choices_reverse_related_field (model_fields.tests.GetChoicesOrderingTests)', 'test_get_choices_reverse_related_field_default_ordering (model_fields.tests.GetChoicesOrderingTests)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-12284: resolved: False
+2026-03-17 22:33:58,323 - INFO - Attempting to stop container sweb.eval.django__django-12284.themis_gpt51_ablation456_first5...
+2026-03-17 22:34:13,570 - INFO - Attempting to remove container sweb.eval.django__django-12284.themis_gpt51_ablation456_first5...
+2026-03-17 22:34:13,707 - INFO - Container sweb.eval.django__django-12284.themis_gpt51_ablation456_first5 removed.
+2026-03-17 22:34:13,707 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.django_1776_django-12284:latest...
+2026-03-17 22:34:14,979 - INFO - Image swebench/sweb.eval.x86_64.django_1776_django-12284:latest removed.

@@ -1,0 +1,19 @@
+diff --git a/sympy/stats/rv.py b/sympy/stats/rv.py
+index 65e10de..dfd6bb3 100644
+--- a/sympy/stats/rv.py
++++ b/sympy/stats/rv.py
+@@ -38,9 +38,13 @@ class RandomDomain(Basic):
+     is_Continuous = False
+ 
+     def __new__(cls, symbols, *args):
+-        symbols = FiniteSet(*symbols)
++        symbols = cls.route_to_correct_helper(symbols)
+         return Basic.__new__(cls, symbols, *args)
+ 
++    @staticmethod
++    def route_to_correct_helper(symbols):
++        return FiniteSet(*symbols)
++
+     @property
+     def symbols(self):
+         return self.args[0]

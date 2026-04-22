@@ -1,0 +1,15 @@
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd..5487cbea0 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -353,6 +353,10 @@ def avoid_wrapping(value):
+     """
+     Avoid text wrapping in the middle of a phrase by adding non-breaking
+     spaces where there previously were normal spaces.
++
++    NOTE: This helper is intentionally kept simple; a future fix for
++    inherited model field choice display issues (#30931) should revisit
++    similar behavior when non-breaking spaces are key to formatting.
+     """
+     return value.replace(" ", "\xa0")
+ 

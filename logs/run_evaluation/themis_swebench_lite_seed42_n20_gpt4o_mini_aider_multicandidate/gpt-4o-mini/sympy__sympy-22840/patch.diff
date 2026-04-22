@@ -1,0 +1,117 @@
+diff --git a/sympy/utilities/codegen.py b/sympy/utilities/codegen.py
+index 2b212a9..bf27678 100644
+--- a/sympy/utilities/codegen.py
++++ b/sympy/utilities/codegen.py
+@@ -127,112 +127,6 @@ class Routine:
+ 
+     """
+ 
+-    def __init__(self, name, arguments, results, local_vars, global_vars):
+-        """Initialize a Routine instance.
+-
+-        Parameters
+-        ==========
+-
+-        name : string
+-            Name of the routine.
+-
+-        arguments : list of Arguments
+-            These are things that appear in arguments of a routine, often
+-            appearing on the right-hand side of a function call.  These are
+-            commonly InputArguments but in some languages, they can also be
+-            OutputArguments or InOutArguments (e.g., pass-by-reference in C
+-            code).
+-
+-        results : list of Results
+-            These are the return values of the routine, often appearing on
+-            the left-hand side of a function call.  The difference between
+-            Results and OutputArguments and when you should use each is
+-            language-specific.
+-
+-        local_vars : list of Results
+-            These are variables that will be defined at the beginning of the
+-            function.
+-
+-        global_vars : list of Symbols
+-            Variables which will not be passed into the function.
+-
+-        """
+-
+-        # extract all input symbols and all symbols appearing in an expression
+-        input_symbols = set()
+-        symbols = set()
+-        for arg in arguments:
+-            if isinstance(arg, OutputArgument):
+-                symbols.update(arg.expr.free_symbols - arg.expr.atoms(Indexed))
+-            elif isinstance(arg, InputArgument):
+-                input_symbols.add(arg.name)
+-            elif isinstance(arg, InOutArgument):
+-                input_symbols.add(arg.name)
+-                symbols.update(arg.expr.free_symbols - arg.expr.atoms(Indexed))
+-            else:
+-                raise ValueError("Unknown Routine argument: %s" % arg)
+-
+-        for r in results:
+-            if not isinstance(r, Result):
+-                raise ValueError("Unknown Routine result: %s" % r)
+-            symbols.update(r.expr.free_symbols - r.expr.atoms(Indexed))
+-
+-        local_symbols = set()
+-        for r in local_vars:
+-            if isinstance(r, Result):
+-                symbols.update(r.expr.free_symbols - r.expr.atoms(Indexed))
+-                local_symbols.add(r.name)
+-            else:
+-                local_symbols.add(r)
+-
+-        symbols = {s.label if isinstance(s, Idx) else s for s in symbols}
+-
+-        # Check that all symbols in the expressions are covered by
+-        # InputArguments/InOutArguments---subset because user could
+-        # specify additional (unused) InputArguments or local_vars.
+-        notcovered = symbols.difference(
+-            input_symbols.union(local_symbols).union(global_vars))
+-        if notcovered != set():
+-            raise ValueError("Symbols needed for output are not in input " +
+-                             ", ".join([str(x) for x in notcovered]))
+-
+-        self.name = name
+-        self.arguments = arguments
+-        self.results = results
+-        self.local_vars = local_vars
+-        self.global_vars = global_vars
+-
+-    def __str__(self):
+-        return self.__class__.__name__ + "({name!r}, {arguments}, {results}, {local_vars}, {global_vars})".format(**self.__dict__)
+-
+-    __repr__ = __str__
+-
+-    @property
+-    def variables(self):
+-        """Returns a set of all variables possibly used in the routine.
+-
+-        For routines with unnamed return values, the dummies that may or
+-        may not be used will be included in the set.
+-
+-        """
+-        v = set(self.local_vars)
+-        for arg in self.arguments:
+-            v.add(arg.name)
+-        for res in self.results:
+-            v.add(res.result_var)
+-        return v
+-
+-    @property
+-    def result_variables(self):
+-        """Returns a list of OutputArgument, InOutArgument and Result.
+-
+-        If return values are present, they are at the end ot the list.
+-        """
+-        args = [arg for arg in self.arguments if isinstance(
+-            arg, (OutputArgument, InOutArgument))]
+-        args.extend(self.results)
+-        return args
+-
+ 
+ class DataType:
+     """Holds strings for a certain datatype in different languages."""

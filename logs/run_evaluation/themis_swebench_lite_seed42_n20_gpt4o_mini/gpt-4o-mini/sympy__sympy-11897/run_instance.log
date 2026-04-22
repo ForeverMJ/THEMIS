@@ -1,0 +1,79 @@
+2026-03-05 10:45:12,492 - INFO - Creating container for sympy__sympy-11897...
+2026-03-05 10:45:13,367 - INFO - Container for sympy__sympy-11897 created: 1e976d1a06fe2d284e800ce9f8369d937bd9fd24b7b46f61f1b43148c7b33dba
+2026-03-05 10:45:13,527 - INFO - Container for sympy__sympy-11897 started: 1e976d1a06fe2d284e800ce9f8369d937bd9fd24b7b46f61f1b43148c7b33dba
+2026-03-05 10:45:13,527 - INFO - Intermediate patch for sympy__sympy-11897 written to logs/run_evaluation/themis_swebench_lite_seed42_n20_gpt4o_mini/gpt-4o-mini/sympy__sympy-11897/patch.diff, now applying to container...
+2026-03-05 10:45:13,666 - INFO - >>>>> Applied Patch:
+Checking patch sympy/stats/rv.py...
+Applied patch sympy/stats/rv.py cleanly.
+
+2026-03-05 10:45:13,892 - INFO - Git diff before:
+diff --git a/sympy/stats/rv.py b/sympy/stats/rv.py
+index 65e10de7bf..b75205991a 100644
+--- a/sympy/stats/rv.py
++++ b/sympy/stats/rv.py
+@@ -209,14 +209,6 @@ class RandomSymbol(Expr):
+     The symbol is a standard SymPy Symbol that is used in that probability space
+     for example in defining a density.
+ 
+-    You can form normal SymPy expressions using RandomSymbols and operate on
+-    those expressions with the Functions
+-
+-    E - Expectation of a random expression
+-    P - Probability of a condition
+-    density - Probability Density of an expression
+-    given - A new random expression (with new random symbols) given a condition
+-
+     An object of the RandomSymbol type should almost never be created by the
+     user. They tend to be created instead by the PSpace class's value method.
+     Traditionally a user doesn't even do this but instead calls one of the
+@@ -264,6 +256,9 @@ def _hashable_content(self):
+     def free_symbols(self):
+         return {self}
+ 
++    def __repr__(self):
++        return f"RandomSymbol({self.symbol}, {self.pspace})"
++
+ 
+ class ProductPSpace(PSpace):
+     """
+2026-03-05 10:45:13,892 - INFO - Eval script for sympy__sympy-11897 written to logs/run_evaluation/themis_swebench_lite_seed42_n20_gpt4o_mini/gpt-4o-mini/sympy__sympy-11897/eval.sh; copying to container...
+2026-03-05 10:45:16,925 - INFO - Test runtime: 2.96 seconds
+2026-03-05 10:45:16,925 - INFO - Test output for sympy__sympy-11897 written to logs/run_evaluation/themis_swebench_lite_seed42_n20_gpt4o_mini/gpt-4o-mini/sympy__sympy-11897/test_output.txt
+2026-03-05 10:45:17,007 - INFO - Git diff after:
+diff --git a/sympy/stats/rv.py b/sympy/stats/rv.py
+index 65e10de7bf..b75205991a 100644
+--- a/sympy/stats/rv.py
++++ b/sympy/stats/rv.py
+@@ -209,14 +209,6 @@ class RandomSymbol(Expr):
+     The symbol is a standard SymPy Symbol that is used in that probability space
+     for example in defining a density.
+ 
+-    You can form normal SymPy expressions using RandomSymbols and operate on
+-    those expressions with the Functions
+-
+-    E - Expectation of a random expression
+-    P - Probability of a condition
+-    density - Probability Density of an expression
+-    given - A new random expression (with new random symbols) given a condition
+-
+     An object of the RandomSymbol type should almost never be created by the
+     user. They tend to be created instead by the PSpace class's value method.
+     Traditionally a user doesn't even do this but instead calls one of the
+@@ -264,6 +256,9 @@ def _hashable_content(self):
+     def free_symbols(self):
+         return {self}
+ 
++    def __repr__(self):
++        return f"RandomSymbol({self.symbol}, {self.pspace})"
++
+ 
+ class ProductPSpace(PSpace):
+     """
+2026-03-05 10:45:17,008 - INFO - Grading answer for sympy__sympy-11897...
+2026-03-05 10:45:17,020 - INFO - report: {'sympy__sympy-11897': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_latex_Piecewise']}, 'PASS_TO_PASS': {'success': ['test_printmethod', 'test_latex_basic', 'test_latex_builtins', 'test_latex_SingularityFunction', 'test_latex_cycle', 'test_latex_permutation', 'test_latex_Float', 'test_latex_symbols', 'test_hyper_printing', 'test_latex_bessel', 'test_latex_fresnel', 'test_latex_brackets', 'test_latex_subs', 'test_latex_integrals', 'test_latex_sets', 'test_latex_Range', 'test_latex_sequences', 'test_latex_intervals', 'test_latex_AccumuBounds', 'test_latex_emptyset', 'test_latex_commutator', 'test_latex_union', 'test_latex_symmetric_difference', 'test_latex_Complement', 'test_latex_Complexes', 'test_latex_productset', 'test_latex_Naturals', 'test_latex_Naturals0', 'test_latex_Integers', 'test_latex_ImageSet', 'test_latex_ConditionSet', 'test_latex_ComplexRegion', 'test_latex_Contains', 'test_latex_sum', 'test_latex_product', 'test_latex_limits', 'test_issue_3568', 'test_latex', 'test_latex_dict', 'test_latex_list', 'test_latex_rational', 'test_latex_inverse', 'test_latex_DiracDelta', 'test_latex_Heaviside', 'test_latex_KroneckerDelta', 'test_latex_LeviCivita', 'test_mode', 'test_latex_Matrix', 'test_latex_mul_symbol', 'test_latex_issue_4381', 'test_latex_issue_4576', 'test_latex_pow_fraction', 'test_noncommutative', 'test_latex_order', 'test_latex_Lambda', 'test_latex_PolyElement', 'test_latex_FracElement', 'test_latex_Poly', 'test_latex_ComplexRootOf', 'test_latex_RootSum', 'test_settings', 'test_latex_numbers', 'test_lamda', 'test_custom_symbol_names', 'test_matAdd', 'test_matMul', 'test_latex_MatrixSlice', 'test_latex_RandomDomain', 'test_PrettyPoly', 'test_integral_transforms', 'test_PolynomialRingBase', 'test_categories', 'test_Modules', 'test_QuotientRing', 'test_Tr', 'test_Adjoint', 'test_Hadamard', 'test_ZeroMatrix', 'test_boolean_args_order', 'test_imaginary', 'test_builtins_without_args', 'test_latex_greek_functions', 'test_translate', 'test_other_symbols', 'test_modifiers', 'test_greek_symbols', 'test_builtin_no_args', 'test_issue_6853', 'test_Mul', 'test_Pow', 'test_issue_7180', 'test_issue_8409', 'test_issue_7117', 'test_issue_2934', 'test_issue_10489'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-11897: resolved: False
+2026-03-05 10:45:17,021 - INFO - Attempting to stop container sweb.eval.sympy__sympy-11897.themis_swebench_lite_seed42_n20_gpt4o_mini...
+2026-03-05 10:45:32,198 - INFO - Attempting to remove container sweb.eval.sympy__sympy-11897.themis_swebench_lite_seed42_n20_gpt4o_mini...
+2026-03-05 10:45:32,218 - INFO - Container sweb.eval.sympy__sympy-11897.themis_swebench_lite_seed42_n20_gpt4o_mini removed.
+2026-03-05 10:45:32,218 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sympy_1776_sympy-11897:latest...
+2026-03-05 10:45:32,946 - INFO - Image swebench/sweb.eval.x86_64.sympy_1776_sympy-11897:latest removed.

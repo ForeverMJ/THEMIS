@@ -1,0 +1,170 @@
+{
+  "instance_id": "django__django-15320",
+  "repo": "django/django",
+  "base_commit": "b55ebe32417e0884b6b8b3e1bc0379033aa221af",
+  "selected_files": [
+    "django/template/defaulttags.py",
+    "django/db/models/expressions.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "fault_space_neighborhood_context",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "graph_only",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 154.43686389923096,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=1, advisory=10\nBlocking conflicts (must fix):\nB1. REQ-027 -> Subquery | reason: Missing CRUD operations: ['delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, requirement_symbol_overlap, mapping_relevance:0.60\n\nAdvisory conflicts (non-blocking): 10\nA1. REQ-027 -> F | reason: Missing CRUD operations: ['delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.50\nA2. REQ-027 -> Q | reason: Missing CRUD operations: ['delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA3. REQ-026 -> F | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA4. REQ-026 -> Q | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA5. REQ-026 -> Subquery | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, requirement_symbol_overlap, mapping_relevance:0.60\nA6. REQ-026 -> abs | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA7. REQ-029 -> F | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA8. REQ-030 -> Expression | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.50\nA9. REQ-030 -> Q | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA10. REQ-030 -> Subquery | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.50\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "graph_only",
+      "confidence": 1.0,
+      "processing_time": 0.22231292724609375,
+      "findings_count": 3,
+      "recommendations_count": 3
+    },
+    "advanced_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 0
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1719,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 10,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": true,
+        "target_hit_rate": 0.3333333333333333,
+        "target_symbols_total": 3,
+        "target_symbols_hit": 1,
+        "changed_line_count": 6,
+        "target_hit_via": "changed_lines",
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 2,
+        "selected_files": [
+          "django/template/defaulttags.py",
+          "django/db/models/expressions.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "Subquery",
+          "Case",
+          "Exists"
+        ],
+        "fallback_enabled": true,
+        "target_expansion_mode": "file_local_neighborhood",
+        "entered_fallback": true,
+        "primary_targets": [
+          "Subquery"
+        ],
+        "expanded_targets": [
+          "Subquery",
+          "Case",
+          "Exists"
+        ],
+        "fallback_added_targets": [
+          "Case",
+          "Exists"
+        ],
+        "fallback_target_hit": false,
+        "fallback_target_hit_rate": 0.0,
+        "fallback_targets_total": 2,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": "django/db/models/expressions.py",
+        "expansion_anchor_symbol": "Subquery",
+        "selected_target_source": "primary",
+        "fallback_would_have_triggered_but_not_used_reason": "primary_targets_sufficient",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Clone the provided query in __init__, set its subquery flag to True, and ensure copies of Subquery propagate the flag.",
+        "execution_result": {},
+        "hypothesis_root_cause": "Subquery.as_sql was compiling its inner query without marking it as a subquery, so the parentheses were stripped and invalid SQL generated.",
+        "expected_invariant": "Every Subquery instance owns a cloned query with subquery=True so that calling as_sql returns properly wrapped SQL.",
+        "patch_strategy": "Clone the provided query in __init__, set its subquery flag to True, and ensure copies of Subquery propagate the flag.",
+        "failure_class": "semantics_space_weak",
+        "fault_space_signal": "strong",
+        "semantics_space_signal": "weak"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 1,
+      "target_rounds": 1,
+      "target_hit_rate": 1.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-027",
+      "target_symbol": "Subquery.__init__",
+      "related_symbols": [
+        "Subquery.as_sql"
+      ],
+      "issue_summary": "`Subquery.as_sql()` strips the first and last characters because the underlying query lacks the `subquery` flag, so it emits `(ELECT …)` instead of `(SELECT …)` unless `query.subquery` is manually set after instantiation.",
+      "expected_behavior": "In `Subquery.__init__` clone the passed query (as hinted) and set `query.subquery = True` so every `Subquery` instance produces valid `(SELECT …)` SQL without extra caller intervention.",
+      "minimal_change_hint": "Clone the incoming query before toggling `subquery` and assign it back to the instance so `as_sql` sees the flag.",
+      "blocking": true,
+      "confidence": 0.65,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-027",
+        "target_symbol": "Subquery.__init__",
+        "related_symbols": [
+          "Subquery.as_sql"
+        ],
+        "issue_summary": "`Subquery.as_sql()` strips the first and last characters because the underlying query lacks the `subquery` flag, so it emits `(ELECT …)` instead of `(SELECT …)` unless `query.subquery` is manually set after instantiation.",
+        "expected_behavior": "In `Subquery.__init__` clone the passed query (as hinted) and set `query.subquery = True` so every `Subquery` instance produces valid `(SELECT …)` SQL without extra caller intervention.",
+        "minimal_change_hint": "Clone the incoming query before toggling `subquery` and assign it back to the instance so `as_sql` sees the flag.",
+        "blocking": true,
+        "confidence": 0.65,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 941
+}

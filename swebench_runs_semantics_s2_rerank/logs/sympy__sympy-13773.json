@@ -1,0 +1,170 @@
+{
+  "instance_id": "sympy__sympy-13773",
+  "repo": "sympy/sympy",
+  "base_commit": "7121bdf1facdd90d05b6994b4c2e5b2865a4638a",
+  "selected_files": [
+    "sympy/matrices/common.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "semantics_contract_rerank",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow_semantics_contract_rerank",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "graph_only",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 86.57672381401062,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow_semantics_contract_rerank",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=2, advisory=23\nBlocking conflicts (must fix):\nB1. REQ-036 -> ValueError | reason: No explicit error handling functions found | confidence: 0.80 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB2. REQ-041 -> TypeError | reason: No explicit error handling functions found | confidence: 0.80 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\n\nAdvisory conflicts (non-blocking): 23\nA1. REQ-036 -> all | reason: No explicit error handling functions found | confidence: 0.80 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40\nA2. REQ-041 -> H | reason: No explicit error handling functions found | confidence: 0.80 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40\nA3. REQ-041 -> __matmul__ | reason: No explicit error handling functions found | confidence: 0.80 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40, symbol_specific\nA4. REQ-041 -> mat | reason: No explicit error handling functions found | confidence: 0.80 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40\nA5. REQ-041 -> type | reason: No explicit error handling functions found | confidence: 0.80 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40\nA6. REQ-037 -> H | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA7. REQ-037 -> __matmul__ | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40, symbol_specific\nA8. REQ-037 -> any | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA9. REQ-037 -> f | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA10. REQ-037 -> mat | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA11. REQ-038 -> H | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA12. REQ-038 -> f | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\n... 11 more advisory conflicts omitted\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "graph_only",
+      "confidence": 1.0,
+      "processing_time": 0.2031421661376953,
+      "findings_count": 3,
+      "recommendations_count": 3
+    },
+    "advanced_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 0
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 2370,
+        "violates_count": 2,
+        "blocking_conflicts_count": 2,
+        "advisory_conflicts_count": 23,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": true,
+        "target_hit_rate": 0.25,
+        "target_symbols_total": 4,
+        "target_symbols_hit": 1,
+        "changed_line_count": 19,
+        "target_hit_via": "changed_lines",
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "sympy/matrices/common.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "MatrixError",
+          "ShapeError",
+          "NonSquareMatrixError"
+        ],
+        "fallback_enabled": true,
+        "target_expansion_mode": "file_local_neighborhood",
+        "entered_fallback": true,
+        "primary_targets": [
+          "ValueError",
+          "TypeError"
+        ],
+        "expanded_targets": [
+          "ValueError",
+          "TypeError",
+          "MatrixError",
+          "ShapeError"
+        ],
+        "fallback_added_targets": [
+          "MatrixError",
+          "ShapeError"
+        ],
+        "fallback_target_hit": true,
+        "fallback_target_hit_rate": 0.5,
+        "fallback_targets_total": 2,
+        "fallback_targets_hit": 1,
+        "expansion_anchor_file": "sympy/matrices/common.py",
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "fallback",
+        "fallback_would_have_triggered_but_not_used_reason": null,
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Replace the trivial __matmul__ and __rmatmul__ implementations with explicit matrix-only dispatch that checks shapes, uses the existing matrix-multiplication helpers, and otherwise returns NotImplemented.",
+        "execution_result": {},
+        "hypothesis_root_cause": "__matmul__ and __rmatmul__ currently defer to __mul__/__rmul__ and therefore accept scalars, violating the protocol that @ should only perform matrix multiplication.",
+        "expected_invariant": "Matrix multiplication via @ should only invoke matrix/matrix-like multiplication logic and return NotImplemented when either operand is non-matrix, allowing Python to fall back or surface an appropriate error.",
+        "patch_strategy": "Replace the trivial __matmul__ and __rmatmul__ implementations with explicit matrix-only dispatch that checks shapes, uses the existing matrix-multiplication helpers, and otherwise returns NotImplemented.",
+        "failure_class": "semantics_space_weak",
+        "fault_space_signal": "strong",
+        "semantics_space_signal": "weak"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 1,
+      "target_rounds": 1,
+      "target_hit_rate": 1.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-041",
+      "target_symbol": "Matrix.__matmul__",
+      "related_symbols": [
+        "Matrix.__mul__"
+      ],
+      "issue_summary": "'@' currently delegates to `__mul__`, so scalars are allowed. Requirement REQ-041 expects matrix multiplication raising when non-matrix operands are used with `@` while keeping normal matrix-to-matrix behavior intact.",
+      "expected_behavior": "`Matrix.__matmul__` should only perform matrix multiplication when the other operand is matrix-like; if the operand is scalar or otherwise unsupported, return `NotImplemented` (so Python can try the reverse or raise a TypeError) rather than reusing scalar multiplication logic.",
+      "minimal_change_hint": "Check the other operand’s type before performing the matmul logic and return `NotImplemented` when it isn’t matrix-like, keeping the existing matrix-path unchanged.",
+      "blocking": true,
+      "confidence": 0.46,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-041",
+        "target_symbol": "Matrix.__matmul__",
+        "related_symbols": [
+          "Matrix.__mul__"
+        ],
+        "issue_summary": "'@' currently delegates to `__mul__`, so scalars are allowed. Requirement REQ-041 expects matrix multiplication raising when non-matrix operands are used with `@` while keeping normal matrix-to-matrix behavior intact.",
+        "expected_behavior": "`Matrix.__matmul__` should only perform matrix multiplication when the other operand is matrix-like; if the operand is scalar or otherwise unsupported, return `NotImplemented` (so Python can try the reverse or raise a TypeError) rather than reusing scalar multiplication logic.",
+        "minimal_change_hint": "Check the other operand’s type before performing the matmul logic and return `NotImplemented` when it isn’t matrix-like, keeping the existing matrix-path unchanged.",
+        "blocking": true,
+        "confidence": 0.46,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 1599
+}

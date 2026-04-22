@@ -1,0 +1,60 @@
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a291..906de04 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1971,9 +1971,17 @@ def __add__(self, other):
+     def __div__(self, other):
+         return self * (S.One / other)
+ 
++    @call_highest_priority('__rmatmul__')
+     @call_highest_priority('__rmatmul__')
+     def __matmul__(self, other):
+-        return self.__mul__(other)
++        other = _matrixify(other)
++        if not _is_matrix_operand(other) or not (hasattr(other, 'rows') and hasattr(other, 'cols')):
++            raise ValueError("Matrix operands are required for matmul.")
++        if getattr(other, 'is_Matrix', False):
++            return self._eval_matrix_mul(other)
++        if getattr(other, 'is_MatrixLike', False):
++            return MatrixArithmetic._eval_matrix_mul(self, other)
++        return self._eval_matrix_mul(other)
+ 
+     @call_highest_priority('__rmul__')
+     def __mul__(self, other):
+@@ -2066,9 +2074,17 @@ def __pow__(self, num):
+     def __radd__(self, other):
+         return self + other
+ 
++    @call_highest_priority('__matmul__')
+     @call_highest_priority('__matmul__')
+     def __rmatmul__(self, other):
+-        return self.__rmul__(other)
++        other = _matrixify(other)
++        if not _is_matrix_operand(other) or not (hasattr(other, 'rows') and hasattr(other, 'cols')):
++            raise ValueError("Matrix operands are required for matmul.")
++        if getattr(other, 'is_Matrix', False):
++            return self._eval_matrix_rmul(other)
++        if getattr(other, 'is_MatrixLike', False):
++            return MatrixArithmetic._eval_matrix_rmul(self, other)
++        return self._eval_matrix_rmul(other)
+ 
+     @call_highest_priority('__mul__')
+     def __rmul__(self, other):
+@@ -2273,6 +2289,17 @@ def _matrixify(mat):
+             return _MatrixWrapper(mat)
+     return mat
+ 
++def _is_matrix_operand(mat):
++    if getattr(mat, 'is_Matrix', False) or getattr(mat, 'is_MatrixLike', False):
++        return True
++    shape = getattr(mat, 'shape', None)
++    if shape is None:
++        return False
++    try:
++        return len(shape) == 2
++    except TypeError:
++        return False
++
+ 
+ def a2idx(j, n=None):
+     """Return integer after making positive and validating against n."""

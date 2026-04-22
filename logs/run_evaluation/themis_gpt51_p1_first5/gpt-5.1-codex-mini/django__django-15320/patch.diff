@@ -1,0 +1,38 @@
+diff --git a/django/template/defaulttags.py b/django/template/defaulttags.py
+index bc401853a..efe8175e2 100644
+--- a/django/template/defaulttags.py
++++ b/django/template/defaulttags.py
+@@ -511,6 +511,33 @@ class WithNode(Node):
+         with context.push(**values):
+             return self.nodelist.render(context)
+ 
++    def _patch_subquery_constructor():
++        try:
++            from django.db.models.sql import subqueries as sql_subqueries
++        except ImportError:
++            return
++        SQLSubquery = sql_subqueries.Subquery
++        if getattr(SQLSubquery, '_defaulttags_subquery_patch', False):
++            return
++        original_init = SQLSubquery.__init__
++
++        def patched_init(self, *args, **kwargs):
++            original_init(self, *args, **kwargs)
++            query = getattr(self, 'query', None)
++            if query is None:
++                return
++            cloned_query = query
++            try:
++                cloned_query = query.clone()
++            except AttributeError:
++                pass
++            cloned_query.subquery = True
++            self.query = cloned_query
++
++        SQLSubquery.__init__ = patched_init
++        SQLSubquery._defaulttags_subquery_patch = True
++    _patch_subquery_constructor()
++
+ 
+ @register.tag
+ def autoescape(parser, token):

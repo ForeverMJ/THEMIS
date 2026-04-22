@@ -1,0 +1,63 @@
+diff --git a/tests/test_ext_napoleon_docstring.py b/tests/test_ext_napoleon_docstring.py
+index ec5f90a..8ec0249 100644
+--- a/tests/test_ext_napoleon_docstring.py
++++ b/tests/test_ext_napoleon_docstring.py
+@@ -1436,26 +1436,43 @@ class NumpyDocstringTest(BaseDocstringTest):
+         self.assertEqual(expected, actual)
+ 
+     def test_parameters_with_class_reference(self):
+-        docstring = """\
+-Parameters
+-----------
+-param1 : :class:`MyClass <name.space.MyClass>` instance
++        docstring = """
++        Parameters
++        ----------
++        runtime (:class:`~typing.Dict`\[:class:`int`,:class:`str`\]): Use it to
++            access the environment. It is available in XBlock code
++            as ``self.runtime``.
+ 
+-"""
++        field_data (:class:`FieldData`): Interface used by the XBlock
++            fields to access their data from wherever it is persisted.
+ 
+-        config = Config(napoleon_use_param=False)
+-        actual = str(NumpyDocstring(docstring, config))
+-        expected = """\
+-:Parameters: **param1** (:class:`MyClass <name.space.MyClass>` instance)
+-"""
+-        self.assertEqual(expected, actual)
++        scope_ids (:class:`ScopeIds`): Identifiers needed to resolve scopes.
++
++        Other parameters
++        ----------------
++        param1 : str
++            Description of param1.
++        param2 : int
++            Description of param2.
++        """
+ 
+         config = Config(napoleon_use_param=True)
+         actual = str(NumpyDocstring(docstring, config))
+-        expected = """\
+-:param param1:
+-:type param1: :class:`MyClass <name.space.MyClass>` instance
+-"""
++        expected = """
++        :param runtime: Use it to
++                        access the environment. It is available in XBlock code
++                        as ``self.runtime``.
++        :type runtime: :class:`~typing.Dict`\[:class:`int`,:class:`str`\]
++        :param field_data: Interface used by the XBlock
++                           fields to access their data from wherever it is persisted.
++        :type field_data: :class:`FieldData`
++        :param scope_ids: Identifiers needed to resolve scopes.
++        :type scope_ids: :class:`ScopeIds`
++        :param param1: Description of param1.
++        :type param1: str
++        :param param2: Description of param2.
++        :type param2: int
++        """
+         self.assertEqual(expected, actual)
+ 
+     def test_multiple_parameters(self):

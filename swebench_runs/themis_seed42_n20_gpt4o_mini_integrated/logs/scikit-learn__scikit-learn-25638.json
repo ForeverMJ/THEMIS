@@ -1,0 +1,107 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-25638",
+  "repo": "scikit-learn/scikit-learn",
+  "base_commit": "6adb209acd63825affc884abcd85381f148fb1b0",
+  "selected_files": [
+    "sklearn/metrics/tests/test_classification.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 168.82981371879578,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 127456,
+      "completion_tokens": 1444,
+      "total_tokens": 128900,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 126.55708503723145,
+      "findings_count": 14,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 45615,
+      "completion_tokens": 6425,
+      "total_tokens": 52040,
+      "successful_requests": 41
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1091,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 1,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 3,
+        "effective_change": true,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: sklearn/metrics/tests/test_classification.py:test_confusion_matrix_pandas_nullable[Int64] -> Developer proposed unknown symbol: test_confusion_matrix_pandas_nullable[Int64]; sklearn/metrics/tests/test_classification.py:test_confusion_matrix_pandas_nullable[Float64] -> Developer proposed unknown symbol: test_confusion_matrix_pandas_nullable[Float64]; sklearn/metrics/tests/test_classification.py:test_confusion_matrix_pandas_nullable[boolean] -> Developer proposed unknown symbol: test_confusion_matrix_pandas_nullable[boolean]",
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-009",
+      "target_symbol": "type",
+      "related_symbols": [],
+      "issue_summary": "No clear relationship found",
+      "expected_behavior": "Update `type` so `REQ-009` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Make the smallest logic change inside `type` for `REQ-009`.",
+      "blocking": false,
+      "confidence": 0.2,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-009",
+        "target_symbol": "type",
+        "related_symbols": [],
+        "issue_summary": "No clear relationship found",
+        "expected_behavior": "Update `type` so `REQ-009` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Make the smallest logic change inside `type` for `REQ-009`.",
+        "blocking": false,
+        "confidence": 0.2,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 701
+}

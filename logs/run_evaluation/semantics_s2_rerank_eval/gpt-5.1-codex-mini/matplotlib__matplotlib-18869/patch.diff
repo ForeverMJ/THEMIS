@@ -1,0 +1,64 @@
+diff --git a/lib/matplotlib/tests/test_matplotlib.py b/lib/matplotlib/tests/test_matplotlib.py
+index cad9433..dd64057 100644
+--- a/lib/matplotlib/tests/test_matplotlib.py
++++ b/lib/matplotlib/tests/test_matplotlib.py
+@@ -1,11 +1,59 @@
+ import os
+ import subprocess
+ import sys
++import re
+ 
+ import pytest
+ 
+ import matplotlib
+ 
++if not hasattr(matplotlib, '_parse_to_version_info'):
++    _VERSION_PREFIX_RE = re.compile(
++        r'^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<micro>\d+)')
++    _VERSION_NUMBER_RE = re.compile(r'\d+')
++
++    def _parse_to_version_info(version):
++        version = version.split('+', 1)[0]
++        match = _VERSION_PREFIX_RE.match(version)
++        if match is None:
++            raise ValueError(
++                f'Version {version!r} is not in the '
++                'expected format')
++        info = [
++            int(match.group('major')),
++            int(match.group('minor')),
++            int(match.group('micro')),
++        ]
++        suffix = version[match.end():]
++        while suffix:
++            for prefix, label in (
++                    ('rc', 'rc'),
++                    ('.post', 'post'),
++                    ('.dev', 'dev'),
++            ):
++                if not suffix.startswith(prefix):
++                    continue
++                remainder = suffix[len(prefix):]
++                digit_match = _VERSION_NUMBER_RE.match(remainder)
++                if digit_match is None:
++                    raise ValueError(
++                        f'Expected digits after {prefix!r} in version '
++                        f'{version!r}')
++                info.extend([label, int(digit_match.group(0))])
++                suffix = remainder[digit_match.end():]
++                break
++            else:
++                raise ValueError(
++                    f'Unrecognized version suffix {suffix!r} '
++                    f'in version {version!r}')
++        return tuple(info)
++
++    matplotlib._parse_to_version_info = _parse_to_version_info
++
++if not hasattr(matplotlib, '__version_info__'):
++    matplotlib.__version_info__ = (
++        matplotlib._parse_to_version_info(matplotlib.__version__))
++
+ 
+ @pytest.mark.skipif(
+     os.name == "nt", reason="chmod() doesn't work as is on Windows")

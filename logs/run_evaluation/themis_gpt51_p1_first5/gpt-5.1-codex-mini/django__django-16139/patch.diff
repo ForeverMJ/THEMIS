@@ -1,0 +1,36 @@
+diff --git a/django/contrib/auth/forms.py b/django/contrib/auth/forms.py
+index b3cfc6723..e243b934f 100644
+--- a/django/contrib/auth/forms.py
++++ b/django/contrib/auth/forms.py
+@@ -1,7 +1,9 @@
+ import unicodedata
++from urllib.parse import urlencode
+ 
+ from django import forms
+ from django.contrib.auth import authenticate, get_user_model, password_validation
++from django.urls import reverse
+ from django.contrib.auth.hashers import UNUSABLE_PASSWORD_PREFIX, identify_hasher
+ from django.contrib.auth.models import User
+ from django.contrib.auth.tokens import default_token_generator
+@@ -163,7 +165,20 @@ class UserChangeForm(forms.ModelForm):
+         super().__init__(*args, **kwargs)
+         password = self.fields.get("password")
+         if password:
+-            password.help_text = password.help_text.format("../password/")
++            instance_pk = getattr(self.instance, "pk", None)
++            if instance_pk is None:
++                password_change_url = "../password/"
++            else:
++                password_change_url = reverse(
++                    "admin:auth_user_password_change", args=[instance_pk]
++                )
++                request = getattr(self, "request", None)
++                if request is not None:
++                    to_field = request.GET.get("_to_field")
++                    if to_field:
++                        query = urlencode({"_to_field": to_field})
++                        password_change_url = f"{password_change_url}?{query}"
++            password.help_text = password.help_text.format(password_change_url)
+         user_permissions = self.fields.get("user_permissions")
+         if user_permissions:
+             user_permissions.queryset = user_permissions.queryset.select_related(

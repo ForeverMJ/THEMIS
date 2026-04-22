@@ -1,0 +1,36 @@
+/home/taotao/workspace/dev/THEMIS/.venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.0.1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+<frozen runpy>:128: RuntimeWarning: 'swebench.harness.run_evaluation' found in sys.modules after import of package 'swebench.harness', but prior to execution of 'swebench.harness.run_evaluation'; this may result in unpredictable behaviour
+2026-03-05 10:02:21,553 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-03-05 10:02:21,571 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/SWE-bench/SWE-bench_Lite/69611d31007e1c6731db8bd5b5c3f2d33f5bab6e/README.md "HTTP/1.1 200 OK"
+2026-03-05 10:02:21,749 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench_Lite/resolve/69611d31007e1c6731db8bd5b5c3f2d33f5bab6e/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-03-05 10:02:22,371 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/SWE-bench/SWE-bench_Lite/SWE-bench/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-03-05 10:02:22,553 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/SWE-bench/SWE-bench_Lite/revision/69611d31007e1c6731db8bd5b5c3f2d33f5bab6e "HTTP/1.1 200 OK"
+2026-03-05 10:02:22,726 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench_Lite/resolve/69611d31007e1c6731db8bd5b5c3f2d33f5bab6e/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-03-05 10:02:23,122 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=SWE-bench/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-03-05 10:02:23,309 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/SWE-bench/SWE-bench_Lite/tree/69611d31007e1c6731db8bd5b5c3f2d33f5bab6e/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-03-05 10:02:23,486 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/SWE-bench/SWE-bench_Lite/tree/69611d31007e1c6731db8bd5b5c3f2d33f5bab6e?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-03-05 10:02:23,669 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench_Lite/resolve/69611d31007e1c6731db8bd5b5c3f2d33f5bab6e/dataset_infos.json "HTTP/1.1 404 Not Found"
+2026-03-05 10:02:23,895 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-03-05 10:02:23,910 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/SWE-bench/SWE-bench_Lite/69611d31007e1c6731db8bd5b5c3f2d33f5bab6e/README.md "HTTP/1.1 200 OK"
+2026-03-05 10:02:24,081 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench_Lite/resolve/69611d31007e1c6731db8bd5b5c3f2d33f5bab6e/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-03-05 10:02:24,279 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/SWE-bench/SWE-bench_Lite/SWE-bench/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-03-05 10:02:24,459 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench_Lite/resolve/69611d31007e1c6731db8bd5b5c3f2d33f5bab6e/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-03-05 10:02:24,647 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=SWE-bench/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-03-05 10:02:24,821 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench_Lite/resolve/69611d31007e1c6731db8bd5b5c3f2d33f5bab6e/dataset_infos.json "HTTP/1.1 404 Not Found"
+Running 14 instances...
+Evaluation:   0%|          | 0/14 [00:00<?, ?it/s, error=0, ✓=0, ✖=0]Evaluation:   0%|          | 0/14 [03:36<?, ?it/s, ✓=0, ✖=1, error=0]Evaluation:   7%|▋         | 1/14 [03:36<46:50, 216.22s/it, ✓=0, ✖=1, error=0]Evaluation:   7%|▋         | 1/14 [06:44<46:50, 216.22s/it, ✓=0, ✖=2, error=0]Evaluation:  14%|█▍        | 2/14 [06:44<39:59, 199.93s/it, ✓=0, ✖=2, error=0]Evaluation:  14%|█▍        | 2/14 [10:18<39:59, 199.93s/it, ✓=0, ✖=3, error=0]Evaluation:  21%|██▏       | 3/14 [10:18<37:46, 206.05s/it, ✓=0, ✖=3, error=0]Evaluation:  21%|██▏       | 3/14 [13:59<37:46, 206.05s/it, ✓=0, ✖=4, error=0]Evaluation:  29%|██▊       | 4/14 [13:59<35:22, 212.25s/it, ✓=0, ✖=4, error=0]Evaluation:  29%|██▊       | 4/14 [17:41<35:22, 212.25s/it, ✓=0, ✖=5, error=0]Evaluation:  36%|███▌      | 5/14 [17:41<32:19, 215.48s/it, ✓=0, ✖=5, error=0]Evaluation:  36%|███▌      | 5/14 [21:50<32:19, 215.48s/it, ✓=1, ✖=5, error=0]Evaluation:  43%|████▎     | 6/14 [21:50<30:15, 226.95s/it, ✓=1, ✖=5, error=0]Evaluation:  43%|████▎     | 6/14 [27:20<30:15, 226.95s/it, ✓=1, ✖=6, error=0]Evaluation:  50%|█████     | 7/14 [27:20<30:24, 260.67s/it, ✓=1, ✖=6, error=0]Evaluation:  50%|█████     | 7/14 [31:22<30:24, 260.67s/it, ✓=1, ✖=7, error=0]Evaluation:  57%|█████▋    | 8/14 [31:22<25:29, 254.85s/it, ✓=1, ✖=7, error=0]Evaluation:  57%|█████▋    | 8/14 [36:29<25:29, 254.85s/it, ✓=1, ✖=8, error=0]Evaluation:  64%|██████▍   | 9/14 [36:29<22:35, 271.15s/it, ✓=1, ✖=8, error=0]Evaluation:  64%|██████▍   | 9/14 [39:45<22:35, 271.15s/it, ✓=1, ✖=9, error=0]Evaluation:  71%|███████▏  | 10/14 [39:45<16:31, 247.93s/it, ✓=1, ✖=9, error=0]Evaluation:  71%|███████▏  | 10/14 [43:06<16:31, 247.93s/it, ✓=1, ✖=10, error=0]Evaluation:  79%|███████▊  | 11/14 [43:06<11:40, 233.61s/it, ✓=1, ✖=10, error=0]Evaluation:  79%|███████▊  | 11/14 [46:34<11:40, 233.61s/it, ✓=1, ✖=11, error=0]Evaluation:  86%|████████▌ | 12/14 [46:34<07:31, 225.63s/it, ✓=1, ✖=11, error=0]Evaluation:  86%|████████▌ | 12/14 [49:57<07:31, 225.63s/it, ✓=1, ✖=12, error=0]Evaluation:  93%|█████████▎| 13/14 [49:57<03:38, 218.89s/it, ✓=1, ✖=12, error=0]Evaluation:  93%|█████████▎| 13/14 [53:21<03:38, 218.89s/it, ✓=1, ✖=13, error=0]Evaluation: 100%|██████████| 14/14 [53:21<00:00, 214.51s/it, ✓=1, ✖=13, error=0]Evaluation: 100%|██████████| 14/14 [53:21<00:00, 228.71s/it, ✓=1, ✖=13, error=0]
+All instances run.
+Cleaning cached images...
+Removed 0 images.
+Total instances: 300
+Instances submitted: 20
+Instances completed: 14
+Instances incomplete: 280
+Instances resolved: 1
+Instances unresolved: 13
+Instances with empty patches: 6
+Instances with errors: 0
+Unstopped containers: 0
+Unremoved images: 0
+Report written to gpt-4o-mini.themis_swebench_lite_seed42_n20_gpt4o_mini.json

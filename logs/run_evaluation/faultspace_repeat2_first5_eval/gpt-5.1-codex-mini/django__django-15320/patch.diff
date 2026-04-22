@@ -1,0 +1,21 @@
+diff --git a/django/template/defaulttags.py b/django/template/defaulttags.py
+index bc401853..f69797ce 100644
+--- a/django/template/defaulttags.py
++++ b/django/template/defaulttags.py
+@@ -646,6 +646,7 @@ def debug(parser, token):
+     return DebugNode()
+ 
+ 
++@register.tag('filter')
+ @register.tag('filter')
+ def do_filter(parser, token):
+     """
+@@ -668,7 +669,7 @@ def do_filter(parser, token):
+     _, rest = token.contents.split(None, 1)
+     filter_expr = parser.compile_filter("var|%s" % (rest))
+     for func, unused in filter_expr.filters:
+-        filter_name = getattr(func, '_filter_name', None)
++        filter_name = getattr(func, '_filter_name', None) or getattr(func, '__name__', None)
+         if filter_name in ('escape', 'safe'):
+             raise TemplateSyntaxError('"filter %s" is not permitted.  Use the "autoescape" tag instead.' % filter_name)
+     nodelist = parser.parse(('endfilter',))

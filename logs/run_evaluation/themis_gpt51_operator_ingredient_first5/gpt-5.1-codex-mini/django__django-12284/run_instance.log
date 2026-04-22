@@ -1,0 +1,53 @@
+2026-03-21 19:16:47,247 - INFO - Creating container for django__django-12284...
+2026-03-21 19:16:47,327 - INFO - Container for django__django-12284 created: eab5e700a205f77ad92268527e777c73511752992179635d134d9d665ba20b15
+2026-03-21 19:16:47,495 - INFO - Container for django__django-12284 started: eab5e700a205f77ad92268527e777c73511752992179635d134d9d665ba20b15
+2026-03-21 19:16:47,495 - INFO - Intermediate patch for django__django-12284 written to logs/run_evaluation/themis_gpt51_operator_ingredient_first5/gpt-5.1-codex-mini/django__django-12284/patch.diff, now applying to container...
+2026-03-21 19:16:47,622 - INFO - >>>>> Applied Patch:
+Checking patch django/utils/html.py...
+Applied patch django/utils/html.py cleanly.
+
+2026-03-21 19:16:48,165 - INFO - Git diff before:
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd3..17d9fe4029 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -354,7 +354,10 @@ def avoid_wrapping(value):
+     Avoid text wrapping in the middle of a phrase by adding non-breaking
+     spaces where there previously were normal spaces.
+     """
+-    return value.replace(" ", "\xa0")
++    text = value
++    if not isinstance(value, str):
++        text = str(value)
++    return text.replace(" ", "\xa0")
+ 
+ 
+ def html_safe(klass):
+2026-03-21 19:16:48,165 - INFO - Eval script for django__django-12284 written to logs/run_evaluation/themis_gpt51_operator_ingredient_first5/gpt-5.1-codex-mini/django__django-12284/eval.sh; copying to container...
+2026-03-21 19:16:52,220 - INFO - Test runtime: 3.98 seconds
+2026-03-21 19:16:52,220 - INFO - Test output for django__django-12284 written to logs/run_evaluation/themis_gpt51_operator_ingredient_first5/gpt-5.1-codex-mini/django__django-12284/test_output.txt
+2026-03-21 19:16:52,308 - INFO - Git diff after:
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd3..17d9fe4029 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -354,7 +354,10 @@ def avoid_wrapping(value):
+     Avoid text wrapping in the middle of a phrase by adding non-breaking
+     spaces where there previously were normal spaces.
+     """
+-    return value.replace(" ", "\xa0")
++    text = value
++    if not isinstance(value, str):
++        text = str(value)
++    return text.replace(" ", "\xa0")
+ 
+ 
+ def html_safe(klass):
+2026-03-21 19:16:52,308 - INFO - Grading answer for django__django-12284...
+2026-03-21 19:16:52,309 - INFO - report: {'django__django-12284': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_overriding_inherited_FIELD_display (model_fields.tests.GetFieldDisplayTests)']}, 'PASS_TO_PASS': {'success': ['test_blank_in_choices (model_fields.tests.GetChoicesTests)', 'test_blank_in_grouped_choices (model_fields.tests.GetChoicesTests)', 'test_empty_choices (model_fields.tests.GetChoicesTests)', 'test_lazy_strings_not_evaluated (model_fields.tests.GetChoicesTests)', 'test_choices_and_field_display (model_fields.tests.GetFieldDisplayTests)', 'test_empty_iterator_choices (model_fields.tests.GetFieldDisplayTests)', 'A translated display value is coerced to str.', 'test_iterator_choices (model_fields.tests.GetFieldDisplayTests)', 'test_overriding_FIELD_display (model_fields.tests.GetFieldDisplayTests)', 'test_check (model_fields.tests.ChoicesTests)', 'test_choices (model_fields.tests.ChoicesTests)', 'test_flatchoices (model_fields.tests.ChoicesTests)', 'test_formfield (model_fields.tests.ChoicesTests)', 'test_invalid_choice (model_fields.tests.ChoicesTests)', 'test_get_choices (model_fields.tests.GetChoicesLimitChoicesToTests)', 'test_get_choices_reverse_related_field (model_fields.tests.GetChoicesLimitChoicesToTests)', 'Can supply a custom choices form class to Field.formfield()', 'deconstruct() uses __qualname__ for nested class support.', 'Field instances can be pickled.', 'test_field_name (model_fields.tests.BasicFieldTests)', 'Fields are ordered based on their creation.', 'test_field_repr (model_fields.tests.BasicFieldTests)', '__repr__() uses __qualname__ for nested class support.', 'test_field_str (model_fields.tests.BasicFieldTests)', 'test_field_verbose_name (model_fields.tests.BasicFieldTests)', 'Field.formfield() sets disabled for fields with choices.', 'test_show_hidden_initial (model_fields.tests.BasicFieldTests)', 'test_get_choices (model_fields.tests.GetChoicesOrderingTests)', 'test_get_choices_default_ordering (model_fields.tests.GetChoicesOrderingTests)', 'test_get_choices_reverse_related_field (model_fields.tests.GetChoicesOrderingTests)', 'test_get_choices_reverse_related_field_default_ordering (model_fields.tests.GetChoicesOrderingTests)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-12284: resolved: False
+2026-03-21 19:16:52,309 - INFO - Attempting to stop container sweb.eval.django__django-12284.themis_gpt51_operator_ingredient_first5...
+2026-03-21 19:17:07,529 - INFO - Attempting to remove container sweb.eval.django__django-12284.themis_gpt51_operator_ingredient_first5...
+2026-03-21 19:17:07,574 - INFO - Container sweb.eval.django__django-12284.themis_gpt51_operator_ingredient_first5 removed.
+2026-03-21 19:17:07,575 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.django_1776_django-12284:latest...
+2026-03-21 19:17:08,974 - INFO - Image swebench/sweb.eval.x86_64.django_1776_django-12284:latest removed.

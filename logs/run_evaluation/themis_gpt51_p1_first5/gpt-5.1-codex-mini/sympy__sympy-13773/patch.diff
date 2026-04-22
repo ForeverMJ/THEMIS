@@ -1,0 +1,29 @@
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a291..24fab13 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1973,6 +1973,10 @@ def __div__(self, other):
+ 
+     @call_highest_priority('__rmatmul__')
+     def __matmul__(self, other):
++        if not (getattr(other, 'is_Matrix', False) or
++                getattr(other, 'is_MatrixExpr', False)):
++            raise ValueError(
++                "Matrix operands expected; use '*' for scalars.")
+         return self.__mul__(other)
+ 
+     @call_highest_priority('__rmul__')
+@@ -2067,8 +2071,11 @@ def __radd__(self, other):
+         return self + other
+ 
+     @call_highest_priority('__matmul__')
+-    def __rmatmul__(self, other):
+-        return self.__rmul__(other)
++    def __matmul__(self, other):
++        if not isinstance(other, MatrixRequired):
++            raise TypeError(
++                "Matrix multiplication is only defined between Matrix objects.")
++        return self.__mul__(other)
+ 
+     @call_highest_priority('__mul__')
+     def __rmul__(self, other):

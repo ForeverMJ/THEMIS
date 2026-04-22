@@ -1,0 +1,19 @@
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a291..cd752ea 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1972,8 +1972,13 @@ def __div__(self, other):
+         return self * (S.One / other)
+ 
+     @call_highest_priority('__rmatmul__')
++    @call_highest_priority('__rmatmul__')
++    @call_highest_priority('__matmul__')
++    @call_highest_priority('__matmul__')
+     def __matmul__(self, other):
+-        return self.__mul__(other)
++        if not isinstance(other, MatrixRequired):
++            raise TypeError("Matrix multiplication requires both operands to be matrices.")
++        return self._eval_matrix_mul(other)
+ 
+     @call_highest_priority('__rmul__')
+     def __mul__(self, other):

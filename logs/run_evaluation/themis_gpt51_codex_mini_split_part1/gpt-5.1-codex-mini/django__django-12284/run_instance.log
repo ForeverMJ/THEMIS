@@ -1,0 +1,51 @@
+2026-03-14 21:01:25,202 - INFO - Creating container for django__django-12284...
+2026-03-14 21:01:25,653 - INFO - Container for django__django-12284 created: 9329545142b0fae1b47b782013ccafa44dc8b8c431ddc0d792d1a01659893677
+2026-03-14 21:01:25,890 - INFO - Container for django__django-12284 started: 9329545142b0fae1b47b782013ccafa44dc8b8c431ddc0d792d1a01659893677
+2026-03-14 21:01:25,890 - INFO - Intermediate patch for django__django-12284 written to logs/run_evaluation/themis_gpt51_codex_mini_split_part1/gpt-5.1-codex-mini/django__django-12284/patch.diff, now applying to container...
+2026-03-14 21:01:26,017 - INFO - >>>>> Applied Patch:
+Checking patch django/utils/html.py...
+Applied patch django/utils/html.py cleanly.
+
+2026-03-14 21:01:26,548 - INFO - Git diff before:
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd3..d0da783823 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -283,8 +283,9 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+             middle_unescaped = html.unescape(middle)
+             stripped = middle_unescaped.rstrip(TRAILING_PUNCTUATION_CHARS)
+             if middle_unescaped != stripped:
+-                trail = middle[len(stripped):] + trail
+-                middle = middle[:len(stripped) - len(middle_unescaped)]
++                trimmed = len(middle_unescaped) - len(stripped)
++                trail = middle[-trimmed:] + trail
++                middle = middle[:-trimmed]
+                 trimmed_something = True
+         return lead, middle, trail
+2026-03-14 21:01:26,548 - INFO - Eval script for django__django-12284 written to logs/run_evaluation/themis_gpt51_codex_mini_split_part1/gpt-5.1-codex-mini/django__django-12284/eval.sh; copying to container...
+2026-03-14 21:01:32,554 - INFO - Test runtime: 5.92 seconds
+2026-03-14 21:01:32,555 - INFO - Test output for django__django-12284 written to logs/run_evaluation/themis_gpt51_codex_mini_split_part1/gpt-5.1-codex-mini/django__django-12284/test_output.txt
+2026-03-14 21:01:32,639 - INFO - Git diff after:
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd3..d0da783823 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -283,8 +283,9 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+             middle_unescaped = html.unescape(middle)
+             stripped = middle_unescaped.rstrip(TRAILING_PUNCTUATION_CHARS)
+             if middle_unescaped != stripped:
+-                trail = middle[len(stripped):] + trail
+-                middle = middle[:len(stripped) - len(middle_unescaped)]
++                trimmed = len(middle_unescaped) - len(stripped)
++                trail = middle[-trimmed:] + trail
++                middle = middle[:-trimmed]
+                 trimmed_something = True
+         return lead, middle, trail
+2026-03-14 21:01:32,639 - INFO - Grading answer for django__django-12284...
+2026-03-14 21:01:32,640 - INFO - report: {'django__django-12284': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_overriding_inherited_FIELD_display (model_fields.tests.GetFieldDisplayTests)']}, 'PASS_TO_PASS': {'success': ['test_blank_in_choices (model_fields.tests.GetChoicesTests)', 'test_blank_in_grouped_choices (model_fields.tests.GetChoicesTests)', 'test_empty_choices (model_fields.tests.GetChoicesTests)', 'test_lazy_strings_not_evaluated (model_fields.tests.GetChoicesTests)', 'test_choices_and_field_display (model_fields.tests.GetFieldDisplayTests)', 'test_empty_iterator_choices (model_fields.tests.GetFieldDisplayTests)', 'A translated display value is coerced to str.', 'test_iterator_choices (model_fields.tests.GetFieldDisplayTests)', 'test_overriding_FIELD_display (model_fields.tests.GetFieldDisplayTests)', 'test_check (model_fields.tests.ChoicesTests)', 'test_choices (model_fields.tests.ChoicesTests)', 'test_flatchoices (model_fields.tests.ChoicesTests)', 'test_formfield (model_fields.tests.ChoicesTests)', 'test_invalid_choice (model_fields.tests.ChoicesTests)', 'test_get_choices (model_fields.tests.GetChoicesLimitChoicesToTests)', 'test_get_choices_reverse_related_field (model_fields.tests.GetChoicesLimitChoicesToTests)', 'Can supply a custom choices form class to Field.formfield()', 'deconstruct() uses __qualname__ for nested class support.', 'Field instances can be pickled.', 'test_field_name (model_fields.tests.BasicFieldTests)', 'Fields are ordered based on their creation.', 'test_field_repr (model_fields.tests.BasicFieldTests)', '__repr__() uses __qualname__ for nested class support.', 'test_field_str (model_fields.tests.BasicFieldTests)', 'test_field_verbose_name (model_fields.tests.BasicFieldTests)', 'Field.formfield() sets disabled for fields with choices.', 'test_show_hidden_initial (model_fields.tests.BasicFieldTests)', 'test_get_choices (model_fields.tests.GetChoicesOrderingTests)', 'test_get_choices_default_ordering (model_fields.tests.GetChoicesOrderingTests)', 'test_get_choices_reverse_related_field (model_fields.tests.GetChoicesOrderingTests)', 'test_get_choices_reverse_related_field_default_ordering (model_fields.tests.GetChoicesOrderingTests)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-12284: resolved: False
+2026-03-14 21:01:32,640 - INFO - Attempting to stop container sweb.eval.django__django-12284.themis_gpt51_codex_mini_split_part1...
+2026-03-14 21:01:47,829 - INFO - Attempting to remove container sweb.eval.django__django-12284.themis_gpt51_codex_mini_split_part1...
+2026-03-14 21:01:47,851 - INFO - Container sweb.eval.django__django-12284.themis_gpt51_codex_mini_split_part1 removed.
+2026-03-14 21:01:47,851 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.django_1776_django-12284:latest...
+2026-03-14 21:01:48,188 - INFO - Image swebench/sweb.eval.x86_64.django_1776_django-12284:latest removed.

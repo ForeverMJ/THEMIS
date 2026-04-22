@@ -1,0 +1,107 @@
+{
+  "instance_id": "django__django-15996",
+  "repo": "django/django",
+  "base_commit": "b30c0081d4d8a31ab7dc7f72a4c7099af606ef29",
+  "selected_files": [
+    "django/db/migrations/serializer.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 209.28212428092957,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 5670,
+      "completion_tokens": 391,
+      "total_tokens": 6061,
+      "successful_requests": 2
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 194.20963549613953,
+      "findings_count": 11,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 22363,
+      "completion_tokens": 6947,
+      "total_tokens": 29310,
+      "successful_requests": 38
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1429,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 3,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-010",
+      "target_symbol": "items",
+      "related_symbols": [],
+      "issue_summary": "Most CRUD operations missing: ['create', 'read', 'update', 'delete']",
+      "expected_behavior": "Update `items` so `REQ-010` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Make the smallest logic change inside `items` for `REQ-010`.",
+      "blocking": false,
+      "confidence": 0.9,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-010",
+        "target_symbol": "items",
+        "related_symbols": [],
+        "issue_summary": "Most CRUD operations missing: ['create', 'read', 'update', 'delete']",
+        "expected_behavior": "Update `items` so `REQ-010` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Make the smallest logic change inside `items` for `REQ-010`.",
+        "blocking": false,
+        "confidence": 0.9,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 1288
+}

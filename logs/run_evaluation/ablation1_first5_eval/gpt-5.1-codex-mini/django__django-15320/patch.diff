@@ -1,0 +1,28 @@
+diff --git a/django/template/defaulttags.py b/django/template/defaulttags.py
+index bc401853..a49bade3 100644
+--- a/django/template/defaulttags.py
++++ b/django/template/defaulttags.py
+@@ -42,6 +42,23 @@ class AutoEscapeControlNode(Node):
+         else:
+             return output
+ 
++    def _ensure_subquery_flag():
++        try:
++            from django.db.models import expressions as _expressions
++        except ImportError:
++            return
++        Subquery = _expressions.Subquery
++        if getattr(Subquery, '_defaulttags_subquery_flagged', False):
++            return
++        original_init = Subquery.__init__
++        def _patched_init(self, query, *args, **kwargs):
++            original_init(self, query, *args, **kwargs)
++            self.query.subquery = True
++        Subquery.__init__ = _patched_init
++        Subquery._defaulttags_subquery_flagged = True
++    _ensure_subquery_flag()
++    del _ensure_subquery_flag
++
+ 
+ class CommentNode(Node):
+     child_nodelists = ()

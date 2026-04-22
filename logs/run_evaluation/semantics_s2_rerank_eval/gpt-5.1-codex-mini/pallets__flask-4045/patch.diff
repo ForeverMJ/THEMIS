@@ -1,0 +1,94 @@
+diff --git a/tests/test_blueprints.py b/tests/test_blueprints.py
+index b986ca0..01320ed 100644
+--- a/tests/test_blueprints.py
++++ b/tests/test_blueprints.py
+@@ -253,28 +253,9 @@ def test_templates_list(test_apps):
+     assert templates == ["admin/index.html", "frontend/index.html"]
+ 
+ 
+-def test_dotted_names(app, client):
+-    frontend = flask.Blueprint("myapp.frontend", __name__)
+-    backend = flask.Blueprint("myapp.backend", __name__)
+-
+-    @frontend.route("/fe")
+-    def frontend_index():
+-        return flask.url_for("myapp.backend.backend_index")
+-
+-    @frontend.route("/fe2")
+-    def frontend_page2():
+-        return flask.url_for(".frontend_index")
+-
+-    @backend.route("/be")
+-    def backend_index():
+-        return flask.url_for("myapp.frontend.frontend_index")
+-
+-    app.register_blueprint(frontend)
+-    app.register_blueprint(backend)
+-
+-    assert client.get("/fe").data.strip() == b"/be"
+-    assert client.get("/fe2").data.strip() == b"/fe"
+-    assert client.get("/be").data.strip() == b"/fe"
++def test_dotted_name_not_allowed():
++    with pytest.raises(ValueError):
++        flask.Blueprint("myapp.frontend", __name__)
+ 
+ 
+ def test_dotted_names_from_app(app, client):
+@@ -347,44 +328,34 @@ def test_route_decorator_custom_endpoint_with_dots(app, client):
+     def foo():
+         return flask.request.endpoint
+ 
+-    try:
++    with pytest.raises(ValueError):
+ 
+         @bp.route("/bar", endpoint="bar.bar")
+         def foo_bar():
+             return flask.request.endpoint
+ 
+-    except AssertionError:
+-        pass
+-    else:
+-        raise AssertionError("expected AssertionError not raised")
+-
+-    try:
++    with pytest.raises(ValueError):
+ 
+         @bp.route("/bar/123", endpoint="bar.123")
+         def foo_bar_foo():
+             return flask.request.endpoint
+ 
+-    except AssertionError:
+-        pass
+-    else:
+-        raise AssertionError("expected AssertionError not raised")
+-
+     def foo_foo_foo():
+         pass
+ 
+     pytest.raises(
+-        AssertionError,
++        ValueError,
+         lambda: bp.add_url_rule("/bar/123", endpoint="bar.123", view_func=foo_foo_foo),
+     )
+ 
+     pytest.raises(
+-        AssertionError, bp.route("/bar/123", endpoint="bar.123"), lambda: None
++        ValueError, bp.route("/bar/123", endpoint="bar.123"), lambda: None
+     )
+ 
+     foo_foo_foo.__name__ = "bar.123"
+ 
+     pytest.raises(
+-        AssertionError, lambda: bp.add_url_rule("/bar/123", view_func=foo_foo_foo)
++        ValueError, lambda: bp.add_url_rule("/bar/123", view_func=foo_foo_foo)
+     )
+ 
+     bp.add_url_rule(
+@@ -394,7 +365,6 @@ def test_route_decorator_custom_endpoint_with_dots(app, client):
+     app.register_blueprint(bp, url_prefix="/py")
+ 
+     assert client.get("/py/foo").data == b"bp.foo"
+-    # The rule's didn't actually made it through
+     rv = client.get("/py/bar")
+     assert rv.status_code == 404
+     rv = client.get("/py/bar/123")

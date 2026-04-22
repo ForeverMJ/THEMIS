@@ -1,0 +1,143 @@
+{
+  "instance_id": "django__django-16139",
+  "repo": "django/django",
+  "base_commit": "d559cb02da30f74debbb1fc3a46de0df134d2d80",
+  "selected_files": [
+    "django/contrib/auth/forms.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "ablation1",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow_ablation1",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "graph_only",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 33.70201587677002,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow_ablation1",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "graph_only",
+      "confidence": 0.7,
+      "processing_time": 0.001889944076538086,
+      "findings_count": 2,
+      "recommendations_count": 0
+    },
+    "advanced_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 0
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 3016,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 14,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/contrib/auth/forms.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [],
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Compute a password link that uses the instance pk to construct the relative path (falling back to '../password/' when no pk is available) before formatting the help text.",
+        "execution_result": {},
+        "hypothesis_root_cause": "UserChangeForm assumes user admin change URL always uses the pk only, so the password change help text link is hardcoded to '../password/' even when the admin is reached via a to_field query parameter.",
+        "expected_invariant": "Password help text should generate a password change link that resolves correctly regardless of whether the change URL uses the pk directly or is reached via another admin through a to_field reference.",
+        "patch_strategy": "Compute a password link that uses the instance pk to construct the relative path (falling back to '../password/' when no pk is available) before formatting the help text.",
+        "failure_class": "mixed_or_unknown",
+        "fault_space_signal": "unknown",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-042",
+      "target_symbol": "SetPasswordForm",
+      "related_symbols": [
+        "SetPasswordForm.__init__",
+        "set_password"
+      ],
+      "issue_summary": "No clear relationship found",
+      "expected_behavior": "Update `SetPasswordForm` so `REQ-042` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Start from the smallest method related to `SetPasswordForm`, especially `SetPasswordForm.__init__`.",
+      "blocking": false,
+      "confidence": 0.2,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-042",
+        "target_symbol": "SetPasswordForm",
+        "related_symbols": [
+          "SetPasswordForm.__init__",
+          "set_password"
+        ],
+        "issue_summary": "No clear relationship found",
+        "expected_behavior": "Update `SetPasswordForm` so `REQ-042` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Start from the smallest method related to `SetPasswordForm`, especially `SetPasswordForm.__init__`.",
+        "blocking": false,
+        "confidence": 0.2,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 832
+}

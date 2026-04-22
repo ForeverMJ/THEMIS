@@ -1,0 +1,16 @@
+diff --git a/sympy/stats/rv.py b/sympy/stats/rv.py
+index 65e10de..f52bedd 100644
+--- a/sympy/stats/rv.py
++++ b/sympy/stats/rv.py
+@@ -38,7 +38,10 @@ class RandomDomain(Basic):
+     is_Continuous = False
+ 
+     def __new__(cls, symbols, *args):
+-        symbols = FiniteSet(*symbols)
++        if isinstance(symbols, (Symbol, RandomSymbol)):
++            symbols = FiniteSet(symbols)
++        else:
++            symbols = FiniteSet(*symbols)
+         return Basic.__new__(cls, symbols, *args)
+ 
+     @property

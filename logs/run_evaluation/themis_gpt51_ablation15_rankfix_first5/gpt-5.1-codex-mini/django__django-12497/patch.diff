@@ -1,0 +1,34 @@
+diff --git a/django/db/models/fields/related.py b/django/db/models/fields/related.py
+index 8ddbb5ba6..3cffe79a4 100644
+--- a/django/db/models/fields/related.py
++++ b/django/db/models/fields/related.py
+@@ -1308,10 +1308,11 @@ class ManyToManyField(RelatedField):
+                              "which foreign key Django should use via the "
+                              "through_fields keyword argument.") % (self, from_model_name),
+                             hint=(
+-                                'If you want to create a recursive relationship, '
+-                                'use ForeignKey("%s", symmetrical=False, through="%s").'
++                                'Disambiguate the relationship by specifying through_fields '
++                                'when defining the ManyToManyField, e.g. '
++                                'ManyToManyField("%s", through="%s", through_fields=("field_a", "field_b")).'
+                             ) % (
+-                                RECURSIVE_RELATIONSHIP_CONSTANT,
++                                to_model_name,
+                                 relationship_model_name,
+                             ),
+                             obj=self,
+@@ -1328,10 +1329,11 @@ class ManyToManyField(RelatedField):
+                             "which foreign key Django should use via the "
+                             "through_fields keyword argument." % (self, to_model_name),
+                             hint=(
+-                                'If you want to create a recursive relationship, '
+-                                'use ForeignKey("%s", symmetrical=False, through="%s").'
++                                'Disambiguate the relationship by specifying through_fields '
++                                'when defining the ManyToManyField, e.g. '
++                                'ManyToManyField("%s", through="%s", through_fields=("field_a", "field_b")).'
+                             ) % (
+-                                RECURSIVE_RELATIONSHIP_CONSTANT,
++                                to_model_name,
+                                 relationship_model_name,
+                             ),
+                             obj=self,

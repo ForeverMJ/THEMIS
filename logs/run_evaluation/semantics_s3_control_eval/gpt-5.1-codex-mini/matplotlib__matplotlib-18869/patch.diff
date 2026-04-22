@@ -1,0 +1,59 @@
+diff --git a/lib/matplotlib/__init__.py b/lib/matplotlib/__init__.py
+index b657a35..169cfee 100644
+--- a/lib/matplotlib/__init__.py
++++ b/lib/matplotlib/__init__.py
+@@ -130,10 +130,34 @@ __bibtex__ = r"""@Article{Hunter:2007,
+ }"""
+ 
+ 
+-def __getattr__(name):
+-    if name == "__version__":
++_PRE_RELEASE_LEVELS = {
++    "a": "alpha",
++    "b": "beta",
++    "c": "rc",
++    "rc": "rc",
++}
++
++def _parse_version_info(version):
++    version_obj = parse_version(version)
++    major, minor, micro = (version_obj.release + (0, 0, 0))[:3]
++    releaselevel = "final"
++    serial = 0
++    if version_obj.pre is not None:
++        pre_tag, pre_number = version_obj.pre
++        releaselevel = _PRE_RELEASE_LEVELS.get(pre_tag, pre_tag)
++        serial = pre_number if pre_number is not None else 0
++    elif version_obj.post is not None:
++        releaselevel = "post"
++        serial = version_obj.post if version_obj.post is not None else 0
++    elif version_obj.dev is not None:
++        releaselevel = "dev"
++        serial = version_obj.dev if version_obj.dev is not None else 0
++    return _VersionInfo(major, minor, micro, releaselevel, serial)
++
++def _get_version():
++    global __version__, __version_info__
++    if __version__ is None:
+         import setuptools_scm
+-        global __version__  # cache it.
+         # Only shell out to a git subprocess if really needed, and not on a
+         # shallow clone, such as those used by CI, as the latter would trigger
+         # a warning from setuptools_scm.
+@@ -147,7 +171,15 @@ def __getattr__(name):
+             )
+         else:  # Get the version from the _version.py setuptools_scm file.
+             __version__ = _version.version
+-        return __version__
++        __version_info__ = _parse_version_info(__version__)
++    return __version__
++
++def __getattr__(name):
++    if name == "__version__":
++        return _get_version()
++    if name == "__version_info__":
++        _get_version()
++        return __version_info__
+     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+ 
+ 

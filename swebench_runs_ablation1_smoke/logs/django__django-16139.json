@@ -1,0 +1,19 @@
+{
+  "instance_id": "django__django-16139",
+  "repo": "django/django",
+  "base_commit": "d559cb02da30f74debbb1fc3a46de0df134d2d80",
+  "selected_files": [
+    "django/contrib/auth/forms.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "ablation1",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow_ablation1",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "graph_only",
+  "max_revisions": 1,
+  "dry_run": true,
+  "duration_s": 5.029099464416504,
+  "meta": {},
+  "patch_chars": 0
+}

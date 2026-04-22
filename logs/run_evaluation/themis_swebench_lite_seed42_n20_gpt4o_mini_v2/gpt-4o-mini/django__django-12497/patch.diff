@@ -1,0 +1,14 @@
+diff --git a/django/db/models/fields/related.py b/django/db/models/fields/related.py
+index 8ddbb5ba..efc7f634 100644
+--- a/django/db/models/fields/related.py
++++ b/django/db/models/fields/related.py
+@@ -1245,8 +1245,7 @@ class ManyToManyField(RelatedField):
+             # The relationship model is not installed.
+             errors.append(
+                 checks.Error(
+-                    "Field specifies a many-to-many relation through model "
+-                    "'%s', which has not been installed." % qualified_model_name,
++                    "Field specifies a many-to-many relation through model '%s', which has not been installed." % qualified_model_name,
+                     obj=self,
+                     id='fields.E331',
+                 )

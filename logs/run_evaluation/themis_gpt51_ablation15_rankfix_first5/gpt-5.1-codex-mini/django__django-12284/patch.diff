@@ -1,0 +1,29 @@
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd..926202612 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -357,17 +357,22 @@ def avoid_wrapping(value):
+     return value.replace(" ", "\xa0")
+ 
+ 
++def _class_defines_attribute(klass, name):
++    """Return True if ``klass`` itself defines ``name`` in its attribute dictionary."""
++    return name in klass.__dict__
++
++
+ def html_safe(klass):
+     """
+     A decorator that defines the __html__ method. This helps non-Django
+     templates to detect classes whose __str__ methods return SafeString.
+     """
+-    if '__html__' in klass.__dict__:
++    if _class_defines_attribute(klass, '__html__'):
+         raise ValueError(
+             "can't apply @html_safe to %s because it defines "
+             "__html__()." % klass.__name__
+         )
+-    if '__str__' not in klass.__dict__:
++    if not _class_defines_attribute(klass, '__str__'):
+         raise ValueError(
+             "can't apply @html_safe to %s because it doesn't "
+             "define __str__()." % klass.__name__

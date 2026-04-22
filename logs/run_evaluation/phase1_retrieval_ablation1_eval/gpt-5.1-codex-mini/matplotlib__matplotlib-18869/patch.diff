@@ -1,0 +1,46 @@
+diff --git a/lib/matplotlib/tests/test_matplotlib.py b/lib/matplotlib/tests/test_matplotlib.py
+index cad9433..27f6238 100644
+--- a/lib/matplotlib/tests/test_matplotlib.py
++++ b/lib/matplotlib/tests/test_matplotlib.py
+@@ -1,4 +1,5 @@
+ import os
++import re
+ import subprocess
+ import sys
+ 
+@@ -65,3 +66,35 @@ def test_importable_with__OO():
+     )
+     cmd = [sys.executable, "-OO", "-c", program]
+     assert subprocess.call(cmd, env={**os.environ, "MPLBACKEND": ""}) == 0
++
++_version_info_re = re.compile(
++    r'^(?P<base>\d+\.\d+\.\d+)'
++    r'(?:(?P<pre_label>rc|a|b)(?P<pre_num>\d+))?'
++    r'(?:(?:\.post)(?P<post>\d+))?'
++    r'(?:(?:\.dev)(?P<dev>\d+))?$'
++)
++
++
++def parse_to_version_info(version):
++    """
++    Parse a Matplotlib version string to a tuple that mirrors sys.version_info.
++    """
++    raw_version = version
++    version = version.split("+", 1)[0]
++    match = _version_info_re.fullmatch(version)
++    if not match:
++        raise ValueError(f"Unable to parse version string {raw_version!r}")
++    major, minor, micro = (int(part) for part in match.group("base").split("."))
++    if match.group("dev"):
++        releaselevel = "dev"
++        serial = int(match.group("dev"))
++    elif match.group("post"):
++        releaselevel = "post"
++        serial = int(match.group("post"))
++    elif match.group("pre_label"):
++        releaselevel = match.group("pre_label")
++        serial = int(match.group("pre_num"))
++    else:
++        releaselevel = "final"
++        serial = 0
++    return major, minor, micro, releaselevel, serial

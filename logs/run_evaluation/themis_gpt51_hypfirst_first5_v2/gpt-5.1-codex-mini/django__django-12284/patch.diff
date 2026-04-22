@@ -1,0 +1,59 @@
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd..ea592d260 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -232,6 +232,23 @@ def smart_urlquote(url):
+     return urlunsplit((scheme, netloc, path, query, fragment))
+ 
+ 
++def _looks_like_email(value):
++    """Return True if value looks like an email address."""
++    # An @ must be in the middle of the value.
++    if '@' not in value or value.startswith('@') or value.endswith('@'):
++        return False
++    try:
++        p1, p2 = value.split('@')
++    except ValueError:
++        # value contains more than one @.
++        return False
++    # Dot must be in p2 (e.g. example.com)
++    if '.' not in p2 or p2.startswith('.'):
++        return False
++    return True
++
++
++@keep_lazy_text
+ @keep_lazy_text
+ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+     """
+@@ -288,21 +305,6 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+                 trimmed_something = True
+         return lead, middle, trail
+ 
+-    def is_email_simple(value):
+-        """Return True if value looks like an email address."""
+-        # An @ must be in the middle of the value.
+-        if '@' not in value or value.startswith('@') or value.endswith('@'):
+-            return False
+-        try:
+-            p1, p2 = value.split('@')
+-        except ValueError:
+-            # value contains more than one @.
+-            return False
+-        # Dot must be in p2 (e.g. example.com)
+-        if '.' not in p2 or p2.startswith('.'):
+-            return False
+-        return True
+-
+     words = word_split_re.split(str(text))
+     for i, word in enumerate(words):
+         if '.' in word or '@' in word or ':' in word:
+@@ -320,7 +322,7 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+                 url = smart_urlquote(html.unescape(middle))
+             elif simple_url_2_re.match(middle):
+                 url = smart_urlquote('http://%s' % html.unescape(middle))
+-            elif ':' not in middle and is_email_simple(middle):
++            elif ':' not in middle and _looks_like_email(middle):
+                 local, domain = middle.rsplit('@', 1)
+                 try:
+                     domain = punycode(domain)

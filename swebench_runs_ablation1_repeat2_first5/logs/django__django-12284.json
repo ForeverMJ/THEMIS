@@ -1,0 +1,138 @@
+{
+  "instance_id": "django__django-12284",
+  "repo": "django/django",
+  "base_commit": "c5e373d48cbdd923575956fed477b63d66d9603f",
+  "selected_files": [
+    "django/utils/html.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "ablation1",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow_ablation1",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "graph_only",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 92.47729969024658,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow_ablation1",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "graph_only",
+      "confidence": 0.7,
+      "processing_time": 0.02153635025024414,
+      "findings_count": 2,
+      "recommendations_count": 0
+    },
+    "advanced_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 0
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 2051,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 2,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 2,
+        "effective_change": true,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: django/db/models/fields/__init__.py:[search/replace] -> unknown file",
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1,
+        "recoverable_failure_count": 1,
+        "recovery_succeeded": true,
+        "fallback_modes_tried": [
+          "search_replace",
+          "symbol_rewrite"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/utils/html.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [],
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Rewrite html_safe so that __str__ and __html__ call small helper functions instead of separate lambdas, ensuring the safe string path isn’t bypassed.",
+        "execution_result": {},
+        "hypothesis_root_cause": "html_safe assigns the decorated class methods via lambdas, which hides the safe formatting path when __html__ is evaluated; making these helpers explicit lets both methods share the same mark_safe logic.",
+        "expected_invariant": "Decorated classes preserve a mark_safe-wrapped __str__ while __html__ consistently coerces that safe string back to plain text.",
+        "patch_strategy": "Rewrite html_safe so that __str__ and __html__ call small helper functions instead of separate lambdas, ensuring the safe string path isn’t bypassed.",
+        "failure_class": "mixed_or_unknown",
+        "fault_space_signal": "unknown",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-023",
+      "target_symbol": "urlize",
+      "related_symbols": [],
+      "issue_summary": "No validation functions found in codebase",
+      "expected_behavior": "Update `urlize` so `REQ-023` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Make the smallest logic change inside `urlize` for `REQ-023`.",
+      "blocking": false,
+      "confidence": 0.9,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-023",
+        "target_symbol": "urlize",
+        "related_symbols": [],
+        "issue_summary": "No validation functions found in codebase",
+        "expected_behavior": "Update `urlize` so `REQ-023` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Make the smallest logic change inside `urlize` for `REQ-023`.",
+        "blocking": false,
+        "confidence": 0.9,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 620
+}

@@ -1,0 +1,141 @@
+2026-03-20 11:48:56,540 - INFO - Creating container for sympy__sympy-13773...
+2026-03-20 11:48:57,345 - INFO - Container for sympy__sympy-13773 created: 6aca7e2507ca5e78bf64db8b0f9d65a9052fb8e335a9b8e7f4f32c76f8143db8
+2026-03-20 11:48:57,474 - INFO - Container for sympy__sympy-13773 started: 6aca7e2507ca5e78bf64db8b0f9d65a9052fb8e335a9b8e7f4f32c76f8143db8
+2026-03-20 11:48:57,474 - INFO - Intermediate patch for sympy__sympy-13773 written to logs/run_evaluation/themis_gpt51_hypfirst_first5_v2/gpt-5.1-codex-mini/sympy__sympy-13773/patch.diff, now applying to container...
+2026-03-20 11:48:57,635 - INFO - >>>>> Applied Patch:
+Checking patch sympy/matrices/common.py...
+Applied patch sympy/matrices/common.py cleanly.
+
+2026-03-20 11:48:57,916 - INFO - Git diff before:
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a2917aa..906de04bbc 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1971,9 +1971,17 @@ def __add__(self, other):
+     def __div__(self, other):
+         return self * (S.One / other)
+ 
++    @call_highest_priority('__rmatmul__')
+     @call_highest_priority('__rmatmul__')
+     def __matmul__(self, other):
+-        return self.__mul__(other)
++        other = _matrixify(other)
++        if not _is_matrix_operand(other) or not (hasattr(other, 'rows') and hasattr(other, 'cols')):
++            raise ValueError("Matrix operands are required for matmul.")
++        if getattr(other, 'is_Matrix', False):
++            return self._eval_matrix_mul(other)
++        if getattr(other, 'is_MatrixLike', False):
++            return MatrixArithmetic._eval_matrix_mul(self, other)
++        return self._eval_matrix_mul(other)
+ 
+     @call_highest_priority('__rmul__')
+     def __mul__(self, other):
+@@ -2066,9 +2074,17 @@ def __pow__(self, num):
+     def __radd__(self, other):
+         return self + other
+ 
++    @call_highest_priority('__matmul__')
+     @call_highest_priority('__matmul__')
+     def __rmatmul__(self, other):
+-        return self.__rmul__(other)
++        other = _matrixify(other)
++        if not _is_matrix_operand(other) or not (hasattr(other, 'rows') and hasattr(other, 'cols')):
++            raise ValueError("Matrix operands are required for matmul.")
++        if getattr(other, 'is_Matrix', False):
++            return self._eval_matrix_rmul(other)
++        if getattr(other, 'is_MatrixLike', False):
++            return MatrixArithmetic._eval_matrix_rmul(self, other)
++        return self._eval_matrix_rmul(other)
+ 
+     @call_highest_priority('__mul__')
+     def __rmul__(self, other):
+@@ -2273,6 +2289,17 @@ def _matrixify(mat):
+             return _MatrixWrapper(mat)
+     return mat
+ 
++def _is_matrix_operand(mat):
++    if getattr(mat, 'is_Matrix', False) or getattr(mat, 'is_MatrixLike', False):
++        return True
++    shape = getattr(mat, 'shape', None)
++    if shape is None:
++        return False
++    try:
++        return len(shape) == 2
++    except TypeError:
++        return False
++
+ 
+ def a2idx(j, n=None):
+     """Return integer after making positive and validating against n."""
+2026-03-20 11:48:57,916 - INFO - Eval script for sympy__sympy-13773 written to logs/run_evaluation/themis_gpt51_hypfirst_first5_v2/gpt-5.1-codex-mini/sympy__sympy-13773/eval.sh; copying to container...
+2026-03-20 11:49:03,974 - INFO - Test runtime: 5.98 seconds
+2026-03-20 11:49:03,975 - INFO - Test output for sympy__sympy-13773 written to logs/run_evaluation/themis_gpt51_hypfirst_first5_v2/gpt-5.1-codex-mini/sympy__sympy-13773/test_output.txt
+2026-03-20 11:49:04,042 - INFO - Git diff after:
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a2917aa..906de04bbc 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1971,9 +1971,17 @@ def __add__(self, other):
+     def __div__(self, other):
+         return self * (S.One / other)
+ 
++    @call_highest_priority('__rmatmul__')
+     @call_highest_priority('__rmatmul__')
+     def __matmul__(self, other):
+-        return self.__mul__(other)
++        other = _matrixify(other)
++        if not _is_matrix_operand(other) or not (hasattr(other, 'rows') and hasattr(other, 'cols')):
++            raise ValueError("Matrix operands are required for matmul.")
++        if getattr(other, 'is_Matrix', False):
++            return self._eval_matrix_mul(other)
++        if getattr(other, 'is_MatrixLike', False):
++            return MatrixArithmetic._eval_matrix_mul(self, other)
++        return self._eval_matrix_mul(other)
+ 
+     @call_highest_priority('__rmul__')
+     def __mul__(self, other):
+@@ -2066,9 +2074,17 @@ def __pow__(self, num):
+     def __radd__(self, other):
+         return self + other
+ 
++    @call_highest_priority('__matmul__')
+     @call_highest_priority('__matmul__')
+     def __rmatmul__(self, other):
+-        return self.__rmul__(other)
++        other = _matrixify(other)
++        if not _is_matrix_operand(other) or not (hasattr(other, 'rows') and hasattr(other, 'cols')):
++            raise ValueError("Matrix operands are required for matmul.")
++        if getattr(other, 'is_Matrix', False):
++            return self._eval_matrix_rmul(other)
++        if getattr(other, 'is_MatrixLike', False):
++            return MatrixArithmetic._eval_matrix_rmul(self, other)
++        return self._eval_matrix_rmul(other)
+ 
+     @call_highest_priority('__mul__')
+     def __rmul__(self, other):
+@@ -2273,6 +2289,17 @@ def _matrixify(mat):
+             return _MatrixWrapper(mat)
+     return mat
+ 
++def _is_matrix_operand(mat):
++    if getattr(mat, 'is_Matrix', False) or getattr(mat, 'is_MatrixLike', False):
++        return True
++    shape = getattr(mat, 'shape', None)
++    if shape is None:
++        return False
++    try:
++        return len(shape) == 2
++    except TypeError:
++        return False
++
+ 
+ def a2idx(j, n=None):
+     """Return integer after making positive and validating against n."""
+2026-03-20 11:49:04,043 - INFO - Grading answer for sympy__sympy-13773...
+2026-03-20 11:49:04,044 - INFO - report: {'sympy__sympy-13773': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_matmul']}, 'PASS_TO_PASS': {'success': ['test__MinimalMatrix', 'test_vec', 'test_tolist', 'test_row_col_del', 'test_get_diag_blocks1', 'test_get_diag_blocks2', 'test_shape', 'test_reshape', 'test_row_col', 'test_row_join', 'test_col_join', 'test_row_insert', 'test_col_insert', 'test_extract', 'test_hstack', 'test_vstack', 'test_atoms', 'test_free_symbols', 'test_has', 'test_is_anti_symmetric', 'test_diagonal_symmetrical', 'test_is_hermitian', 'test_is_Identity', 'test_is_symbolic', 'test_is_upper', 'test_is_lower', 'test_is_square', 'test_is_symmetric', 'test_is_hessenberg', 'test_is_zero', 'test_values', 'test_adjoint', 'test_as_real_imag', 'test_conjugate', 'test_doit', 'test_evalf', 'test_expand', 'test_replace', 'test_replace_map', 'test_simplify', 'test_subs', 'test_trace', 'test_xreplace', 'test_permute', 'test_abs', 'test_add', 'test_power', 'test_neg', 'test_sub', 'test_det', 'test_adjugate', 'test_cofactor_and_minors', 'test_charpoly', 'test_row_op', 'test_col_op', 'test_is_echelon', 'test_echelon_form', 'test_rref', 'test_eye', 'test_ones', 'test_zeros', 'test_diag', 'test_jordan_block', 'test_columnspace', 'test_rowspace', 'test_nullspace', 'test_eigenvals', 'test_singular_values', 'test_integrate'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-13773: resolved: False
+2026-03-20 11:49:04,044 - INFO - Attempting to stop container sweb.eval.sympy__sympy-13773.themis_gpt51_hypfirst_first5_v2...
+2026-03-20 11:49:19,225 - INFO - Attempting to remove container sweb.eval.sympy__sympy-13773.themis_gpt51_hypfirst_first5_v2...
+2026-03-20 11:49:19,248 - INFO - Container sweb.eval.sympy__sympy-13773.themis_gpt51_hypfirst_first5_v2 removed.
+2026-03-20 11:49:19,248 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sympy_1776_sympy-13773:latest...
+2026-03-20 11:49:20,334 - INFO - Image swebench/sweb.eval.x86_64.sympy_1776_sympy-13773:latest removed.

@@ -1,0 +1,21 @@
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd..168de5168 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -249,6 +249,16 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+ 
+     If autoescape is True, autoescape the link text and URLs.
+     """
++    if trim_url_limit is not None:
++        if not isinstance(trim_url_limit, int):
++            raise TypeError('trim_url_limit must be an integer or None.')
++        if trim_url_limit < 0:
++            raise ValueError('trim_url_limit must be non-negative.')
++    if not isinstance(nofollow, bool):
++        raise TypeError('nofollow must be a boolean.')
++    if not isinstance(autoescape, bool):
++        raise TypeError('autoescape must be a boolean.')
++
+     safe_input = isinstance(text, SafeData)
+ 
+     def trim_url(x, limit=trim_url_limit):

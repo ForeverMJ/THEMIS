@@ -1,0 +1,26 @@
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a291..ee22e53 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1973,6 +1973,10 @@ def __div__(self, other):
+ 
+     @call_highest_priority('__rmatmul__')
+     def __matmul__(self, other):
++        if not isinstance(other, MatrixRequired):
++            raise TypeError("Matrix multiplication requires a matrix on the right side.")
++        if not isinstance(other, Matrix):
++            raise ValueError("The right operand must be a matrix.")
+         return self.__mul__(other)
+ 
+     @call_highest_priority('__rmul__')
+@@ -2068,6 +2072,10 @@ def __radd__(self, other):
+ 
+     @call_highest_priority('__matmul__')
+     def __rmatmul__(self, other):
++        if not isinstance(other, MatrixRequired):
++            raise TypeError("Matrix multiplication requires a matrix on the left side.")
++        if not isinstance(other, Matrix):
++            raise ValueError("The left operand must be a matrix.")
+         return self.__rmul__(other)
+ 
+     @call_highest_priority('__mul__')

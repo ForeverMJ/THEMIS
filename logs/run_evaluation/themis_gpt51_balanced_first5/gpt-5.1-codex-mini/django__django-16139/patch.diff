@@ -1,0 +1,41 @@
+diff --git a/django/contrib/auth/forms.py b/django/contrib/auth/forms.py
+index b3cfc6723..5d86c0c1f 100644
+--- a/django/contrib/auth/forms.py
++++ b/django/contrib/auth/forms.py
+@@ -150,7 +150,7 @@ class UserChangeForm(forms.ModelForm):
+         help_text=_(
+             "Raw passwords are not stored, so there is no way to see this "
+             "user’s password, but you can change the password using "
+-            '<a href="{}">this form</a>.'
++            '<a href="{}">this form</a>. '
+         ),
+     )
+ 
+@@ -160,10 +160,26 @@ class UserChangeForm(forms.ModelForm):
+         field_classes = {"username": UsernameField}
+ 
+     def __init__(self, *args, **kwargs):
++        request = kwargs.pop("request", None)
++        admin_form_url_context = kwargs.pop("admin_form_url_context", None)
++        current_app = kwargs.pop("current_app", None)
+         super().__init__(*args, **kwargs)
+         password = self.fields.get("password")
+         if password:
+-            password.help_text = password.help_text.format("../password/")
++            password_change_url = "../password/"
++            if admin_form_url_context and current_app:
++                object_id = admin_form_url_context.get("object_id")
++                if object_id is not None:
++                    password_change_url = reverse(
++                        "admin:auth_user_password_change",
++                        kwargs={"object_id": object_id},
++                        current_app=current_app,
++                    )
++                    if request:
++                        to_field = request.GET.get("_to_field") or request.POST.get("_to_field")
++                        if to_field:
++                            password_change_url = f"{password_change_url}?_to_field={to_field}"
++            password.help_text = password.help_text.format(password_change_url)
+         user_permissions = self.fields.get("user_permissions")
+         if user_permissions:
+             user_permissions.queryset = user_permissions.queryset.select_related(

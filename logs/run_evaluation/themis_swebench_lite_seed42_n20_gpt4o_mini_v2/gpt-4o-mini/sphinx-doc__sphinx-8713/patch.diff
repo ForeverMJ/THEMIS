@@ -1,0 +1,59 @@
+diff --git a/tests/test_ext_napoleon_docstring.py b/tests/test_ext_napoleon_docstring.py
+index ec5f90a..ec3e510 100644
+--- a/tests/test_ext_napoleon_docstring.py
++++ b/tests/test_ext_napoleon_docstring.py
+@@ -1435,28 +1435,35 @@ class NumpyDocstringTest(BaseDocstringTest):
+         """)
+         self.assertEqual(expected, actual)
+ 
+-    def test_parameters_with_class_reference(self):
+-        docstring = """\
+-Parameters
+-----------
+-param1 : :class:`MyClass <name.space.MyClass>` instance
++        def test_parameters_with_class_reference(self):
++            docstring = """
++    Parameters
++    ----------
++    param1 : :class:`MyClass <name.space.MyClass>` instance
+ 
+-"""
++    Other parameters
++    ----------------
++    param2 : int
++        An integer parameter.
++    """
+ 
+-        config = Config(napoleon_use_param=False)
+-        actual = str(NumpyDocstring(docstring, config))
+-        expected = """\
+-:Parameters: **param1** (:class:`MyClass <name.space.MyClass>` instance)
+-"""
+-        self.assertEqual(expected, actual)
++            config = Config(napoleon_use_param=False)
++            actual = str(NumpyDocstring(docstring, config))
++            expected = """
++    :Parameters: **param1** (:class:`MyClass <name.space.MyClass>` instance)
++    :Other Parameters: **param2** (*int*) -- An integer parameter.
++    """
++            self.assertEqual(expected, actual)
+ 
+-        config = Config(napoleon_use_param=True)
+-        actual = str(NumpyDocstring(docstring, config))
+-        expected = """\
+-:param param1:
+-:type param1: :class:`MyClass <name.space.MyClass>` instance
+-"""
+-        self.assertEqual(expected, actual)
++            config = Config(napoleon_use_param=True)
++            actual = str(NumpyDocstring(docstring, config))
++            expected = """
++    :param param1:
++    :type param1: :class:`MyClass <name.space.MyClass>` instance
++    :param param2: An integer parameter.
++    :type param2: int
++    """
++            self.assertEqual(expected, actual)
+ 
+     def test_multiple_parameters(self):
+         docstring = """\

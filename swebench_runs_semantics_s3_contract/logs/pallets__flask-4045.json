@@ -1,0 +1,159 @@
+{
+  "instance_id": "pallets__flask-4045",
+  "repo": "pallets/flask",
+  "base_commit": "d8c37f43724cd9fb0870f77877b7c4c7e38a19e0",
+  "selected_files": [
+    "tests/test_blueprints.py",
+    "src/flask/app.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "semantics_contract_prompt",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "graph_only",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 279.3310842514038,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "graph_only",
+      "confidence": 0.7,
+      "processing_time": 0.1886281967163086,
+      "findings_count": 2,
+      "recommendations_count": 0
+    },
+    "advanced_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 0
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 2863,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 40,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 2,
+        "selected_files": [
+          "tests/test_blueprints.py",
+          "src/flask/app.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [],
+        "fallback_enabled": true,
+        "target_expansion_mode": "file_local_neighborhood",
+        "entered_fallback": false,
+        "primary_targets": [],
+        "expanded_targets": [],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "anchor_symbol_not_found",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Insert a validation check in Flask.register_blueprint that rejects names containing dots and raises a ValueError with an explanatory message.",
+        "execution_result": {},
+        "hypothesis_root_cause": "Blueprint names containing dots were never validated, so registering a dotted-name blueprint slipped through and tests expecting a ValueError now fail.",
+        "expected_invariant": "Attempting to register a blueprint whose name contains a dot should raise a ValueError before the blueprint is registered.",
+        "patch_strategy": "Insert a validation check in Flask.register_blueprint that rejects names containing dots and raises a ValueError with an explanatory message.",
+        "failure_class": "mixed_or_unknown",
+        "fault_space_signal": "unknown",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-038",
+      "target_symbol": "Blueprint",
+      "related_symbols": [
+        "int",
+        "name"
+      ],
+      "issue_summary": "No clear relationship found",
+      "expected_behavior": "Update `Blueprint` so `REQ-038` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Start from the smallest method related to `Blueprint`, especially `int`.",
+      "blocking": false,
+      "confidence": 0.2,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-038",
+        "target_symbol": "Blueprint",
+        "related_symbols": [
+          "int",
+          "name"
+        ],
+        "issue_summary": "No clear relationship found",
+        "expected_behavior": "Update `Blueprint` so `REQ-038` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Start from the smallest method related to `Blueprint`, especially `int`.",
+        "blocking": false,
+        "confidence": 0.2,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 523
+}

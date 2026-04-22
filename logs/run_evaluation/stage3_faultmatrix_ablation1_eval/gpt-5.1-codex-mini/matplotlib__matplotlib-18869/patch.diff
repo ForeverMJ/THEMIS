@@ -1,0 +1,31 @@
+diff --git a/lib/matplotlib/tests/test_matplotlib.py b/lib/matplotlib/tests/test_matplotlib.py
+index cad9433..423ec92 100644
+--- a/lib/matplotlib/tests/test_matplotlib.py
++++ b/lib/matplotlib/tests/test_matplotlib.py
+@@ -1,10 +1,12 @@
+ import os
+ import subprocess
+ import sys
++from distutils.version import LooseVersion
+ 
+ import pytest
+ 
+ import matplotlib
++from matplotlib._version import parse_to_version_info
+ 
+ 
+ @pytest.mark.skipif(
+@@ -65,3 +67,13 @@ def test_importable_with__OO():
+     )
+     cmd = [sys.executable, "-OO", "-c", program]
+     assert subprocess.call(cmd, env={**os.environ, "MPLBACKEND": ""}) == 0
++
++
++@pytest.mark.parametrize("version", [
++    "3.5.0",
++    "3.5.0rc2",
++    "3.5.0.dev820+g6768ef8c4c",
++    "3.5.0.post820+g6768ef8c4c",
++])
++def test_parse_to_version_info(version):
++    assert parse_to_version_info(version) == tuple(LooseVersion(version).version)

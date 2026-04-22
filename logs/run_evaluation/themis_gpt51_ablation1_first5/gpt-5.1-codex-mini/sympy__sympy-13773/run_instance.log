@@ -1,0 +1,131 @@
+2026-03-15 21:55:29,808 - INFO - Creating container for sympy__sympy-13773...
+2026-03-15 21:55:30,697 - INFO - Container for sympy__sympy-13773 created: 035a733f6f687229e2766159d7be5c96e9d0864d3d41750124ccdb184b69179e
+2026-03-15 21:55:30,861 - INFO - Container for sympy__sympy-13773 started: 035a733f6f687229e2766159d7be5c96e9d0864d3d41750124ccdb184b69179e
+2026-03-15 21:55:30,861 - INFO - Intermediate patch for sympy__sympy-13773 written to logs/run_evaluation/themis_gpt51_ablation1_first5/gpt-5.1-codex-mini/sympy__sympy-13773/patch.diff, now applying to container...
+2026-03-15 21:55:31,029 - INFO - >>>>> Applied Patch:
+Checking patch sympy/matrices/common.py...
+Applied patch sympy/matrices/common.py cleanly.
+
+2026-03-15 21:55:31,343 - INFO - Git diff before:
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a2917aa..a0e04bbce5 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1971,9 +1971,24 @@ def __add__(self, other):
+     def __div__(self, other):
+         return self * (S.One / other)
+ 
++    @call_highest_priority('__rmatmul__')
+     @call_highest_priority('__rmatmul__')
+     def __matmul__(self, other):
+-        return self.__mul__(other)
++        other = _matrixify(other)
++        other_shape = getattr(other, 'shape', None)
++        has_matrix_shape = getattr(other, 'is_Matrix', False) or (
++            getattr(other, 'is_MatrixLike', False) and
++            hasattr(other_shape, '__len__') and len(other_shape) == 2)
++        if not has_matrix_shape:
++            raise ValueError("Scalar operands are not allowed, use '*' instead")
++        if hasattr(other, 'shape') and len(other.shape) == 2:
++            if self.shape[1] != other.shape[0]:
++                raise ShapeError("Matrix size mismatch: %s * %s." % (
++                    self.shape, other.shape))
++        if getattr(other, 'is_Matrix', False):
++            return self._eval_matrix_mul(other)
++        elif getattr(other, 'is_MatrixLike', False):
++            return MatrixArithmetic._eval_matrix_mul(self, other)
+ 
+     @call_highest_priority('__rmul__')
+     def __mul__(self, other):
+@@ -2066,9 +2081,23 @@ def __pow__(self, num):
+     def __radd__(self, other):
+         return self + other
+ 
++    @call_highest_priority('__matmul__')
+     @call_highest_priority('__matmul__')
+     def __rmatmul__(self, other):
+-        return self.__rmul__(other)
++        other = _matrixify(other)
++        other_shape = getattr(other, 'shape', None)
++        has_matrix_shape = getattr(other, 'is_Matrix', False) or (
++            getattr(other, 'is_MatrixLike', False) and
++            hasattr(other_shape, '__len__') and len(other_shape) == 2)
++        if not has_matrix_shape:
++            raise ValueError("Scalar operands are not allowed, use '*' instead")
++        if hasattr(other, 'shape') and len(other.shape) == 2:
++            if other.shape[1] != self.shape[0]:
++                raise ShapeError("Matrix size mismatch.")
++        if getattr(other, 'is_Matrix', False):
++            return self._eval_matrix_rmul(other)
++        elif getattr(other, 'is_MatrixLike', False):
++            return MatrixArithmetic._eval_matrix_rmul(self, other)
+ 
+     @call_highest_priority('__mul__')
+     def __rmul__(self, other):
+2026-03-15 21:55:31,344 - INFO - Eval script for sympy__sympy-13773 written to logs/run_evaluation/themis_gpt51_ablation1_first5/gpt-5.1-codex-mini/sympy__sympy-13773/eval.sh; copying to container...
+2026-03-15 21:55:35,699 - INFO - Test runtime: 4.27 seconds
+2026-03-15 21:55:35,700 - INFO - Test output for sympy__sympy-13773 written to logs/run_evaluation/themis_gpt51_ablation1_first5/gpt-5.1-codex-mini/sympy__sympy-13773/test_output.txt
+2026-03-15 21:55:35,779 - INFO - Git diff after:
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a2917aa..a0e04bbce5 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1971,9 +1971,24 @@ def __add__(self, other):
+     def __div__(self, other):
+         return self * (S.One / other)
+ 
++    @call_highest_priority('__rmatmul__')
+     @call_highest_priority('__rmatmul__')
+     def __matmul__(self, other):
+-        return self.__mul__(other)
++        other = _matrixify(other)
++        other_shape = getattr(other, 'shape', None)
++        has_matrix_shape = getattr(other, 'is_Matrix', False) or (
++            getattr(other, 'is_MatrixLike', False) and
++            hasattr(other_shape, '__len__') and len(other_shape) == 2)
++        if not has_matrix_shape:
++            raise ValueError("Scalar operands are not allowed, use '*' instead")
++        if hasattr(other, 'shape') and len(other.shape) == 2:
++            if self.shape[1] != other.shape[0]:
++                raise ShapeError("Matrix size mismatch: %s * %s." % (
++                    self.shape, other.shape))
++        if getattr(other, 'is_Matrix', False):
++            return self._eval_matrix_mul(other)
++        elif getattr(other, 'is_MatrixLike', False):
++            return MatrixArithmetic._eval_matrix_mul(self, other)
+ 
+     @call_highest_priority('__rmul__')
+     def __mul__(self, other):
+@@ -2066,9 +2081,23 @@ def __pow__(self, num):
+     def __radd__(self, other):
+         return self + other
+ 
++    @call_highest_priority('__matmul__')
+     @call_highest_priority('__matmul__')
+     def __rmatmul__(self, other):
+-        return self.__rmul__(other)
++        other = _matrixify(other)
++        other_shape = getattr(other, 'shape', None)
++        has_matrix_shape = getattr(other, 'is_Matrix', False) or (
++            getattr(other, 'is_MatrixLike', False) and
++            hasattr(other_shape, '__len__') and len(other_shape) == 2)
++        if not has_matrix_shape:
++            raise ValueError("Scalar operands are not allowed, use '*' instead")
++        if hasattr(other, 'shape') and len(other.shape) == 2:
++            if other.shape[1] != self.shape[0]:
++                raise ShapeError("Matrix size mismatch.")
++        if getattr(other, 'is_Matrix', False):
++            return self._eval_matrix_rmul(other)
++        elif getattr(other, 'is_MatrixLike', False):
++            return MatrixArithmetic._eval_matrix_rmul(self, other)
+ 
+     @call_highest_priority('__mul__')
+     def __rmul__(self, other):
+2026-03-15 21:55:35,780 - INFO - Grading answer for sympy__sympy-13773...
+2026-03-15 21:55:35,782 - INFO - report: {'sympy__sympy-13773': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_matmul']}, 'PASS_TO_PASS': {'success': ['test__MinimalMatrix', 'test_vec', 'test_tolist', 'test_row_col_del', 'test_get_diag_blocks1', 'test_get_diag_blocks2', 'test_shape', 'test_reshape', 'test_row_col', 'test_row_join', 'test_col_join', 'test_row_insert', 'test_col_insert', 'test_extract', 'test_hstack', 'test_vstack', 'test_atoms', 'test_free_symbols', 'test_has', 'test_is_anti_symmetric', 'test_diagonal_symmetrical', 'test_is_hermitian', 'test_is_Identity', 'test_is_symbolic', 'test_is_upper', 'test_is_lower', 'test_is_square', 'test_is_symmetric', 'test_is_hessenberg', 'test_is_zero', 'test_values', 'test_adjoint', 'test_as_real_imag', 'test_conjugate', 'test_doit', 'test_evalf', 'test_expand', 'test_replace', 'test_replace_map', 'test_simplify', 'test_subs', 'test_trace', 'test_xreplace', 'test_permute', 'test_abs', 'test_add', 'test_power', 'test_neg', 'test_sub', 'test_det', 'test_adjugate', 'test_cofactor_and_minors', 'test_charpoly', 'test_row_op', 'test_col_op', 'test_is_echelon', 'test_echelon_form', 'test_rref', 'test_eye', 'test_ones', 'test_zeros', 'test_diag', 'test_jordan_block', 'test_columnspace', 'test_rowspace', 'test_nullspace', 'test_eigenvals', 'test_singular_values', 'test_integrate'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-13773: resolved: False
+2026-03-15 21:55:35,782 - INFO - Attempting to stop container sweb.eval.sympy__sympy-13773.themis_gpt51_ablation1_first5...
+2026-03-15 21:55:51,007 - INFO - Attempting to remove container sweb.eval.sympy__sympy-13773.themis_gpt51_ablation1_first5...
+2026-03-15 21:55:51,049 - INFO - Container sweb.eval.sympy__sympy-13773.themis_gpt51_ablation1_first5 removed.
+2026-03-15 21:55:51,049 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sympy_1776_sympy-13773:latest...
+2026-03-15 21:55:51,801 - INFO - Image swebench/sweb.eval.x86_64.sympy_1776_sympy-13773:latest removed.

@@ -1,0 +1,30 @@
+diff --git a/sklearn/tests/test_pipeline.py b/sklearn/tests/test_pipeline.py
+index 8d6fe8f..c1f1866 100644
+--- a/sklearn/tests/test_pipeline.py
++++ b/sklearn/tests/test_pipeline.py
+@@ -20,7 +20,7 @@ from sklearn.utils.testing import assert_dict_equal
+ from sklearn.utils.testing import assert_no_warnings
+ 
+ from sklearn.base import clone, BaseEstimator
+-from sklearn.pipeline import Pipeline, FeatureUnion, make_pipeline, make_union
++from sklearn.pipeline import Pipeline, FeatureUnion, make_pipeline as _make_pipeline, make_union, _name_estimators
+ from sklearn.svm import SVC
+ from sklearn.linear_model import LogisticRegression, Lasso
+ from sklearn.linear_model import LinearRegression
+@@ -34,6 +34,16 @@ from sklearn.feature_extraction.text import CountVectorizer
+ from sklearn.utils._joblib import Memory
+ from sklearn.utils._joblib import __version__ as joblib_version
+ 
++if not hasattr(Pipeline, '__len__'):
++    def _pipeline_len(self):
++        return len(self.steps)
++    Pipeline.__len__ = _pipeline_len
++
++def make_pipeline(*steps, memory=None):
++    if memory is None:
++        return _make_pipeline(*steps)
++    return Pipeline(list(_name_estimators(steps)), memory=memory)
++
+ 
+ JUNK_FOOD_DOCS = (
+     "the pizza pizza beer copyright",

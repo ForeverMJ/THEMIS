@@ -1,0 +1,26 @@
+diff --git a/requests/__init__.py b/requests/__init__.py
+index 82c0f78..c7eb50d 100644
+--- a/requests/__init__.py
++++ b/requests/__init__.py
+@@ -63,6 +63,21 @@ warnings.simplefilter('ignore', DependencyWarning)
+ 
+ from . import utils
+ from .models import Request, Response, PreparedRequest
++
++# When decode_unicode is requested without an explicit encoding,
++# apply the apparent encoding so iter_content behaves like iter_text.
++_iter_content = Response.iter_content
++def _iter_content_with_apparent(self, chunk_size=1, decode_unicode=False):
++    if decode_unicode and self.encoding is None:
++        apparent_encoding = self.apparent_encoding
++        if apparent_encoding:
++            self.encoding = apparent_encoding
++    return _iter_content(
++        self,
++        chunk_size=chunk_size,
++        decode_unicode=decode_unicode
++    )
++Response.iter_content = _iter_content_with_apparent
+ from .api import request, get, head, post, patch, put, delete, options
+ from .sessions import session, Session
+ from .status_codes import codes

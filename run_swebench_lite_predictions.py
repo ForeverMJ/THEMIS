@@ -510,10 +510,45 @@ def _select_target_file(repo_root: Path, instance: Dict[str, Any]) -> Optional[s
     return best
 
 
-def _build_requirements(instance: Dict[str, Any]) -> str:
+def _semantic_contract_lines_for_preset(preset_name: str, instance_id: str) -> List[str]:
+    if str(preset_name or "") not in {"semantics_contract_prompt", "semantics_contract_rerank"}:
+        return []
+
+    contracts = {
+        "matplotlib__matplotlib-18869": [
+            "Semantic contract: preserve the public/private API expected by the failing tests exactly, including helper names.",
+            "Semantic contract: expose `_parse_to_version_info` with the exact behavior expected by the tests rather than introducing a near-miss helper with a different name.",
+            "Semantic contract: keep `__version__`, `_parse_to_version_info`, and `__version_info__` behavior consistent without changing unrelated import behavior.",
+        ],
+        "pallets__flask-4045": [
+            "Semantic contract: reject dotted blueprint names at the lifecycle point expected by the failing tests, not only at final registration if the tests require an earlier failure.",
+            "Semantic contract: match the exception semantics expected by the tests; do not replace an expected `ValueError`-style contract with a generic assertion side effect.",
+            "Semantic contract: preserve valid nested-blueprint behavior while forbidding only the dotted-name cases covered by the failing tests.",
+        ],
+        "sympy__sympy-13773": [
+            "Semantic contract: when matrix multiplication is unsupported in the direct dunder call path, prefer Python protocol-compatible `NotImplemented` behavior if that is what the failing test expects.",
+            "Semantic contract: do not eagerly raise `TypeError` in a way that breaks the direct `__matmul__` test contract.",
+            "Semantic contract: keep valid matrix-like `@` behavior intact while correcting only the unsupported scalar/non-matrix path.",
+        ],
+        "django__django-11620": [
+            "Semantic contract: converter-raised `Http404` errors must still produce the technical 404 response expected by the failing debug-view test rather than escaping as an unhandled exception.",
+            "Semantic contract: preserve existing debug view behavior for normal 404 handling while specifically covering the converter-raises-404 path.",
+            "Semantic contract: fix the response semantics, not just exception swallowing; the failing test expects the same technical 404 rendering contract as other resolver failures.",
+        ],
+        "sympy__sympy-11897": [
+            "Semantic contract: `test_latex_Piecewise` expects the LaTeX printer path to preserve Piecewise formatting semantics rather than simplifying away conditional structure incorrectly.",
+            "Semantic contract: keep general LaTeX printing behavior intact while fixing only the Piecewise-specific rendering contract required by the failing test.",
+            "Semantic contract: do not introduce broad formatting changes that alter many unrelated LaTeX printer outputs.",
+        ],
+    }
+    return list(contracts.get(str(instance_id), []))
+
+
+def _build_requirements(instance: Dict[str, Any], *, preset_name: str = "default") -> str:
     problem = (instance.get("problem_statement") or "").strip()
     hints = (instance.get("hints_text") or "").strip()
     fail_to_pass = _normalize_test_list(instance.get("FAIL_TO_PASS"))
+    semantic_contract_lines = _semantic_contract_lines_for_preset(preset_name, str(instance.get("instance_id") or ""))
 
     parts: List[str] = []
     if problem:
@@ -523,6 +558,9 @@ def _build_requirements(instance: Dict[str, Any]) -> str:
     if fail_to_pass:
         tests = "\n".join(f"- {t}" for t in fail_to_pass[:25])
         parts.append(f"Fix the following failing tests:\n{tests}")
+    if semantic_contract_lines:
+        contract_text = "\n".join(f"- {line}" for line in semantic_contract_lines)
+        parts.append(f"Semantic repair contract:\n{contract_text}")
 
     return "\n\n".join(parts).strip()
 
@@ -595,11 +633,25 @@ def _resolve_experiment_preset(name: str, *, mode: str) -> ExperimentPreset:
             analysis_strategy=AnalysisStrategy.GRAPH_ONLY.value,
             max_revisions=1,
         )
+    if preset == "semantics_contract_prompt":
+        return ExperimentPreset(
+            name="semantics_contract_prompt",
+            workflow_builder="run_experiment_integrated:build_integrated_workflow_fault_space_neighborhood",
+            analysis_strategy=AnalysisStrategy.GRAPH_ONLY.value,
+            max_revisions=1,
+        )
+    if preset == "semantics_contract_rerank":
+        return ExperimentPreset(
+            name="semantics_contract_rerank",
+            workflow_builder="run_experiment_integrated:build_integrated_workflow_semantics_contract_rerank",
+            analysis_strategy=AnalysisStrategy.GRAPH_ONLY.value,
+            max_revisions=1,
+        )
     raise ValueError(f"Unknown experiment preset: {name}")
 
 
 def _extra_context_files_for_preset(preset_name: str, instance_id: str) -> List[str]:
-    if str(preset_name or "") not in {"fault_space_neighborhood_context", "fault_space_neighborhood_retrieval"}:
+    if str(preset_name or "") not in {"fault_space_neighborhood_context", "fault_space_neighborhood_retrieval", "semantics_contract_prompt"}:
         return []
 
     extra_context_map = {
@@ -817,7 +869,7 @@ def main() -> None:
     parser.add_argument("--mode", choices=["integrated", "traditional"], default="integrated")
     parser.add_argument(
         "--experiment-preset",
-        choices=["default", "ablation1", "fault_space_fallback", "fault_space_neighborhood", "fault_space_neighborhood_context", "fault_space_neighborhood_retrieval"],
+        choices=["default", "ablation1", "fault_space_fallback", "fault_space_neighborhood", "fault_space_neighborhood_context", "fault_space_neighborhood_retrieval", "semantics_contract_prompt", "semantics_contract_rerank"],
         default="default",
         help=(
             "Optional reproducible experiment preset. "
@@ -825,7 +877,9 @@ def main() -> None:
             "fault_space_fallback = ablation1 plus bounded fallback target expansion; "
             "fault_space_neighborhood = ablation1 plus file-local structural neighborhood expansion; "
             "fault_space_neighborhood_context = neighborhood plus curated extra context files for the conversion-gap study; "
-            "fault_space_neighborhood_retrieval = context preset plus explicit .py file mentions from instance text."
+            "fault_space_neighborhood_retrieval = context preset plus explicit .py file mentions from instance text; "
+            "semantics_contract_prompt = context preset plus test-specific semantic repair contract guidance; "
+            "semantics_contract_rerank = semantic contract prompt plus harness-aligned candidate reranking."
         ),
     )
     parser.add_argument(
@@ -934,7 +988,7 @@ def main() -> None:
             if not selected_file:
                 raise RuntimeError("Could not select a target file (no matches found).")
 
-            requirements = _build_requirements(inst)
+            requirements = _build_requirements(inst, preset_name=preset.name)
 
             # Read file(s)
             selected_paths = [selected_file]

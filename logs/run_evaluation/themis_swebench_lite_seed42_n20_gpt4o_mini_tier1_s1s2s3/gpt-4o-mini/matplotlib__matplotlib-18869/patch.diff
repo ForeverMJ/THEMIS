@@ -1,0 +1,15 @@
+diff --git a/lib/matplotlib/tests/test_matplotlib.py b/lib/matplotlib/tests/test_matplotlib.py
+index cad9433..af92bc2 100644
+--- a/lib/matplotlib/tests/test_matplotlib.py
++++ b/lib/matplotlib/tests/test_matplotlib.py
+@@ -46,6 +46,10 @@ def test_use_doc_standard_backends():
+             backends += [e.strip() for e in line.split(',') if e]
+         return backends
+ 
++    # Ensure version_info is available for comparison
++    version_info = matplotlib.__version_info__
++    assert version_info is not None, "version_info should not be None"
++
+     assert (set(parse('- interactive backends:\n')) ==
+             set(matplotlib.rcsetup.interactive_bk))
+     assert (set(parse('- non-interactive backends:\n')) ==

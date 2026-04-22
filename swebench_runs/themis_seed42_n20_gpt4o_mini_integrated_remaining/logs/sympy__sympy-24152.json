@@ -1,0 +1,207 @@
+{
+  "instance_id": "sympy__sympy-24152",
+  "repo": "sympy/sympy",
+  "base_commit": "b9af885473ad7e34b5b0826cb424dd26d8934670",
+  "selected_files": [
+    "sympy/core/add.py"
+  ],
+  "mode": "integrated",
+  "model": "gpt-4o-mini",
+  "analysis_model": "gpt-4o-mini",
+  "dry_run": false,
+  "duration_s": 345.79988193511963,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 3,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=1, advisory=4\nBlocking conflicts (must fix):\nB1. REQ-015 -> Mul | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50\n\nAdvisory conflicts (non-blocking): 4\nA1. REQ-015 -> Add | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.30\nA2. REQ-015 -> all | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40\nA3. REQ-015 -> as_two_terms | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.30, symbol_specific\nA4. REQ-015 -> primitive | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.30\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 76492,
+      "completion_tokens": 4637,
+      "total_tokens": 81129,
+      "successful_requests": 9
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 230.88816285133362,
+      "findings_count": 14,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 58468,
+      "completion_tokens": 11476,
+      "total_tokens": 69944,
+      "successful_requests": 70
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1030,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 4,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      },
+      {
+        "conflict_len": 1030,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 4,
+        "metrics_source": "analysis_report",
+        "revision": 1,
+        "conflict_down": false,
+        "delta_violates": 0,
+        "delta_blocking_conflicts": 0,
+        "delta_advisory_conflicts": 0,
+        "delta_conflict_len": 0
+      },
+      {
+        "conflict_len": 1030,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 4,
+        "metrics_source": "analysis_report",
+        "revision": 2,
+        "conflict_down": false,
+        "delta_violates": 0,
+        "delta_blocking_conflicts": 0,
+        "delta_advisory_conflicts": 0,
+        "delta_conflict_len": 0
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 3,
+        "effective_change": false,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: sympy/core/add.py:TensorProduct._eval_expand_tensorproduct -> Developer proposed unknown symbol: TensorProduct._eval_expand_tensorproduct",
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 1
+      },
+      {
+        "revision": 1,
+        "attempts_used": 2,
+        "effective_change": true,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: no rewrite produced a semantic code delta",
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 0,
+        "changed_line_count": 1,
+        "target_hit_via": null,
+        "applied_symbols_count": 1,
+        "applied_symbols": [
+          "Add.flatten"
+        ],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      },
+      {
+        "revision": 2,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 0,
+        "changed_line_count": 1,
+        "target_hit_via": null,
+        "applied_symbols_count": 1,
+        "applied_symbols": [
+          "Add.flatten"
+        ],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 3,
+      "effective_rounds": 2,
+      "effective_modification_rate": 0.6666666666666666,
+      "target_hit_rounds": 0,
+      "target_rounds": 2,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-015",
+      "target_symbol": "Mul",
+      "related_symbols": [
+        "Add",
+        "all",
+        "as_two_terms"
+      ],
+      "issue_summary": "No validation functions found in codebase",
+      "expected_behavior": "Update `Mul` so `REQ-015` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Start from the smallest method related to `Mul`, especially `Add`.",
+      "blocking": true,
+      "confidence": 0.9,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-009",
+        "target_symbol": "Mul",
+        "related_symbols": [
+          "Add",
+          "all",
+          "as_two_terms"
+        ],
+        "issue_summary": "No validation functions found in codebase",
+        "expected_behavior": "Update `Mul` so `REQ-009` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Start from the smallest method related to `Mul`, especially `Add`.",
+        "blocking": true,
+        "confidence": 0.9,
+        "source": "llm"
+      },
+      {
+        "requirement_id": "REQ-012",
+        "target_symbol": "Mul",
+        "related_symbols": [
+          "Add",
+          "all",
+          "as_two_terms"
+        ],
+        "issue_summary": "No validation functions found in codebase",
+        "expected_behavior": "Update `Mul` so `REQ-012` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Start from the smallest method related to `Mul`, especially `Add`.",
+        "blocking": true,
+        "confidence": 0.9,
+        "source": "llm"
+      },
+      {
+        "requirement_id": "REQ-015",
+        "target_symbol": "Mul",
+        "related_symbols": [
+          "Add",
+          "all",
+          "as_two_terms"
+        ],
+        "issue_summary": "No validation functions found in codebase",
+        "expected_behavior": "Update `Mul` so `REQ-015` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Start from the smallest method related to `Mul`, especially `Add`.",
+        "blocking": true,
+        "confidence": 0.9,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 2,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 297
+}

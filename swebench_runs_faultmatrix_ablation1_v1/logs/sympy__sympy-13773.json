@@ -1,0 +1,143 @@
+{
+  "instance_id": "sympy__sympy-13773",
+  "repo": "sympy/sympy",
+  "base_commit": "7121bdf1facdd90d05b6994b4c2e5b2865a4638a",
+  "selected_files": [
+    "sympy/matrices/common.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "ablation1",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow_ablation1",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "graph_only",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 116.50638794898987,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow_ablation1",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=1, advisory=9\nBlocking conflicts (must fix):\nB1. REQ-021 -> ValueError | reason: No explicit error handling functions found | confidence: 0.80 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\n\nAdvisory conflicts (non-blocking): 9\nA1. REQ-021 -> all | reason: No explicit error handling functions found | confidence: 0.80 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40\nA2. REQ-022 -> H | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA3. REQ-022 -> __matmul__ | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40, symbol_specific\nA4. REQ-022 -> any | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA5. REQ-022 -> f | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA6. REQ-022 -> mat | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA7. REQ-023 -> H | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA8. REQ-023 -> f | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA9. REQ-024 -> mat | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "graph_only",
+      "confidence": 1.0,
+      "processing_time": 0.11472320556640625,
+      "findings_count": 3,
+      "recommendations_count": 3
+    },
+    "advanced_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 0
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1579,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 9,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": true,
+        "target_hit_rate": 1.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 1,
+        "changed_line_count": 6,
+        "target_hit_via": "changed_lines",
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "sympy/matrices/common.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "ValueError"
+        ],
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Explicitly matrixify the operand in `__matmul__`/`__rmatmul__`, check for matrix-like attributes, and raise `ValueError` before deferring to the existing multiplication logic.",
+        "execution_result": {},
+        "hypothesis_root_cause": "`__matmul__` and `__rmatmul__` currently delegate to `__mul__`/`__rmul__` without enforcing matrix-only operands, so scalars slip through and allow invalid `@` usage.",
+        "expected_invariant": "Matrix multiplication (`@`) should only accept matrix-like operands and should raise a `ValueError` when either operand is scalar or otherwise not matrix-like.",
+        "patch_strategy": "Explicitly matrixify the operand in `__matmul__`/`__rmatmul__`, check for matrix-like attributes, and raise `ValueError` before deferring to the existing multiplication logic.",
+        "failure_class": "semantics_space_weak",
+        "fault_space_signal": "strong",
+        "semantics_space_signal": "weak"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 1,
+      "target_rounds": 1,
+      "target_hit_rate": 1.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-021",
+      "target_symbol": "Matrix.__matmul__",
+      "related_symbols": [
+        "Matrix.__mul__"
+      ],
+      "issue_summary": "`__matmul__` currently defers to `__mul__`, so scalars like `2@Matrix` erroneously succeed instead of raising an error, causing `test_matmul` to fail.",
+      "expected_behavior": "`Matrix.__matmul__` should validate that both operands are matrices (or matrix-like) and raise an informative `ValueError` when a scalar is used with `@`, mirroring NumPy’s behavior.",
+      "minimal_change_hint": "At the start of `Matrix.__matmul__`, add a matrix-versus-scalar check (similar to NumPy’s error) before reusing the matrix multiplication logic from `__mul__`.",
+      "blocking": true,
+      "confidence": 0.6,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-021",
+        "target_symbol": "Matrix.__matmul__",
+        "related_symbols": [
+          "Matrix.__mul__"
+        ],
+        "issue_summary": "`__matmul__` currently defers to `__mul__`, so scalars like `2@Matrix` erroneously succeed instead of raising an error, causing `test_matmul` to fail.",
+        "expected_behavior": "`Matrix.__matmul__` should validate that both operands are matrices (or matrix-like) and raise an informative `ValueError` when a scalar is used with `@`, mirroring NumPy’s behavior.",
+        "minimal_change_hint": "At the start of `Matrix.__matmul__`, add a matrix-versus-scalar check (similar to NumPy’s error) before reusing the matrix multiplication logic from `__mul__`.",
+        "blocking": true,
+        "confidence": 0.6,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 992
+}

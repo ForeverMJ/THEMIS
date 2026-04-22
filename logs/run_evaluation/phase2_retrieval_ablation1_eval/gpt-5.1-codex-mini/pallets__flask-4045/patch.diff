@@ -1,0 +1,50 @@
+diff --git a/tests/test_blueprints.py b/tests/test_blueprints.py
+index b986ca0..8919564 100644
+--- a/tests/test_blueprints.py
++++ b/tests/test_blueprints.py
+@@ -353,10 +353,10 @@ def test_route_decorator_custom_endpoint_with_dots(app, client):
+         def foo_bar():
+             return flask.request.endpoint
+ 
+-    except AssertionError:
++    except ValueError:
+         pass
+     else:
+-        raise AssertionError("expected AssertionError not raised")
++        raise AssertionError("expected ValueError not raised")
+ 
+     try:
+ 
+@@ -364,27 +364,27 @@ def test_route_decorator_custom_endpoint_with_dots(app, client):
+         def foo_bar_foo():
+             return flask.request.endpoint
+ 
+-    except AssertionError:
++    except ValueError:
+         pass
+     else:
+-        raise AssertionError("expected AssertionError not raised")
++        raise AssertionError("expected ValueError not raised")
+ 
+     def foo_foo_foo():
+         pass
+ 
+     pytest.raises(
+-        AssertionError,
++        ValueError,
+         lambda: bp.add_url_rule("/bar/123", endpoint="bar.123", view_func=foo_foo_foo),
+     )
+ 
+     pytest.raises(
+-        AssertionError, bp.route("/bar/123", endpoint="bar.123"), lambda: None
++        ValueError, bp.route("/bar/123", endpoint="bar.123"), lambda: None
+     )
+ 
+     foo_foo_foo.__name__ = "bar.123"
+ 
+     pytest.raises(
+-        AssertionError, lambda: bp.add_url_rule("/bar/123", view_func=foo_foo_foo)
++        ValueError, lambda: bp.add_url_rule("/bar/123", view_func=foo_foo_foo)
+     )
+ 
+     bp.add_url_rule(

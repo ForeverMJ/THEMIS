@@ -1,0 +1,13 @@
+diff --git a/django/views/debug.py b/django/views/debug.py
+index cb3e8c7ec..dbf97f040 100644
+--- a/django/views/debug.py
++++ b/django/views/debug.py
+@@ -485,6 +485,8 @@ def technical_404_response(request, exception):
+         resolver_match = resolve(request.path)
+     except Resolver404:
+         pass
++    except Http404 as e:
++        return technical_404_response(request, e)  # Catch Http404 here
+     else:
+         obj = resolver_match.func
+ 

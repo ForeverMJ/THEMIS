@@ -1,0 +1,155 @@
+2026-04-20 11:37:52,440 - INFO - Creating container for matplotlib__matplotlib-18869...
+2026-04-20 11:37:53,593 - INFO - Container for matplotlib__matplotlib-18869 created: 1dd9eedb2c594ad8385e8aa435d72ccf9a97872a71be6bc73728a4450dbae701
+2026-04-20 11:37:53,803 - INFO - Container for matplotlib__matplotlib-18869 started: 1dd9eedb2c594ad8385e8aa435d72ccf9a97872a71be6bc73728a4450dbae701
+2026-04-20 11:37:53,804 - INFO - Intermediate patch for matplotlib__matplotlib-18869 written to logs/run_evaluation/semantics_4case_s1_contract_eval/gpt-5.1-codex-mini/matplotlib__matplotlib-18869/patch.diff, now applying to container...
+2026-04-20 11:37:53,937 - INFO - >>>>> Applied Patch:
+Checking patch lib/matplotlib/__init__.py...
+Applied patch lib/matplotlib/__init__.py cleanly.
+
+2026-04-20 11:37:54,798 - INFO - Git diff before:
+diff --git a/lib/matplotlib/__init__.py b/lib/matplotlib/__init__.py
+index b657a35cf7..726db63d76 100644
+--- a/lib/matplotlib/__init__.py
++++ b/lib/matplotlib/__init__.py
+@@ -130,10 +130,46 @@ __bibtex__ = r"""@Article{Hunter:2007,
+ }"""
+ 
+ 
++def _parse_to_version_info(version):
++    """
++    Parse the given version into a tuple suitable for comparisons.
++    """
++    parsed_version = parse_version(str(version))
++    release = tuple(parsed_version.release)
++    if not release:
++        release = (parsed_version.public,)
++
++    stage = "final"
++    stage_serial = 0
++
++    dev = getattr(parsed_version, "dev", None)
++    if dev is not None:
++        stage = "dev"
++        stage_serial = dev
++    else:
++        pre = getattr(parsed_version, "pre", None)
++        if pre is not None:
++            stage, stage_serial = pre
++            if stage_serial is None:
++                stage_serial = 0
++        else:
++            post = getattr(parsed_version, "post", None)
++            if post is not None:
++                stage = "post"
++                stage_serial = post
++
++    if stage_serial is None:
++        stage_serial = 0
++
++    return (*release, stage, stage_serial)
++
++
+ def __getattr__(name):
+-    if name == "__version__":
++    if name not in {"__version__", "__version_info__"}:
++        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
++    global __version__, __version_info__  # cache version info.
++    if "__version__" not in globals():
+         import setuptools_scm
+-        global __version__  # cache it.
+         # Only shell out to a git subprocess if really needed, and not on a
+         # shallow clone, such as those used by CI, as the latter would trigger
+         # a warning from setuptools_scm.
+@@ -147,8 +183,11 @@ def __getattr__(name):
+             )
+         else:  # Get the version from the _version.py setuptools_scm file.
+             __version__ = _version.version
+-        return __version__
+-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
++    if "__version_info__" not in globals():
++        __version_info__ = _parse_to_version_info(__version__)
++    if name == "__version_info__":
++        return __version_info__
++    return __version__
+ 
+ 
+ def _check_versions():
+2026-04-20 11:37:54,798 - INFO - Eval script for matplotlib__matplotlib-18869 written to logs/run_evaluation/semantics_4case_s1_contract_eval/gpt-5.1-codex-mini/matplotlib__matplotlib-18869/eval.sh; copying to container...
+2026-04-20 11:38:05,195 - INFO - Test runtime: 10.30 seconds
+2026-04-20 11:38:05,195 - INFO - Test output for matplotlib__matplotlib-18869 written to logs/run_evaluation/semantics_4case_s1_contract_eval/gpt-5.1-codex-mini/matplotlib__matplotlib-18869/test_output.txt
+2026-04-20 11:38:05,242 - INFO - Git diff after:
+diff --git a/lib/matplotlib/__init__.py b/lib/matplotlib/__init__.py
+index b657a35cf7..726db63d76 100644
+--- a/lib/matplotlib/__init__.py
++++ b/lib/matplotlib/__init__.py
+@@ -130,10 +130,46 @@ __bibtex__ = r"""@Article{Hunter:2007,
+ }"""
+ 
+ 
++def _parse_to_version_info(version):
++    """
++    Parse the given version into a tuple suitable for comparisons.
++    """
++    parsed_version = parse_version(str(version))
++    release = tuple(parsed_version.release)
++    if not release:
++        release = (parsed_version.public,)
++
++    stage = "final"
++    stage_serial = 0
++
++    dev = getattr(parsed_version, "dev", None)
++    if dev is not None:
++        stage = "dev"
++        stage_serial = dev
++    else:
++        pre = getattr(parsed_version, "pre", None)
++        if pre is not None:
++            stage, stage_serial = pre
++            if stage_serial is None:
++                stage_serial = 0
++        else:
++            post = getattr(parsed_version, "post", None)
++            if post is not None:
++                stage = "post"
++                stage_serial = post
++
++    if stage_serial is None:
++        stage_serial = 0
++
++    return (*release, stage, stage_serial)
++
++
+ def __getattr__(name):
+-    if name == "__version__":
++    if name not in {"__version__", "__version_info__"}:
++        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
++    global __version__, __version_info__  # cache version info.
++    if "__version__" not in globals():
+         import setuptools_scm
+-        global __version__  # cache it.
+         # Only shell out to a git subprocess if really needed, and not on a
+         # shallow clone, such as those used by CI, as the latter would trigger
+         # a warning from setuptools_scm.
+@@ -147,8 +183,11 @@ def __getattr__(name):
+             )
+         else:  # Get the version from the _version.py setuptools_scm file.
+             __version__ = _version.version
+-        return __version__
+-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
++    if "__version_info__" not in globals():
++        __version_info__ = _parse_to_version_info(__version__)
++    if name == "__version_info__":
++        return __version_info__
++    return __version__
+ 
+ 
+ def _check_versions():
+2026-04-20 11:38:05,242 - INFO - Grading answer for matplotlib__matplotlib-18869...
+2026-04-20 11:38:05,242 - INFO - report: {'matplotlib__matplotlib-18869': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['lib/matplotlib/tests/test_matplotlib.py::test_parse_to_version_info[3.5.0-version_tuple0]'], 'failure': ['lib/matplotlib/tests/test_matplotlib.py::test_parse_to_version_info[3.5.0rc2-version_tuple1]', 'lib/matplotlib/tests/test_matplotlib.py::test_parse_to_version_info[3.5.0.dev820+g6768ef8c4c-version_tuple2]', 'lib/matplotlib/tests/test_matplotlib.py::test_parse_to_version_info[3.5.0.post820+g6768ef8c4c-version_tuple3]']}, 'PASS_TO_PASS': {'success': ['lib/matplotlib/tests/test_matplotlib.py::test_importable_with_no_home', 'lib/matplotlib/tests/test_matplotlib.py::test_use_doc_standard_backends', 'lib/matplotlib/tests/test_matplotlib.py::test_importable_with__OO'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for matplotlib__matplotlib-18869: resolved: False
+2026-04-20 11:38:05,242 - INFO - Attempting to stop container sweb.eval.matplotlib__matplotlib-18869.semantics_4case_s1_contract_eval...
+2026-04-20 11:38:20,620 - INFO - Attempting to remove container sweb.eval.matplotlib__matplotlib-18869.semantics_4case_s1_contract_eval...
+2026-04-20 11:38:20,651 - INFO - Container sweb.eval.matplotlib__matplotlib-18869.semantics_4case_s1_contract_eval removed.
+2026-04-20 11:38:20,651 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-18869:latest...
+2026-04-20 11:38:20,656 - INFO - Image swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-18869:latest not found, removing has no effect.
