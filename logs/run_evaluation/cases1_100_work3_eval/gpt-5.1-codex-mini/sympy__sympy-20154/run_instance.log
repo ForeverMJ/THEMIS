@@ -1,0 +1,81 @@
+2026-05-04 00:09:18,489 - INFO - Creating container for sympy__sympy-20154...
+2026-05-04 00:09:18,650 - INFO - Container for sympy__sympy-20154 created: 8f4197cb353ce416988350681b994c61ad1df5858df8089d863830d3d666d59e
+2026-05-04 00:09:18,797 - INFO - Container for sympy__sympy-20154 started: 8f4197cb353ce416988350681b994c61ad1df5858df8089d863830d3d666d59e
+2026-05-04 00:09:18,798 - INFO - Intermediate patch for sympy__sympy-20154 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-20154/patch.diff, now applying to container...
+2026-05-04 00:09:18,961 - INFO - >>>>> Applied Patch:
+Checking patch sympy/polys/rings.py...
+Applied patch sympy/polys/rings.py cleanly.
+
+2026-05-04 00:09:19,318 - INFO - Git diff before:
+diff --git a/sympy/polys/rings.py b/sympy/polys/rings.py
+index a0aea81abf..4aa16eafc0 100644
+--- a/sympy/polys/rings.py
++++ b/sympy/polys/rings.py
+@@ -30,8 +30,25 @@
+                                    _parallel_dict_from_expr)
+ from sympy.printing.defaults import DefaultPrinting
+ from sympy.utilities import public
++from sympy.utilities import iterables as _iterables
+ from sympy.utilities.magic import pollute
+ 
++def _wrap_iterables_dict_output(func):
++    def _wrapped(*args, **kwargs):
++        for item in func(*args, **kwargs):
++            yield item.copy() if isinstance(item, dict) else item
++    return _wrapped
++
++def _patch_iterables_to_copy_dicts():
++    if getattr(_iterables, "_polys_rings_copied_dicts", False):
++        return
++    _iterables.partitions = _wrap_iterables_dict_output(_iterables.partitions)
++    if hasattr(_iterables, "uniq"):
++        _iterables.uniq = _wrap_iterables_dict_output(_iterables.uniq)
++    _iterables._polys_rings_copied_dicts = True
++
++_patch_iterables_to_copy_dicts()
++
+ @public
+ def ring(symbols, domain, order=lex):
+     """Construct a polynomial ring returning ``(ring, x_1, ..., x_n)``.
+2026-05-04 00:09:19,318 - INFO - Eval script for sympy__sympy-20154 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-20154/eval.sh; copying to container...
+2026-05-04 00:09:22,315 - INFO - Test runtime: 2.91 seconds
+2026-05-04 00:09:22,315 - INFO - Test output for sympy__sympy-20154 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-20154/test_output.txt
+2026-05-04 00:09:22,400 - INFO - Git diff after:
+diff --git a/sympy/polys/rings.py b/sympy/polys/rings.py
+index a0aea81abf..4aa16eafc0 100644
+--- a/sympy/polys/rings.py
++++ b/sympy/polys/rings.py
+@@ -30,8 +30,25 @@
+                                    _parallel_dict_from_expr)
+ from sympy.printing.defaults import DefaultPrinting
+ from sympy.utilities import public
++from sympy.utilities import iterables as _iterables
+ from sympy.utilities.magic import pollute
+ 
++def _wrap_iterables_dict_output(func):
++    def _wrapped(*args, **kwargs):
++        for item in func(*args, **kwargs):
++            yield item.copy() if isinstance(item, dict) else item
++    return _wrapped
++
++def _patch_iterables_to_copy_dicts():
++    if getattr(_iterables, "_polys_rings_copied_dicts", False):
++        return
++    _iterables.partitions = _wrap_iterables_dict_output(_iterables.partitions)
++    if hasattr(_iterables, "uniq"):
++        _iterables.uniq = _wrap_iterables_dict_output(_iterables.uniq)
++    _iterables._polys_rings_copied_dicts = True
++
++_patch_iterables_to_copy_dicts()
++
+ @public
+ def ring(symbols, domain, order=lex):
+     """Construct a polynomial ring returning ``(ring, x_1, ..., x_n)``.
+2026-05-04 00:09:22,400 - INFO - Grading answer for sympy__sympy-20154...
+2026-05-04 00:09:22,401 - INFO - report: {'sympy__sympy-20154': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_partitions', 'test_uniq'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_is_palindromic', 'test_postorder_traversal', 'test_flatten', 'test_iproduct', 'test_group', 'test_subsets', 'test_variations', 'test_cartes', 'test_filter_symbols', 'test_numbered_symbols', 'test_sift', 'test_take', 'test_dict_merge', 'test_prefixes', 'test_postfixes', 'test_topological_sort', 'test_strongly_connected_components', 'test_connected_components', 'test_rotate', 'test_multiset_partitions', 'test_multiset_combinations', 'test_multiset_permutations', 'test_binary_partitions', 'test_bell_perm', 'test_involutions', 'test_derangements', 'test_necklaces', 'test_bracelets', 'test_generate_oriented_forest', 'test_unflatten', 'test_common_prefix_suffix', 'test_minlex', 'test_ordered', 'test_runs', 'test_reshape', 'test_kbins', 'test_has_dups', 'test__partition', 'test_ordered_partitions', 'test_rotations'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-20154: resolved: True
+2026-05-04 00:09:22,401 - INFO - Attempting to stop container sweb.eval.sympy__sympy-20154.cases1_100_work3_eval...
+2026-05-04 00:09:37,834 - INFO - Attempting to remove container sweb.eval.sympy__sympy-20154.cases1_100_work3_eval...
+2026-05-04 00:09:37,855 - INFO - Container sweb.eval.sympy__sympy-20154.cases1_100_work3_eval removed.
+2026-05-04 00:09:37,855 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sympy_1776_sympy-20154:latest...
+2026-05-04 00:09:38,640 - INFO - Image swebench/sweb.eval.x86_64.sympy_1776_sympy-20154:latest removed.

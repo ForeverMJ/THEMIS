@@ -1,0 +1,20 @@
+diff --git a/django/db/migrations/operations/base.py b/django/db/migrations/operations/base.py
+index 18935520..b2e46cf1 100644
+--- a/django/db/migrations/operations/base.py
++++ b/django/db/migrations/operations/base.py
+@@ -118,7 +118,14 @@ class Operation:
+         if not model._meta.can_migrate(connection_alias):
+             return False
+ 
+-        return router.allow_migrate_model(connection_alias, model)
++        model_allowed = router.allow_migrate_model(connection_alias, model)
++        if model_allowed is None:
++            return router.allow_migrate(
++                connection_alias,
++                model._meta.app_label,
++                model._meta.model_name,
++            )
++        return model_allowed
+ 
+     def reduce(self, operation, app_label):
+         """

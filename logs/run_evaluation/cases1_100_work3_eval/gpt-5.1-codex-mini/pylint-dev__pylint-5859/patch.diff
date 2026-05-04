@@ -1,0 +1,19 @@
+diff --git a/tests/checkers/unittest_misc.py b/tests/checkers/unittest_misc.py
+index 23e19a9..159d549 100644
+--- a/tests/checkers/unittest_misc.py
++++ b/tests/checkers/unittest_misc.py
+@@ -89,6 +89,14 @@ class TestFixme(CheckerTestCase):
+         ):
+             self.checker.process_tokens(_tokenize_str(code))
+ 
++    @set_config(notes=["???"])
++    def test_non_alphanumeric_codetag(self) -> None:
++        code = "# ???: no"
++        with self.assertAddsMessages(
++            MessageTest(msg_id="fixme", line=1, args="???: no", col_offset=1)
++        ):
++            self.checker.process_tokens(_tokenize_str(code))
++
+     def test_issue_2321_should_not_trigger(self) -> None:
+         code = 'print("# TODO this should not trigger a fixme")'
+         with self.assertNoMessages():

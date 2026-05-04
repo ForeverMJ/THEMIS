@@ -1,0 +1,19 @@
+diff --git a/sympy/core/facts.py b/sympy/core/facts.py
+index a5231d65..f2b45ad0 100644
+--- a/sympy/core/facts.py
++++ b/sympy/core/facts.py
+@@ -239,12 +239,9 @@ def rules_2prereq(rules):
+     """
+     prereq = defaultdict(set)
+     for (a, _), impl in rules.items():
+-        if isinstance(a, Not):
+-            a = a.args[0]
++        base_a = _base_fact(a)
+         for (i, _) in impl:
+-            if isinstance(i, Not):
+-                i = i.args[0]
+-            prereq[i].add(a)
++            prereq[_base_fact(i)].add(base_a)
+     return prereq
+ 
+ ################

@@ -1,0 +1,40 @@
+2026-05-03 23:16:42,144 - INFO - Creating container for pallets__flask-4992...
+2026-05-03 23:16:42,911 - INFO - Container for pallets__flask-4992 created: 45aae2858440521f0edb7ef9b4dd84efde8edf63822b86697fbd97a4ad157404
+2026-05-03 23:16:43,086 - INFO - Container for pallets__flask-4992 started: 45aae2858440521f0edb7ef9b4dd84efde8edf63822b86697fbd97a4ad157404
+2026-05-03 23:16:43,086 - INFO - Intermediate patch for pallets__flask-4992 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/pallets__flask-4992/patch.diff, now applying to container...
+2026-05-03 23:16:43,257 - INFO - >>>>> Applied Patch:
+Checking patch tests/test_config.py...
+Applied patch tests/test_config.py cleanly.
+
+2026-05-03 23:16:43,317 - INFO - Git diff before:
+diff --git a/tests/test_config.py b/tests/test_config.py
+index 76c5d272..6670597a 100644
+--- a/tests/test_config.py
++++ b/tests/test_config.py
+@@ -247,3 +247,12 @@ def test_from_pyfile_weird_encoding(tmpdir, encoding):
+     app.config.from_pyfile(str(f))
+     value = app.config["TEST_VALUE"]
+     assert value == "föö"
++
++
++def test_config_from_file_toml(tmp_path):
++    tomllib = pytest.importorskip("tomllib")
++    app = flask.Flask(__name__)
++    toml_path = tmp_path / "config.toml"
++    toml_path.write_text('SECRET_KEY = "config"\nTEST_KEY = "foo"\n', encoding="utf-8")
++    app.config.from_file(str(toml_path), tomllib.load, mode="rb")
++    common_object_test(app)
+2026-05-03 23:16:43,317 - INFO - Eval script for pallets__flask-4992 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/pallets__flask-4992/eval.sh; copying to container...
+2026-05-03 23:16:46,880 - INFO - Test runtime: 3.50 seconds
+2026-05-03 23:16:46,881 - INFO - Test output for pallets__flask-4992 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/pallets__flask-4992/test_output.txt
+2026-05-03 23:16:46,955 - INFO - Git diff after:
+
+2026-05-03 23:16:46,955 - INFO - Git diff changed after running eval script
+2026-05-03 23:16:46,955 - INFO - Grading answer for pallets__flask-4992...
+2026-05-03 23:16:46,956 - INFO - report: {'pallets__flask-4992': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['tests/test_config.py::test_config_from_file_toml']}, 'PASS_TO_PASS': {'success': ['tests/test_config.py::test_config_from_pyfile', 'tests/test_config.py::test_config_from_object', 'tests/test_config.py::test_config_from_file_json', 'tests/test_config.py::test_from_prefixed_env', 'tests/test_config.py::test_from_prefixed_env_custom_prefix', 'tests/test_config.py::test_from_prefixed_env_nested', 'tests/test_config.py::test_config_from_mapping', 'tests/test_config.py::test_config_from_class', 'tests/test_config.py::test_config_from_envvar', 'tests/test_config.py::test_config_from_envvar_missing', 'tests/test_config.py::test_config_missing', 'tests/test_config.py::test_config_missing_file', 'tests/test_config.py::test_custom_config_class', 'tests/test_config.py::test_session_lifetime', 'tests/test_config.py::test_get_namespace', 'tests/test_config.py::test_from_pyfile_weird_encoding[utf-8]', 'tests/test_config.py::test_from_pyfile_weird_encoding[iso-8859-15]', 'tests/test_config.py::test_from_pyfile_weird_encoding[latin-1]'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for pallets__flask-4992: resolved: False
+2026-05-03 23:16:46,956 - INFO - Attempting to stop container sweb.eval.pallets__flask-4992.cases1_100_work3_eval...
+2026-05-03 23:17:02,227 - INFO - Attempting to remove container sweb.eval.pallets__flask-4992.cases1_100_work3_eval...
+2026-05-03 23:17:02,245 - INFO - Container sweb.eval.pallets__flask-4992.cases1_100_work3_eval removed.
+2026-05-03 23:17:02,245 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.pallets_1776_flask-4992:latest...
+2026-05-03 23:17:02,579 - INFO - Image swebench/sweb.eval.x86_64.pallets_1776_flask-4992:latest removed.

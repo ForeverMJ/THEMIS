@@ -1,0 +1,29 @@
+diff --git a/sympy/physics/units/__init__.py b/sympy/physics/units/__init__.py
+index bf17c7f..ddf749c 100644
+--- a/sympy/physics/units/__init__.py
++++ b/sympy/physics/units/__init__.py
+@@ -50,6 +50,8 @@
+ amount = amount_of_substance
+ 
+ from .prefixes import (
++    Prefix,
++    PrefixUnit,
+     # 10-power based:
+     yotta,
+     zetta,
+@@ -216,6 +218,15 @@
+     mks, mksa, si
+ )
+ 
++_prefix_mul_original = Prefix.__mul__
++
++def _prefix_unit_mul(self, other):
++    if isinstance(other, (Quantity, PrefixUnit)):
++        return PrefixUnit(self, other)
++    return _prefix_mul_original(self, other)
++
++Prefix.__mul__ = _prefix_unit_mul
++
+ 
+ def find_unit(quantity, unit_system="SI"):
+     """

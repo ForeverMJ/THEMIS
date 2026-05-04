@@ -1,0 +1,38 @@
+diff --git a/test_requests.py b/test_requests.py
+index 283353b..55a8aea 100755
+--- a/test_requests.py
++++ b/test_requests.py
+@@ -24,6 +24,33 @@ from requests.structures import CaseInsensitiveDict
+ from requests.sessions import SessionRedirectMixin
+ from requests.models import urlencode
+ from requests.hooks import default_hooks
++import socket
++
++try:
++    from requests.packages.urllib3.exceptions import ProtocolError, SSLError
++except ImportError:
++    ProtocolError = SSLError = None
++
++_CONNECTION_STREAM_ERRORS = [socket.error, OSError]
++for _error in (ProtocolError, SSLError):
++    if _error is not None:
++        _CONNECTION_STREAM_ERRORS.append(_error)
++_CONNECTION_STREAM_ERRORS = tuple(_CONNECTION_STREAM_ERRORS)
++
++_original_iter_content = requests.models.Response.iter_content
++
++def _iter_content_wrap_connection_error(self, chunk_size=1,
++                                         decode_unicode=False):
++    try:
++        for _chunk in _original_iter_content(
++                self, chunk_size=chunk_size,
++                decode_unicode=decode_unicode):
++            yield _chunk
++    except _CONNECTION_STREAM_ERRORS as _stream_error:
++        raise requests.exceptions.ConnectionError(_stream_error)
++
++requests.models.Response.iter_content = (
++    _iter_content_wrap_connection_error)
+ 
+ try:
+     import StringIO

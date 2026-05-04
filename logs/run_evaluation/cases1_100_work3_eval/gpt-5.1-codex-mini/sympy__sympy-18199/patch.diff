@@ -1,0 +1,17 @@
+diff --git a/sympy/solvers/solveset.py b/sympy/solvers/solveset.py
+index 445be3e..6e7f122 100644
+--- a/sympy/solvers/solveset.py
++++ b/sympy/solvers/solveset.py
+@@ -1201,8 +1201,12 @@ def _invert_modular(modterm, rhs, n, symbol):
+             # rhs = ImageSet(Lambda(n, period*n + remainder), S.Naturals0).
+             return expo, ImageSet(Lambda(n, period*n + remainder), S.Naturals0)
+         elif base.has(symbol) and not expo.has(symbol):
++            rhs_mod_m = Mod(rhs, m)
++            zero_root_candidate = rhs_mod_m.is_zero and expo.is_positive is True
+             try:
+                 remainder_list = nthroot_mod(rhs, expo, m, all_roots=True)
++                if zero_root_candidate and remainder_list is not None and S.Zero not in remainder_list:
++                    remainder_list.append(S.Zero)
+                 if remainder_list is None:
+                     return symbol, EmptySet
+             except (ValueError, NotImplementedError):

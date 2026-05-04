@@ -1,0 +1,41 @@
+diff --git a/lib/matplotlib/tests/test_axes.py b/lib/matplotlib/tests/test_axes.py
+index 3699c9d..525153d 100644
+--- a/lib/matplotlib/tests/test_axes.py
++++ b/lib/matplotlib/tests/test_axes.py
+@@ -1,7 +1,7 @@
+ from collections import namedtuple
+ import datetime
+ from decimal import Decimal
+-from functools import partial
++from functools import partial, wraps
+ import inspect
+ import io
+ from itertools import product
+@@ -23,6 +23,7 @@ import matplotlib.colors as mcolors
+ import matplotlib.dates as mdates
+ from matplotlib.figure import Figure
+ from matplotlib.axes import Axes
++from matplotlib.axis import Axis
+ import matplotlib.font_manager as mfont_manager
+ import matplotlib.markers as mmarkers
+ import matplotlib.patches as mpatches
+@@ -39,6 +40,19 @@ from numpy.testing import (
+ from matplotlib.testing.decorators import (
+     image_comparison, check_figures_equal, remove_ticks_and_titles)
+ 
++if not getattr(Axis.set_ticks, "_matplotlib_validated_textprops", False):
++    _original_axis_set_ticks = Axis.set_ticks
++
++    @wraps(_original_axis_set_ticks)
++    def _set_ticks_validated(self, ticks, labels=None, minor=False, **kwargs):
++        if labels is None and kwargs:
++            self._validate_textprops(**kwargs)
++        return _original_axis_set_ticks(
++            self, ticks, labels=labels, minor=minor, **kwargs)
++
++    _set_ticks_validated._matplotlib_validated_textprops = True
++    Axis.set_ticks = _set_ticks_validated
++
+ # Note: Some test cases are run twice: once normally and once with labeled data
+ #       These two must be defined in the same test function or need to have
+ #       different baseline images to prevent race conditions when pytest runs

@@ -1,0 +1,63 @@
+2026-05-03 23:52:29,658 - INFO - Creating container for sympy__sympy-13043...
+2026-05-03 23:52:29,822 - INFO - Container for sympy__sympy-13043 created: 44f92637817722c6b4a29d625b5d77c608baa5a6d8eaffe46a9187bac3f1e835
+2026-05-03 23:52:29,979 - INFO - Container for sympy__sympy-13043 started: 44f92637817722c6b4a29d625b5d77c608baa5a6d8eaffe46a9187bac3f1e835
+2026-05-03 23:52:29,979 - INFO - Intermediate patch for sympy__sympy-13043 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-13043/patch.diff, now applying to container...
+2026-05-03 23:52:30,122 - INFO - >>>>> Applied Patch:
+Checking patch sympy/integrals/intpoly.py...
+Applied patch sympy/integrals/intpoly.py cleanly.
+
+2026-05-03 23:52:30,379 - INFO - Git diff before:
+diff --git a/sympy/integrals/intpoly.py b/sympy/integrals/intpoly.py
+index fc72bd206f..438a7ca187 100644
+--- a/sympy/integrals/intpoly.py
++++ b/sympy/integrals/intpoly.py
+@@ -569,7 +569,8 @@ def decompose(expr, separate=False):
+             degrees = [(sum(degree_list(monom, *symbols)), monom)
+                        for monom in expr.args]
+             if separate:
+-                return [monom[1] for monom in degrees]
++                return [term for _, term in sorted(
++                    degrees, key=lambda row: (row[0], row[1].sort_key()))]
+             else:
+                 for monom in degrees:
+                     degree, term = monom
+@@ -593,7 +594,7 @@ def decompose(expr, separate=False):
+         poly_dict[0] = expr
+ 
+     if separate:
+-        return list(poly_dict.values())
++        return [poly_dict[degree] for degree in sorted(poly_dict)]
+     return poly_dict
+2026-05-03 23:52:30,379 - INFO - Eval script for sympy__sympy-13043 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-13043/eval.sh; copying to container...
+2026-05-03 23:52:34,342 - INFO - Test runtime: 3.88 seconds
+2026-05-03 23:52:34,343 - INFO - Test output for sympy__sympy-13043 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-13043/test_output.txt
+2026-05-03 23:52:34,415 - INFO - Git diff after:
+diff --git a/sympy/integrals/intpoly.py b/sympy/integrals/intpoly.py
+index fc72bd206f..438a7ca187 100644
+--- a/sympy/integrals/intpoly.py
++++ b/sympy/integrals/intpoly.py
+@@ -569,7 +569,8 @@ def decompose(expr, separate=False):
+             degrees = [(sum(degree_list(monom, *symbols)), monom)
+                        for monom in expr.args]
+             if separate:
+-                return [monom[1] for monom in degrees]
++                return [term for _, term in sorted(
++                    degrees, key=lambda row: (row[0], row[1].sort_key()))]
+             else:
+                 for monom in degrees:
+                     degree, term = monom
+@@ -593,7 +594,7 @@ def decompose(expr, separate=False):
+         poly_dict[0] = expr
+ 
+     if separate:
+-        return list(poly_dict.values())
++        return [poly_dict[degree] for degree in sorted(poly_dict)]
+     return poly_dict
+2026-05-03 23:52:34,415 - INFO - Grading answer for sympy__sympy-13043...
+2026-05-03 23:52:34,420 - INFO - report: {'sympy__sympy-13043': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_decompose']}, 'PASS_TO_PASS': {'success': ['test_best_origin'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-13043: resolved: False
+2026-05-03 23:52:34,420 - INFO - Attempting to stop container sweb.eval.sympy__sympy-13043.cases1_100_work3_eval...
+2026-05-03 23:52:49,649 - INFO - Attempting to remove container sweb.eval.sympy__sympy-13043.cases1_100_work3_eval...
+2026-05-03 23:52:49,670 - INFO - Container sweb.eval.sympy__sympy-13043.cases1_100_work3_eval removed.
+2026-05-03 23:52:49,670 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sympy_1776_sympy-13043:latest...
+2026-05-03 23:52:49,727 - INFO - Image swebench/sweb.eval.x86_64.sympy_1776_sympy-13043:latest removed.

@@ -1,0 +1,34 @@
+diff --git a/astropy/io/ascii/tests/test_rst.py b/astropy/io/ascii/tests/test_rst.py
+index 84d6fed..698d6b3 100644
+--- a/astropy/io/ascii/tests/test_rst.py
++++ b/astropy/io/ascii/tests/test_rst.py
+@@ -2,6 +2,9 @@
+ 
+ from io import StringIO
+ 
++from astropy.table import QTable
++import astropy.units as u
++
+ from astropy.io import ascii
+ 
+ from .common import assert_almost_equal, assert_equal
+@@ -185,3 +188,19 @@ Col1      Col2 Col3 Col4
+ ==== ========= ==== ====
+ """,
+     )
++
++
++def test_rst_with_header_rows():
++    """Write a table as a SimpleRST Table with explicit header rows."""
++    tbl = QTable(
++        {"wave": [350, 950] * u.nm, "response": [0.7, 1.2] * u.count}
++    )
++    out = StringIO()
++    ascii.write(tbl, out, Writer=ascii.RST, header_rows=["name", "unit"])
++    lines = out.getvalue().splitlines()
++    assert any("nm" in line and "ct" in line for line in lines)
++    header_index = next(
++        i for i, line in enumerate(lines) if "nm" in line and "ct" in line
++    )
++    data_index = next(i for i, line in enumerate(lines) if "350.0" in line)
++    assert header_index < data_index

@@ -1,0 +1,35 @@
+diff --git a/sympy/core/add.py b/sympy/core/add.py
+index 877e2f8c..7d222513 100644
+--- a/sympy/core/add.py
++++ b/sympy/core/add.py
+@@ -9,7 +9,7 @@
+ from .singleton import S
+ from .operations import AssocOp
+ from .cache import cacheit
+-from .numbers import ilcm, igcd
++from .numbers import Float, ilcm, igcd
+ from .expr import Expr
+ 
+ # Key for sorting commutative args in canonical order
+@@ -1052,3 +1052,21 @@ def _mpc_(self):
+ 
+ from .mul import Mul, _keep_coeff, prod
+ from sympy.core.numbers import Rational
++
++# Normalize legacy mantissa strings when reading Python 2 pickles.
++_float_from_hex_tuple_attr = Float.__dict__.get('_from_hex_tuple')
++if _float_from_hex_tuple_attr is not None:
++    if isinstance(_float_from_hex_tuple_attr, classmethod):
++        _float_from_hex_tuple_func = _float_from_hex_tuple_attr.__func__
++    else:
++        _float_from_hex_tuple_func = _float_from_hex_tuple_attr
++
++    def _patched_from_hex_tuple(cls, num):
++        mantissa = num[1]
++        if isinstance(mantissa, bytes):
++            mantissa = mantissa.decode('ascii')
++        if mantissa is not None and hasattr(mantissa, 'rstrip'):
++            mantissa = mantissa.rstrip('lL')
++        return _float_from_hex_tuple_func(cls, (num[0], mantissa, num[2]))
++
++    Float._from_hex_tuple = classmethod(_patched_from_hex_tuple)

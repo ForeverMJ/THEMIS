@@ -1,0 +1,14 @@
+diff --git a/sympy/stats/rv.py b/sympy/stats/rv.py
+index 65e10de..d679d62 100644
+--- a/sympy/stats/rv.py
++++ b/sympy/stats/rv.py
+@@ -244,6 +244,9 @@ def __new__(cls, symbol, pspace=None):
+     symbol = property(lambda self: self.args[0])
+     name   = property(lambda self: self.symbol.name)
+ 
++    def _latex(self, printer):
++        return printer._print(self.symbol)
++
+     def _eval_is_positive(self):
+         return self.symbol.is_positive
+ 

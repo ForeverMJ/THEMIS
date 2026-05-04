@@ -1,0 +1,38 @@
+diff --git a/django/template/defaulttags.py b/django/template/defaulttags.py
+index b10a811c..ab0a5b95 100644
+--- a/django/template/defaulttags.py
++++ b/django/template/defaulttags.py
+@@ -524,6 +524,12 @@ class WidthRatioNode(Node):
+ 
+ 
+ class WithNode(Node):
++    _INDEX_TOGETHER_WARNING = (
++        "Legacy 'index_together' metadata is deprecated and needs to be "
++        "converted to 'indexes' before squashing migrations with the "
++        "optimizer/autodetector."
++    )
++
+     def __init__(self, var, name, nodelist, extra_context=None):
+         self.nodelist = nodelist
+         # var and name are legacy attributes, being left in case they are used
+@@ -535,8 +541,20 @@ class WithNode(Node):
+     def __repr__(self):
+         return "<%s>" % self.__class__.__name__
+ 
++    def _normalize_index_metadata(self, values):
++        index_together = values.pop("index_together", None)
++        if index_together is not None:
++            values.setdefault("indexes", index_together)
++            warnings.warn(
++                self._INDEX_TOGETHER_WARNING,
++                DeprecationWarning,
++                stacklevel=3,
++            )
++        return values
++
+     def render(self, context):
+         values = {key: val.resolve(context) for key, val in self.extra_context.items()}
++        values = self._normalize_index_metadata(values)
+         with context.push(**values):
+             return self.nodelist.render(context)
+ 

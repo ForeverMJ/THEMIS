@@ -1,0 +1,28 @@
+diff --git a/sklearn/preprocessing/tests/test_encoders.py b/sklearn/preprocessing/tests/test_encoders.py
+index d5ac50a..bac3c76 100644
+--- a/sklearn/preprocessing/tests/test_encoders.py
++++ b/sklearn/preprocessing/tests/test_encoders.py
+@@ -251,6 +251,23 @@ def test_one_hot_encoder_handle_unknown():
+     assert_raises(ValueError, oh.fit, X)
+ 
+ 
++def test_one_hot_encoder_handle_unknown_strings():
++    train = np.array(['22', '333', '4444', '11111111']).reshape((-1, 1))
++    test = np.array(['55555', '22']).reshape((-1, 1))
++
++    ohe = OneHotEncoder(dtype=bool, handle_unknown='ignore')
++    ohe.fit(train)
++
++    expected = np.array([[False, False, False, False],
++                         [False, True, False, False]], dtype=bool)
++
++    test_copy = test.copy()
++    assert_array_equal(
++        ohe.transform(test_copy).toarray(),
++        expected)
++    assert_array_equal(test_copy, test)
++
++
+ def test_one_hot_encoder_not_fitted():
+     X = np.array([['a'], ['b']])
+     enc = OneHotEncoder(categories=['a', 'b'])

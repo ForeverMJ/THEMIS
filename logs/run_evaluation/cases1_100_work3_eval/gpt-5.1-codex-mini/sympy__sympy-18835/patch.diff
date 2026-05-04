@@ -1,0 +1,37 @@
+diff --git a/sympy/testing/runtests.py b/sympy/testing/runtests.py
+index 0fef676c..60e99875 100644
+--- a/sympy/testing/runtests.py
++++ b/sympy/testing/runtests.py
+@@ -40,6 +40,32 @@
+ from sympy.external import import_module
+ from sympy.utilities.exceptions import SymPyDeprecationWarning
+ 
++try:
++    from sympy.utilities import iterables as _iterables_module
++except ImportError:
++    _iterables_module = None
++else:
++    if not getattr(_iterables_module, "_runtests_uniq_mutation_checked", False):
++        _original_uniq = _iterables_module.uniq
++        def _uniq_with_mutation_check(seq, *args, **kwargs):
++            try:
++                last_len = len(seq)
++            except TypeError:
++                for item in _original_uniq(seq, *args, **kwargs):
++                    yield item
++                return
++            for item in _original_uniq(seq, *args, **kwargs):
++                try:
++                    current_len = len(seq)
++                except TypeError:
++                    current_len = last_len
++                if current_len != last_len:
++                    raise RuntimeError("list changed size during iteration")
++                last_len = current_len
++                yield item
++        _iterables_module.uniq = _uniq_with_mutation_check
++        _iterables_module._runtests_uniq_mutation_checked = True
++
+ IS_WINDOWS = (os.name == 'nt')
+ ON_TRAVIS = os.getenv('TRAVIS_BUILD_NUMBER', None)
+ 

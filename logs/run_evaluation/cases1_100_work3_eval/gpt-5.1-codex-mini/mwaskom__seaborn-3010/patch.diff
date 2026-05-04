@@ -1,0 +1,23 @@
+diff --git a/tests/_stats/test_regression.py b/tests/_stats/test_regression.py
+index 7facf75..5e67154 100644
+--- a/tests/_stats/test_regression.py
++++ b/tests/_stats/test_regression.py
+@@ -50,3 +50,18 @@ class TestPolyFit:
+             grid = np.linspace(part["x"].min(), part["x"].max(), gridsize)
+             assert_array_equal(part["x"], grid)
+             assert part["y"].diff().diff().dropna().abs().gt(0).all()
++
++    def test_missing_data(self):
++        groupby = GroupBy(["group"])
++        data = pd.DataFrame(dict(
++            x=[0, 1, np.nan, 3],
++            y=[0, 1, 2, 3],
++        ))
++        res = PolyFit(gridsize=20, order=1)(data, groupby, "x", {})
++
++        assert not res["x"].isna().any()
++        assert not res["y"].isna().any()
++
++        grid = np.linspace(0, 3, 20)
++        assert_array_equal(res["x"], grid)
++        assert_array_almost_equal(res["y"], res["x"])

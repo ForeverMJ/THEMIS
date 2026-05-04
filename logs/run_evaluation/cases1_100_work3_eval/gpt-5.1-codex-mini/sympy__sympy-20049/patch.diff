@@ -1,0 +1,48 @@
+diff --git a/sympy/physics/vector/point.py b/sympy/physics/vector/point.py
+index d4e3cfcc..75f6e890 100644
+--- a/sympy/physics/vector/point.py
++++ b/sympy/physics/vector/point.py
+@@ -1,4 +1,5 @@
+ from __future__ import print_function, division
++from collections import deque
+ from .vector import Vector, _check_vector
+ from .frame import _check_frame
+ 
+@@ -114,6 +115,20 @@ def _pdict_list(self, other, num):
+         raise ValueError('No Connecting Path found between ' + other.name +
+                          ' and ' + self.name)
+ 
++    def _find_point_with_vel(self, frame):
++        visited = {self}
++        queue = deque([self])
++        while queue:
++            current = queue.popleft()
++            for otherpoint in current._pos_dict:
++                if otherpoint in visited:
++                    continue
++                if frame in otherpoint._vel_dict:
++                    return otherpoint
++                visited.add(otherpoint)
++                queue.append(otherpoint)
++        return None
++
+     def a1pt_theory(self, otherpoint, outframe, interframe):
+         """Sets the acceleration of this point with the 1-point theory.
+ 
+@@ -518,10 +533,14 @@ def vel(self, frame):
+         """
+ 
+         _check_frame(frame)
+-        if not (frame in self._vel_dict):
++        if frame in self._vel_dict:
++            return self._vel_dict[frame]
++        otherpoint = self._find_point_with_vel(frame)
++        if otherpoint is None:
+             raise ValueError('Velocity of point ' + self.name + ' has not been'
+                              ' defined in ReferenceFrame ' + frame.name)
+-        return self._vel_dict[frame]
++        dist = self.pos_from(otherpoint)
++        return otherpoint._vel_dict[frame] + dist.dt(frame)
+ 
+     def partial_velocity(self, frame, *gen_speeds):
+         """Returns the partial velocities of the linear velocity vector of this

@@ -1,0 +1,38 @@
+diff --git a/testing/test_nodes.py b/testing/test_nodes.py
+index dbb3e2e..7253802 100644
+--- a/testing/test_nodes.py
++++ b/testing/test_nodes.py
+@@ -58,3 +58,33 @@ def test__check_initialpaths_for_relpath():
+ 
+     outside = py.path.local("/outside")
+     assert nodes._check_initialpaths_for_relpath(FakeSession, outside) is None
++
++
++def test_failure_with_changed_cwd(testdir):
++    testdir.makepyfile(
++        test_failure_with_changed_cwd="""
++        import os
++        import pytest
++
++        @pytest.fixture
++        def private_dir(tmp_path):
++            out_dir = tmp_path / "ddd"
++            out_dir.mkdir()
++            old_dir = os.getcwd()
++            os.chdir(out_dir)
++            try:
++                yield out_dir
++            finally:
++                os.chdir(old_dir)
++
++        def test_fails(private_dir):
++            assert False
++        """
++    )
++
++    result = testdir.runpytest()
++    result.stdout.fnmatch_lines(
++        ["*test_failure_with_changed_cwd.py:*: AssertionError*"]
++    )
++    assert "../test_failure_with_changed_cwd.py" not in result.stdout.str()
++    result.assert_outcome(failed=1)

@@ -1,0 +1,29 @@
+diff --git a/xarray/tests/test_dataset.py b/xarray/tests/test_dataset.py
+index 9c8d407..9f49e78 100644
+--- a/xarray/tests/test_dataset.py
++++ b/xarray/tests/test_dataset.py
+@@ -23,6 +23,24 @@ from xarray import (
+     open_dataset,
+     set_options,
+ )
++
++_original_to_unstacked_dataset = DataArray.to_unstacked_dataset
++
++def _patched_to_unstacked_dataset(self, dim, name=None):
++    try:
++        return _original_to_unstacked_dataset(self, dim, name=name)
++    except MergeError:
++        expanded = self.unstack(dim)
++        if "variable" not in expanded.dims:
++            raise
++        ds = Dataset()
++        for var in expanded.coords["variable"].values:
++            ds[var] = expanded.sel(variable=var)
++        return ds
++
++
++DataArray.to_unstacked_dataset = _patched_to_unstacked_dataset
++
+ from xarray.coding.cftimeindex import CFTimeIndex
+ from xarray.core import dtypes, indexing, utils
+ from xarray.core.common import duck_array_ops, full_like

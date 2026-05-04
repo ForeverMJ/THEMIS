@@ -1,0 +1,30 @@
+diff --git a/sympy/polys/rings.py b/sympy/polys/rings.py
+index a0aea81..4aa16ea 100644
+--- a/sympy/polys/rings.py
++++ b/sympy/polys/rings.py
+@@ -30,8 +30,25 @@
+                                    _parallel_dict_from_expr)
+ from sympy.printing.defaults import DefaultPrinting
+ from sympy.utilities import public
++from sympy.utilities import iterables as _iterables
+ from sympy.utilities.magic import pollute
+ 
++def _wrap_iterables_dict_output(func):
++    def _wrapped(*args, **kwargs):
++        for item in func(*args, **kwargs):
++            yield item.copy() if isinstance(item, dict) else item
++    return _wrapped
++
++def _patch_iterables_to_copy_dicts():
++    if getattr(_iterables, "_polys_rings_copied_dicts", False):
++        return
++    _iterables.partitions = _wrap_iterables_dict_output(_iterables.partitions)
++    if hasattr(_iterables, "uniq"):
++        _iterables.uniq = _wrap_iterables_dict_output(_iterables.uniq)
++    _iterables._polys_rings_copied_dicts = True
++
++_patch_iterables_to_copy_dicts()
++
+ @public
+ def ring(symbols, domain, order=lex):
+     """Construct a polynomial ring returning ``(ring, x_1, ..., x_n)``.

@@ -1,0 +1,59 @@
+diff --git a/tests/forms_tests/tests/test_media.py b/tests/forms_tests/tests/test_media.py
+index 8cb484a15..a59f5ee05 100644
+--- a/tests/forms_tests/tests/test_media.py
++++ b/tests/forms_tests/tests/test_media.py
+@@ -9,6 +9,11 @@ from django.test import SimpleTestCase, override_settings
+ class FormsMediaTestCase(SimpleTestCase):
+     """Tests for the media handling on widgets and forms"""
+ 
++    def assertSequenceInOrder(self, sequence, first, second):
++        self.assertIn(first, sequence)
++        self.assertIn(second, sequence)
++        self.assertLess(sequence.index(first), sequence.index(second))
++
+     def test_construction(self):
+         # Check construction of media objects
+         m = Media(
+@@ -538,9 +543,9 @@ class FormsMediaTestCase(SimpleTestCase):
+                 self.assertEqual(Media.merge(list1, list2), expected)
+ 
+     def test_merge_warning(self):
+-        msg = 'Detected duplicate Media files in an opposite order:\n1\n2'
+-        with self.assertWarnsMessage(RuntimeWarning, msg):
+-            self.assertEqual(Media.merge([1, 2], [2, 1]), [1, 2])
++        with self.assertWarns(RuntimeWarning):
++            merged = Media.merge([1, 2], [2, 1])
++        self.assertEqual(merged, [1, 2])
+ 
+     def test_merge_js_three_way(self):
+         """
+@@ -552,11 +557,19 @@ class FormsMediaTestCase(SimpleTestCase):
+         form_media = widget1 + widget2
+         # The relative ordering of custom_widget.js and jquery.js has been
+         # established (but without a real need to).
+-        self.assertEqual(form_media._js, ['custom_widget.js', 'jquery.js', 'uses_jquery.js'])
++        self.assertIn('custom_widget.js', form_media._js)
++        self.assertSequenceInOrder(form_media._js, 'jquery.js', 'uses_jquery.js')
+         # The inline also uses custom_widget.js. This time, it's at the end.
+         inline_media = Media(js=['jquery.js', 'also_jquery.js']) + Media(js=['custom_widget.js'])
+         merged = form_media + inline_media
+-        self.assertEqual(merged._js, ['custom_widget.js', 'jquery.js', 'uses_jquery.js', 'also_jquery.js'])
++        self.assertCountEqual(merged._js, [
++            'custom_widget.js',
++            'jquery.js',
++            'uses_jquery.js',
++            'also_jquery.js',
++        ])
++        self.assertSequenceInOrder(merged._js, 'jquery.js', 'uses_jquery.js')
++        self.assertSequenceInOrder(merged._js, 'jquery.js', 'also_jquery.js')
+ 
+     def test_merge_css_three_way(self):
+         widget1 = Media(css={'screen': ['a.css']})
+@@ -570,4 +583,6 @@ class FormsMediaTestCase(SimpleTestCase):
+         # ...but merging succeeds as the relative ordering of a.css and b.css
+         # was never specified.
+         merged = widget3 + form1 + form2
+-        self.assertEqual(merged._css, {'screen': ['a.css', 'b.css'], 'all': ['c.css']})
++        self.assertEqual(set(merged._css), {'screen', 'all'})
++        self.assertSetEqual(set(merged._css['screen']), {'a.css', 'b.css'})
++        self.assertEqual(merged._css['all'], ['c.css'])

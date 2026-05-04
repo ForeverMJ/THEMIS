@@ -1,0 +1,45 @@
+2026-05-04 00:06:36,136 - INFO - Creating container for sympy__sympy-18532...
+2026-05-04 00:06:36,784 - INFO - Container for sympy__sympy-18532 created: 33373ab8fd4e6ed07487ed6bffd68d07613f1b45686aa8094c9554d4d91fe871
+2026-05-04 00:06:36,933 - INFO - Container for sympy__sympy-18532 started: 33373ab8fd4e6ed07487ed6bffd68d07613f1b45686aa8094c9554d4d91fe871
+2026-05-04 00:06:36,934 - INFO - Intermediate patch for sympy__sympy-18532 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-18532/patch.diff, now applying to container...
+2026-05-04 00:06:37,097 - INFO - >>>>> Applied Patch:
+Checking patch sympy/vector/tests/test_field_functions.py...
+Applied patch sympy/vector/tests/test_field_functions.py cleanly.
+
+2026-05-04 00:06:37,434 - INFO - Git diff before:
+diff --git a/sympy/vector/tests/test_field_functions.py b/sympy/vector/tests/test_field_functions.py
+index 2a0c589909..ae076863a6 100644
+--- a/sympy/vector/tests/test_field_functions.py
++++ b/sympy/vector/tests/test_field_functions.py
+@@ -183,6 +183,7 @@ def test_conservative():
+     assert is_conservative(x * j) is False
+     assert is_conservative(grad_field) is True
+     assert is_conservative(curl_field) is False
++    assert is_conservative(vector_field) is False
+     assert (is_conservative(4*x*y*z*i + 2*x**2*z*j) is
+             False)
+     assert is_conservative(z*P.i + P.x*k) is True
+2026-05-04 00:06:37,434 - INFO - Eval script for sympy__sympy-18532 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-18532/eval.sh; copying to container...
+2026-05-04 00:06:40,035 - INFO - Test runtime: 2.53 seconds
+2026-05-04 00:06:40,035 - INFO - Test output for sympy__sympy-18532 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-18532/test_output.txt
+2026-05-04 00:06:40,100 - INFO - Git diff after:
+diff --git a/sympy/vector/tests/test_field_functions.py b/sympy/vector/tests/test_field_functions.py
+index 2a0c589909..ae076863a6 100644
+--- a/sympy/vector/tests/test_field_functions.py
++++ b/sympy/vector/tests/test_field_functions.py
+@@ -183,6 +183,7 @@ def test_conservative():
+     assert is_conservative(x * j) is False
+     assert is_conservative(grad_field) is True
+     assert is_conservative(curl_field) is False
++    assert is_conservative(vector_field) is False
+     assert (is_conservative(4*x*y*z*i + 2*x**2*z*j) is
+             False)
+     assert is_conservative(z*P.i + P.x*k) is True
+2026-05-04 00:06:40,100 - INFO - Grading answer for sympy__sympy-18532...
+2026-05-04 00:06:40,100 - INFO - report: {'sympy__sympy-18532': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_sizeof', 'test_atoms']}, 'PASS_TO_PASS': {'success': ['test_alignof', 'test_CommaOperator', 'test_goto_Label', 'test_PreDecrement', 'test_PostDecrement', 'test_PreIncrement', 'test_PostIncrement', 'test_struct', 'test__aresame', 'test_structure', 'test_equality', 'test_matches_basic', 'test_has', 'test_subs', 'test_subs_with_unicode_symbols', 'test_free_symbols_empty', 'test_doit', 'test_S', 'test_xreplace', 'test_preorder_traversal', 'test_sorted_args', 'test_call', 'test_rewrite', 'test_literal_evalf_is_number_is_zero_is_comparable', 'test_as_Basic', 'test_atomic', 'test_as_dummy', 'test_canonical_variables'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-18532: resolved: False
+2026-05-04 00:06:40,100 - INFO - Attempting to stop container sweb.eval.sympy__sympy-18532.cases1_100_work3_eval...
+2026-05-04 00:06:55,395 - INFO - Attempting to remove container sweb.eval.sympy__sympy-18532.cases1_100_work3_eval...
+2026-05-04 00:06:55,420 - INFO - Container sweb.eval.sympy__sympy-18532.cases1_100_work3_eval removed.
+2026-05-04 00:06:55,420 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sympy_1776_sympy-18532:latest...
+2026-05-04 00:06:56,203 - INFO - Image swebench/sweb.eval.x86_64.sympy_1776_sympy-18532:latest removed.

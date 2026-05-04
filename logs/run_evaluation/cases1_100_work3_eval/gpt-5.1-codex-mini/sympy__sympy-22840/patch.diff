@@ -1,0 +1,50 @@
+diff --git a/sympy/utilities/codegen.py b/sympy/utilities/codegen.py
+index 2b212a9..9604552 100644
+--- a/sympy/utilities/codegen.py
++++ b/sympy/utilities/codegen.py
+@@ -591,6 +591,11 @@ def routine(self, name, expr, argument_sequence=None, global_vars=None):
+         if self.cse:
+             from sympy.simplify.cse_main import cse
+ 
++            def _contains_matrix(sub_expr):
++                if isinstance(sub_expr, (MatrixBase, MatrixExpr)):
++                    return True
++                return bool(sub_expr.atoms(MatrixBase, MatrixExpr))
++
+             if is_sequence(expr) and not isinstance(expr, (MatrixBase, MatrixExpr)):
+                 if not expr:
+                     raise ValueError("No expression given")
+@@ -600,17 +605,28 @@ def routine(self, name, expr, argument_sequence=None, global_vars=None):
+ 
+                 # create a list of right hand sides and simplify them
+                 rhs = [e.rhs for e in expr]
+-                common, simplified = cse(rhs)
++
++                if any(_contains_matrix(r) for r in rhs):
++                    common, simplified = [], rhs
++                else:
++                    common, simplified = cse(rhs)
+ 
+                 # pack the simplified expressions back up with their left hand sides
+                 expr = [Equality(e.lhs, rhs) for e, rhs in zip(expr, simplified)]
+             else:
+                 if isinstance(expr, Equality):
+-                    common, simplified = cse(expr.rhs) #, ignore=in_out_args)
+-                    expr = Equality(expr.lhs, simplified[0])
++                    rhs = expr.rhs
++                    if _contains_matrix(rhs):
++                        common, simplified = [], [rhs]
++                    else:
++                        common, simplified = cse(rhs)
++                        expr = Equality(expr.lhs, simplified[0])
+                 else:
+-                    common, simplified = cse(expr)
+-                    expr = simplified
++                    if _contains_matrix(expr):
++                        common, simplified = [], expr
++                    else:
++                        common, simplified = cse(expr)
++                        expr = simplified
+ 
+             local_vars = [Result(b,a) for a,b in common]
+             local_symbols = {a for a,_ in common}

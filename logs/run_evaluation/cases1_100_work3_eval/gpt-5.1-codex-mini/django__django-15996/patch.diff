@@ -1,0 +1,33 @@
+diff --git a/django/db/migrations/serializer.py b/django/db/migrations/serializer.py
+index 38da1e6e..7273e2ce 100644
+--- a/django/db/migrations/serializer.py
++++ b/django/db/migrations/serializer.py
+@@ -125,8 +125,27 @@ class EnumSerializer(BaseSerializer):
+     def serialize(self):
+         enum_class = self.value.__class__
+         module = enum_class.__module__
++        name = getattr(self.value, "name", None)
++        if name is not None:
++            return (
++                "%s.%s[%r]" % (module, enum_class.__qualname__, name),
++                {"import %s" % module},
++            )
++        flag_decompose = (
++            getattr(enum_class, "_decompose", None)
++            if issubclass(enum_class, enum.Flag)
++            else None
++        )
++        if flag_decompose:
++            members, remainder = flag_decompose(self.value)
++            if members and not remainder:
++                member_strings = [
++                    "%s.%s.%s" % (module, enum_class.__qualname__, member.name)
++                    for member in members
++                ]
++                return " | ".join(member_strings), {"import %s" % module}
+         return (
+-            "%s.%s[%r]" % (module, enum_class.__qualname__, self.value.name),
++            "%s.%s(%r)" % (module, enum_class.__qualname__, self.value.value),
+             {"import %s" % module},
+         )
+ 

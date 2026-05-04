@@ -1,0 +1,31 @@
+diff --git a/sympy/interactive/printing.py b/sympy/interactive/printing.py
+index 08b43ff..be3a03d 100644
+--- a/sympy/interactive/printing.py
++++ b/sympy/interactive/printing.py
+@@ -9,6 +9,7 @@
+ from sympy import latex as default_latex
+ from sympy import preview
+ from sympy.core.compatibility import integer_types
++from sympy.polys.polytools import Poly as PolyClass
+ from sympy.utilities.misc import debug
+ 
+ 
+@@ -61,6 +62,18 @@ def _init_ipython_printing(ip, stringify_func, use_latex, euler, forecolor,
+     debug("init_printing: PREAMBLE:", preamble)
+ 
+     latex = latex_printer or default_latex
++    base_latex = latex
++
++    def _latex_with_poly_order(obj, **latex_settings):
++        if isinstance(obj, PolyClass):
++            try:
++                sorted_expr = obj.as_expr(order=obj.order)
++                obj = PolyClass(sorted_expr, *obj.gens, domain=obj.domain)
++            except Exception:
++                pass
++        return base_latex(obj, **latex_settings)
++
++    latex = _latex_with_poly_order
+ 
+     def _print_plain(arg, p, cycle):
+         """caller for pretty, for use in IPython 0.11"""

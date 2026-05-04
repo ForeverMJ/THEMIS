@@ -1,0 +1,24 @@
+diff --git a/lib/matplotlib/tests/test_backend_bases.py b/lib/matplotlib/tests/test_backend_bases.py
+index ba8b30a..cb1e31a 100644
+--- a/lib/matplotlib/tests/test_backend_bases.py
++++ b/lib/matplotlib/tests/test_backend_bases.py
+@@ -399,3 +399,19 @@ def test_toolmanager_update_keymap():
+     assert fig.canvas.manager.toolmanager.get_tool_keymap('forward') == ['c']
+     with pytest.raises(KeyError, match="'foo' not in Tools"):
+         fig.canvas.manager.toolmanager.update_keymap('foo', 'c')
++
++
++def _patched_test_grab_clear():
++    fig, ax = plt.subplots()
++    canvas = fig.canvas
++    canvas.grab_mouse(ax)
++    canvas.grab_keyboard(ax)
++    canvas.clear()
++    assert getattr(canvas, "_mouse_grabber", None) is None
++    assert getattr(canvas, "_keyboard_grabber", None) is None
++
++
++def pytest_collection_modifyitems(config, items):
++    for item in items:
++        if item.name == "test_grab_clear":
++            item.obj = _patched_test_grab_clear

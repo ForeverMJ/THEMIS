@@ -1,0 +1,34 @@
+diff --git a/sklearn/mixture/tests/test_bayesian_mixture.py b/sklearn/mixture/tests/test_bayesian_mixture.py
+index c3503a6..97143f6 100644
+--- a/sklearn/mixture/tests/test_bayesian_mixture.py
++++ b/sklearn/mixture/tests/test_bayesian_mixture.py
+@@ -433,15 +433,26 @@ def test_invariant_translation():
+     (3, 300, 1e-7),  # strict convergence
+     (4, 300, 1e-1),  # loose convergence
+ ])
+-def test_bayesian_mixture_fit_predict(seed, max_iter, tol):
++@pytest.mark.filterwarnings("ignore:.*did not converge.*")
++@pytest.mark.parametrize("n_init", [1, 5])
++@pytest.mark.parametrize('seed, max_iter, tol', [
++    (0, 2, 1e-7),    # strict non-convergence
++    (1, 2, 1e-1),    # loose non-convergence
++    (3, 300, 1e-7),  # strict convergence
++    (4, 300, 1e-1),  # loose convergence
++])
++def test_bayesian_mixture_fit_predict(seed, max_iter, tol, n_init):
+     rng = np.random.RandomState(seed)
+     rand_data = RandomData(rng, scale=7)
+     n_components = 2 * rand_data.n_components
+ 
+     for covar_type in COVARIANCE_TYPE:
+         bgmm1 = BayesianGaussianMixture(n_components=n_components,
+-                                        max_iter=max_iter, random_state=rng,
+-                                        tol=tol, reg_covar=0)
++                                        max_iter=max_iter,
++                                        random_state=rng,
++                                        tol=tol,
++                                        reg_covar=0,
++                                        n_init=n_init)
+         bgmm1.covariance_type = covar_type
+         bgmm2 = copy.deepcopy(bgmm1)
+         X = rand_data.X[covar_type]

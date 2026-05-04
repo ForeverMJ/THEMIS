@@ -1,0 +1,60 @@
+diff --git a/django/db/migrations/autodetector.py b/django/db/migrations/autodetector.py
+index 1c40161c..c295e79d 100644
+--- a/django/db/migrations/autodetector.py
++++ b/django/db/migrations/autodetector.py
+@@ -951,6 +951,8 @@ class MigrationAutodetector:
+             old_field_dec = self.deep_deconstruct(old_field)
+             new_field_dec = self.deep_deconstruct(new_field)
+             if old_field_dec != new_field_dec:
++                if self._remote_field_refers_to_renamed_field(old_field, new_field):
++                    continue
+                 both_m2m = old_field.many_to_many and new_field.many_to_many
+                 neither_m2m = not old_field.many_to_many and not new_field.many_to_many
+                 if both_m2m or neither_m2m:
+@@ -1070,14 +1072,38 @@ class MigrationAutodetector:
+             dep_app_label = field.remote_field.model._meta.app_label
+             dep_object_name = field.remote_field.model._meta.object_name
+         dependencies = [(dep_app_label, dep_object_name, None, True)]
+-        if getattr(field.remote_field, "through", None) and not field.remote_field.through._meta.auto_created:
+-            dependencies.append((
+-                field.remote_field.through._meta.app_label,
+-                field.remote_field.through._meta.object_name,
+-                None,
+-                True,
+-            ))
+-        return dependencies
++    if getattr(field.remote_field, "through", None) and not field.remote_field.through._meta.auto_created:
++        dependencies.append((
++            field.remote_field.through._meta.app_label,
++            field.remote_field.through._meta.object_name,
++            None,
++            True,
++        ))
++    return dependencies
++
++def _remote_field_refers_to_renamed_field(self, old_field, new_field):
++    if not (hasattr(new_field, "remote_field") and new_field.remote_field and new_field.remote_field.model):
++        return False
++    if not (hasattr(old_field, "remote_field") and old_field.remote_field and old_field.remote_field.model):
++        return False
++    remote_model = new_field.remote_field.model
++    remote_field_name = (
++        new_field.remote_field.field_name or
++        remote_model._meta.pk.name
++    )
++    rename_key = (
++        remote_model._meta.app_label,
++        remote_model._meta.model_name,
++        remote_field_name,
++    )
++    renamed_field_name = self.renamed_fields.get(rename_key)
++    if not renamed_field_name:
++        return False
++    old_remote_field_name = (
++        old_field.remote_field.field_name or
++        old_field.remote_field.model._meta.pk.name
++    )
++    return old_remote_field_name == renamed_field_name
+ 
+     def _generate_altered_foo_together(self, operation):
+         option_name = operation.option_name

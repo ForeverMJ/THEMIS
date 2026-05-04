@@ -1,0 +1,61 @@
+2026-05-03 23:32:22,942 - INFO - Creating container for pytest-dev__pytest-7220...
+2026-05-03 23:32:23,023 - INFO - Container for pytest-dev__pytest-7220 created: 1ac29db72f978288fd023102f5018324c53f1b4785fcd75827036fb1741e1769
+2026-05-03 23:32:23,147 - INFO - Container for pytest-dev__pytest-7220 started: 1ac29db72f978288fd023102f5018324c53f1b4785fcd75827036fb1741e1769
+2026-05-03 23:32:23,147 - INFO - Intermediate patch for pytest-dev__pytest-7220 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/pytest-dev__pytest-7220/patch.diff, now applying to container...
+2026-05-03 23:32:23,246 - INFO - >>>>> Applied Patch:
+Checking patch testing/test_nodes.py...
+Applied patch testing/test_nodes.py cleanly.
+
+2026-05-03 23:32:23,344 - INFO - Git diff before:
+diff --git a/testing/test_nodes.py b/testing/test_nodes.py
+index dbb3e2e8f..7253802ae 100644
+--- a/testing/test_nodes.py
++++ b/testing/test_nodes.py
+@@ -58,3 +58,33 @@ def test__check_initialpaths_for_relpath():
+ 
+     outside = py.path.local("/outside")
+     assert nodes._check_initialpaths_for_relpath(FakeSession, outside) is None
++
++
++def test_failure_with_changed_cwd(testdir):
++    testdir.makepyfile(
++        test_failure_with_changed_cwd="""
++        import os
++        import pytest
++
++        @pytest.fixture
++        def private_dir(tmp_path):
++            out_dir = tmp_path / "ddd"
++            out_dir.mkdir()
++            old_dir = os.getcwd()
++            os.chdir(out_dir)
++            try:
++                yield out_dir
++            finally:
++                os.chdir(old_dir)
++
++        def test_fails(private_dir):
++            assert False
++        """
++    )
++
++    result = testdir.runpytest()
++    result.stdout.fnmatch_lines(
++        ["*test_failure_with_changed_cwd.py:*: AssertionError*"]
++    )
++    assert "../test_failure_with_changed_cwd.py" not in result.stdout.str()
++    result.assert_outcome(failed=1)
+2026-05-03 23:32:23,345 - INFO - Eval script for pytest-dev__pytest-7220 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/pytest-dev__pytest-7220/eval.sh; copying to container...
+2026-05-03 23:32:28,262 - INFO - Test runtime: 4.83 seconds
+2026-05-03 23:32:28,262 - INFO - Test output for pytest-dev__pytest-7220 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/pytest-dev__pytest-7220/test_output.txt
+2026-05-03 23:32:28,337 - INFO - Git diff after:
+
+2026-05-03 23:32:28,337 - INFO - Git diff changed after running eval script
+2026-05-03 23:32:28,337 - INFO - Grading answer for pytest-dev__pytest-7220...
+2026-05-03 23:32:28,337 - INFO - report: {'pytest-dev__pytest-7220': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['testing/test_nodes.py::test_failure_with_changed_cwd']}, 'PASS_TO_PASS': {'success': ['testing/test_nodes.py::test_ischildnode[--True]', 'testing/test_nodes.py::test_ischildnode[-foo-True]', 'testing/test_nodes.py::test_ischildnode[-foo/bar-True]', 'testing/test_nodes.py::test_ischildnode[-foo/bar::TestBaz-True]', 'testing/test_nodes.py::test_ischildnode[foo-food-False]', 'testing/test_nodes.py::test_ischildnode[foo/bar::TestBaz-foo/bar-False]', 'testing/test_nodes.py::test_ischildnode[foo/bar::TestBaz-foo/bar::TestBop-False]', 'testing/test_nodes.py::test_ischildnode[foo/bar-foo/bar::TestBop-True]', 'testing/test_nodes.py::test_node_from_parent_disallowed_arguments', 'testing/test_nodes.py::test__check_initialpaths_for_relpath', 'testing/test_nodes.py::test_std_warn_not_pytestwarning'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for pytest-dev__pytest-7220: resolved: False
+2026-05-03 23:32:28,337 - INFO - Attempting to stop container sweb.eval.pytest-dev__pytest-7220.cases1_100_work3_eval...
+2026-05-03 23:32:43,609 - INFO - Attempting to remove container sweb.eval.pytest-dev__pytest-7220.cases1_100_work3_eval...
+2026-05-03 23:32:43,629 - INFO - Container sweb.eval.pytest-dev__pytest-7220.cases1_100_work3_eval removed.
+2026-05-03 23:32:43,629 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-7220:latest...
+2026-05-03 23:32:43,868 - INFO - Image swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-7220:latest removed.

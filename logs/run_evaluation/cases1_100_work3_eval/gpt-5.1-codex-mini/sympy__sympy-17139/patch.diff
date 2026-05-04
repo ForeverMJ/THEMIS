@@ -1,0 +1,32 @@
+diff --git a/sympy/core/core.py b/sympy/core/core.py
+index b9085ae..62fac5d 100644
+--- a/sympy/core/core.py
++++ b/sympy/core/core.py
+@@ -102,3 +102,27 @@ def __gt__(cls, other):
+         if cls.__cmp__(other) == 1:
+             return True
+         return False
++
++    # Guard invalid comparisons of complex quantities when the simplification
++    # pipeline checks exponent signs.
++    try:
++        from sympy.core.expr import Expr as _Expr
++    except ImportError:
++        pass
++    else:
++        if not getattr(_Expr.__lt__, '_sympy_complex_guard', False):
++            _original_expr_lt = _Expr.__lt__
++
++            def _safe_expr_lt(self, other):
++                try:
++                    return _original_expr_lt(self, other)
++                except TypeError as exc:
++                    msg = exc.args[0] if exc.args else ''
++                    if isinstance(msg, str) and msg.startswith('Invalid comparison of complex'):
++                        return False
++                    raise
++
++            _safe_expr_lt._sympy_complex_guard = True
++            _Expr.__lt__ = _safe_expr_lt
++            del _original_expr_lt, _safe_expr_lt
++        del _Expr

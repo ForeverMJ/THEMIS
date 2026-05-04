@@ -1,0 +1,53 @@
+2026-05-03 22:29:25,709 - INFO - Creating container for astropy__astropy-7746...
+2026-05-03 22:29:26,451 - INFO - Container for astropy__astropy-7746 created: eefc4eb0427ad77593669cfac36702b4afdb80a6b1a08a03b8079105cb6732b5
+2026-05-03 22:29:26,603 - INFO - Container for astropy__astropy-7746 started: eefc4eb0427ad77593669cfac36702b4afdb80a6b1a08a03b8079105cb6732b5
+2026-05-03 22:29:26,603 - INFO - Intermediate patch for astropy__astropy-7746 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/astropy__astropy-7746/patch.diff, now applying to container...
+2026-05-03 22:29:26,764 - INFO - >>>>> Applied Patch:
+Checking patch astropy/wcs/tests/test_wcs.py...
+Applied patch astropy/wcs/tests/test_wcs.py cleanly.
+
+2026-05-03 22:29:27,174 - INFO - Git diff before:
+diff --git a/astropy/wcs/tests/test_wcs.py b/astropy/wcs/tests/test_wcs.py
+index 85853e10e5..e3b3b3bc06 100644
+--- a/astropy/wcs/tests/test_wcs.py
++++ b/astropy/wcs/tests/test_wcs.py
+@@ -275,6 +275,25 @@ def test_shape_mismatch():
+     assert xw.shape == (42,)
+ 
+ 
++def test_zero_size_input():
++    w = wcs.WCS(naxis=2)
++
++    x = np.empty(0)
++    y = np.empty(0)
++
++    xp, yp = w.wcs_pix2world(x, y, 0)
++    assert xp.shape == (0,)
++    assert yp.shape == (0,)
++
++    xp, yp = w.wcs_world2pix(x, y, 0)
++    assert xp.shape == (0,)
++    assert yp.shape == (0,)
++
++    empty_xy = np.empty((0, 2))
++    xy_world = w.wcs_pix2world(empty_xy, 0)
++    assert xy_world.shape == (0, 2)
++
++
+ def test_invalid_shape():
+     # Issue #1395
+     w = wcs.WCS(naxis=2)
+2026-05-03 22:29:27,174 - INFO - Eval script for astropy__astropy-7746 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/astropy__astropy-7746/eval.sh; copying to container...
+2026-05-03 22:29:31,780 - INFO - Test runtime: 4.51 seconds
+2026-05-03 22:29:31,780 - INFO - Test output for astropy__astropy-7746 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/astropy__astropy-7746/test_output.txt
+2026-05-03 22:29:31,872 - INFO - Git diff after:
+
+2026-05-03 22:29:31,872 - INFO - Git diff changed after running eval script
+2026-05-03 22:29:31,872 - INFO - Grading answer for astropy__astropy-7746...
+2026-05-03 22:29:31,873 - INFO - report: {'astropy__astropy-7746': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['astropy/wcs/tests/test_wcs.py::test_zero_size_input']}, 'PASS_TO_PASS': {'success': ['astropy/wcs/tests/test_wcs.py::TestMaps::test_consistency', 'astropy/wcs/tests/test_wcs.py::TestMaps::test_maps', 'astropy/wcs/tests/test_wcs.py::TestSpectra::test_consistency', 'astropy/wcs/tests/test_wcs.py::TestSpectra::test_spectra', 'astropy/wcs/tests/test_wcs.py::test_fixes', 'astropy/wcs/tests/test_wcs.py::test_outside_sky', 'astropy/wcs/tests/test_wcs.py::test_pix2world', 'astropy/wcs/tests/test_wcs.py::test_load_fits_path', 'astropy/wcs/tests/test_wcs.py::test_dict_init', 'astropy/wcs/tests/test_wcs.py::test_extra_kwarg', 'astropy/wcs/tests/test_wcs.py::test_3d_shapes', 'astropy/wcs/tests/test_wcs.py::test_preserve_shape', 'astropy/wcs/tests/test_wcs.py::test_broadcasting', 'astropy/wcs/tests/test_wcs.py::test_shape_mismatch', 'astropy/wcs/tests/test_wcs.py::test_invalid_shape', 'astropy/wcs/tests/test_wcs.py::test_warning_about_defunct_keywords', 'astropy/wcs/tests/test_wcs.py::test_warning_about_defunct_keywords_exception', 'astropy/wcs/tests/test_wcs.py::test_to_header_string', 'astropy/wcs/tests/test_wcs.py::test_to_fits', 'astropy/wcs/tests/test_wcs.py::test_to_header_warning', 'astropy/wcs/tests/test_wcs.py::test_no_comments_in_header', 'astropy/wcs/tests/test_wcs.py::test_find_all_wcs_crash', 'astropy/wcs/tests/test_wcs.py::test_validate', 'astropy/wcs/tests/test_wcs.py::test_validate_with_2_wcses', 'astropy/wcs/tests/test_wcs.py::test_crpix_maps_to_crval', 'astropy/wcs/tests/test_wcs.py::test_all_world2pix', 'astropy/wcs/tests/test_wcs.py::test_scamp_sip_distortion_parameters', 'astropy/wcs/tests/test_wcs.py::test_fixes2', 'astropy/wcs/tests/test_wcs.py::test_unit_normalization', 'astropy/wcs/tests/test_wcs.py::test_footprint_to_file', 'astropy/wcs/tests/test_wcs.py::test_validate_faulty_wcs', 'astropy/wcs/tests/test_wcs.py::test_error_message', 'astropy/wcs/tests/test_wcs.py::test_out_of_bounds', 'astropy/wcs/tests/test_wcs.py::test_calc_footprint_1', 'astropy/wcs/tests/test_wcs.py::test_calc_footprint_2', 'astropy/wcs/tests/test_wcs.py::test_calc_footprint_3', 'astropy/wcs/tests/test_wcs.py::test_sip', 'astropy/wcs/tests/test_wcs.py::test_printwcs', 'astropy/wcs/tests/test_wcs.py::test_invalid_spherical', 'astropy/wcs/tests/test_wcs.py::test_no_iteration', 'astropy/wcs/tests/test_wcs.py::test_sip_tpv_agreement', 'astropy/wcs/tests/test_wcs.py::test_tpv_copy', 'astropy/wcs/tests/test_wcs.py::test_hst_wcs', 'astropy/wcs/tests/test_wcs.py::test_list_naxis', 'astropy/wcs/tests/test_wcs.py::test_sip_broken', 'astropy/wcs/tests/test_wcs.py::test_no_truncate_crval', 'astropy/wcs/tests/test_wcs.py::test_no_truncate_crval_try2', 'astropy/wcs/tests/test_wcs.py::test_no_truncate_crval_p17', 'astropy/wcs/tests/test_wcs.py::test_no_truncate_using_compare', 'astropy/wcs/tests/test_wcs.py::test_passing_ImageHDU', 'astropy/wcs/tests/test_wcs.py::test_inconsistent_sip', 'astropy/wcs/tests/test_wcs.py::test_bounds_check', 'astropy/wcs/tests/test_wcs.py::test_naxis', 'astropy/wcs/tests/test_wcs.py::test_sip_with_altkey', 'astropy/wcs/tests/test_wcs.py::test_to_fits_1', 'astropy/wcs/tests/test_wcs.py::test_keyedsip'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for astropy__astropy-7746: resolved: False
+2026-05-03 22:29:31,873 - INFO - Attempting to stop container sweb.eval.astropy__astropy-7746.cases1_100_work3_eval...
+2026-05-03 22:29:47,084 - INFO - Attempting to remove container sweb.eval.astropy__astropy-7746.cases1_100_work3_eval...
+2026-05-03 22:29:47,105 - INFO - Container sweb.eval.astropy__astropy-7746.cases1_100_work3_eval removed.
+2026-05-03 22:29:47,106 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.astropy_1776_astropy-7746:latest...
+2026-05-03 22:29:47,383 - INFO - Image swebench/sweb.eval.x86_64.astropy_1776_astropy-7746:latest removed.

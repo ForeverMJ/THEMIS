@@ -1,0 +1,28 @@
+diff --git a/sklearn/utils/tests/test_set_output.py b/sklearn/utils/tests/test_set_output.py
+index ac73ca0..08db27f 100644
+--- a/sklearn/utils/tests/test_set_output.py
++++ b/sklearn/utils/tests/test_set_output.py
+@@ -135,6 +135,23 @@ def test_set_output_method():
+     assert isinstance(X_trans_pd, pd.DataFrame)
+ 
+ 
++def test_set_output_pandas_keep_index():
++    """Check pandas output keeps the original index."""
++    pd = pytest.importorskip("pandas")
++
++    X = pd.DataFrame(
++        [[1, 0, 3], [0, 0, 1]],
++        columns=["a", "b", "c"],
++        index=pd.Index([10, 12], name="sample"),
++    )
++
++    est = EstimatorWithSetOutput().fit(np.asarray(X))
++    est.set_output(transform="pandas")
++
++    X_trans_pd = est.transform(X)
++    assert_array_equal(X_trans_pd.index, X.index)
++
++
+ def test_set_output_method_error():
+     """Check transform fails with invalid transform."""
+ 

@@ -1,0 +1,12 @@
+diff --git a/setup.py b/setup.py
+index 96d337f..199e0d7 100755
+--- a/setup.py
++++ b/setup.py
+@@ -102,6 +102,7 @@
+     'sympy.matrices',
+     'sympy.matrices.benchmarks',
+     'sympy.matrices.expressions',
++    'sympy.matrices.sparse',
+     'sympy.ntheory',
+     'sympy.parsing',
+     'sympy.physics',

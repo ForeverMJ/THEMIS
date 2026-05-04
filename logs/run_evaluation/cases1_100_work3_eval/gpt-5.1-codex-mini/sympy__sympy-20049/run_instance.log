@@ -1,0 +1,117 @@
+2026-05-04 00:13:11,278 - INFO - Creating container for sympy__sympy-20049...
+2026-05-04 00:13:12,267 - INFO - Container for sympy__sympy-20049 created: 386909725f4f76a4fbcba4ee24714d0b261cef3044faf6cb5757a9a744fce72c
+2026-05-04 00:13:12,494 - INFO - Container for sympy__sympy-20049 started: 386909725f4f76a4fbcba4ee24714d0b261cef3044faf6cb5757a9a744fce72c
+2026-05-04 00:13:12,494 - INFO - Intermediate patch for sympy__sympy-20049 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-20049/patch.diff, now applying to container...
+2026-05-04 00:13:12,643 - INFO - >>>>> Applied Patch:
+Checking patch sympy/physics/vector/point.py...
+Applied patch sympy/physics/vector/point.py cleanly.
+
+2026-05-04 00:13:12,982 - INFO - Git diff before:
+diff --git a/sympy/physics/vector/point.py b/sympy/physics/vector/point.py
+index d4e3cfcc90..75f6e890c9 100644
+--- a/sympy/physics/vector/point.py
++++ b/sympy/physics/vector/point.py
+@@ -1,4 +1,5 @@
+ from __future__ import print_function, division
++from collections import deque
+ from .vector import Vector, _check_vector
+ from .frame import _check_frame
+ 
+@@ -114,6 +115,20 @@ def _pdict_list(self, other, num):
+         raise ValueError('No Connecting Path found between ' + other.name +
+                          ' and ' + self.name)
+ 
++    def _find_point_with_vel(self, frame):
++        visited = {self}
++        queue = deque([self])
++        while queue:
++            current = queue.popleft()
++            for otherpoint in current._pos_dict:
++                if otherpoint in visited:
++                    continue
++                if frame in otherpoint._vel_dict:
++                    return otherpoint
++                visited.add(otherpoint)
++                queue.append(otherpoint)
++        return None
++
+     def a1pt_theory(self, otherpoint, outframe, interframe):
+         """Sets the acceleration of this point with the 1-point theory.
+ 
+@@ -518,10 +533,14 @@ def vel(self, frame):
+         """
+ 
+         _check_frame(frame)
+-        if not (frame in self._vel_dict):
++        if frame in self._vel_dict:
++            return self._vel_dict[frame]
++        otherpoint = self._find_point_with_vel(frame)
++        if otherpoint is None:
+             raise ValueError('Velocity of point ' + self.name + ' has not been'
+                              ' defined in ReferenceFrame ' + frame.name)
+-        return self._vel_dict[frame]
++        dist = self.pos_from(otherpoint)
++        return otherpoint._vel_dict[frame] + dist.dt(frame)
+ 
+     def partial_velocity(self, frame, *gen_speeds):
+         """Returns the partial velocities of the linear velocity vector of this
+2026-05-04 00:13:12,983 - INFO - Eval script for sympy__sympy-20049 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-20049/eval.sh; copying to container...
+2026-05-04 00:13:16,014 - INFO - Test runtime: 2.95 seconds
+2026-05-04 00:13:16,014 - INFO - Test output for sympy__sympy-20049 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-20049/test_output.txt
+2026-05-04 00:13:16,065 - INFO - Git diff after:
+diff --git a/sympy/physics/vector/point.py b/sympy/physics/vector/point.py
+index d4e3cfcc90..75f6e890c9 100644
+--- a/sympy/physics/vector/point.py
++++ b/sympy/physics/vector/point.py
+@@ -1,4 +1,5 @@
+ from __future__ import print_function, division
++from collections import deque
+ from .vector import Vector, _check_vector
+ from .frame import _check_frame
+ 
+@@ -114,6 +115,20 @@ def _pdict_list(self, other, num):
+         raise ValueError('No Connecting Path found between ' + other.name +
+                          ' and ' + self.name)
+ 
++    def _find_point_with_vel(self, frame):
++        visited = {self}
++        queue = deque([self])
++        while queue:
++            current = queue.popleft()
++            for otherpoint in current._pos_dict:
++                if otherpoint in visited:
++                    continue
++                if frame in otherpoint._vel_dict:
++                    return otherpoint
++                visited.add(otherpoint)
++                queue.append(otherpoint)
++        return None
++
+     def a1pt_theory(self, otherpoint, outframe, interframe):
+         """Sets the acceleration of this point with the 1-point theory.
+ 
+@@ -518,10 +533,14 @@ def vel(self, frame):
+         """
+ 
+         _check_frame(frame)
+-        if not (frame in self._vel_dict):
++        if frame in self._vel_dict:
++            return self._vel_dict[frame]
++        otherpoint = self._find_point_with_vel(frame)
++        if otherpoint is None:
+             raise ValueError('Velocity of point ' + self.name + ' has not been'
+                              ' defined in ReferenceFrame ' + frame.name)
+-        return self._vel_dict[frame]
++        dist = self.pos_from(otherpoint)
++        return otherpoint._vel_dict[frame] + dist.dt(frame)
+ 
+     def partial_velocity(self, frame, *gen_speeds):
+         """Returns the partial velocities of the linear velocity vector of this
+2026-05-04 00:13:16,065 - INFO - Grading answer for sympy__sympy-20049...
+2026-05-04 00:13:16,066 - INFO - report: {'sympy__sympy-20049': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_auto_point_vel', 'test_auto_point_vel_multiple_point_path', 'test_auto_vel_dont_overwrite', 'test_auto_point_vel_shortest_path'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_point_v1pt_theorys', 'test_point_a1pt_theorys', 'test_point_v2pt_theorys', 'test_point_a2pt_theorys', 'test_point_funcs', 'test_point_pos', 'test_point_partial_velocity', 'test_point_vel', 'test_auto_point_vel_if_tree_has_vel_but_inappropriate_pos_vector'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-20049: resolved: True
+2026-05-04 00:13:16,066 - INFO - Attempting to stop container sweb.eval.sympy__sympy-20049.cases1_100_work3_eval...
+2026-05-04 00:13:31,450 - INFO - Attempting to remove container sweb.eval.sympy__sympy-20049.cases1_100_work3_eval...
+2026-05-04 00:13:31,510 - INFO - Container sweb.eval.sympy__sympy-20049.cases1_100_work3_eval removed.
+2026-05-04 00:13:31,510 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sympy_1776_sympy-20049:latest...
+2026-05-04 00:13:31,576 - INFO - Image swebench/sweb.eval.x86_64.sympy_1776_sympy-20049:latest removed.

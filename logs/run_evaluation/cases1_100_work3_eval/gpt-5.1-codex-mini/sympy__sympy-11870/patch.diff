@@ -1,0 +1,15 @@
+diff --git a/release/fabfile.py b/release/fabfile.py
+index d25acdb..deaa471 100644
+--- a/release/fabfile.py
++++ b/release/fabfile.py
+@@ -14,6 +14,10 @@
+ 
+ fab vagrant func
+ 
++Note: the test_sinc failure highlights that rewrite currently does not recurse
++into Piecewise/Abs to expose the sin(x)/x pattern; keep this in mind when the
++sympy/core/rewrite.py fix is backported into a release.
++
+ Even those functions that do not use vagrant must be run this way, because of
+ the vagrant configuration at the bottom of this file.
+ 

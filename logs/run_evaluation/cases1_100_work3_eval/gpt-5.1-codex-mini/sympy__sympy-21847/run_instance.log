@@ -1,0 +1,97 @@
+2026-05-04 00:15:44,458 - INFO - Creating container for sympy__sympy-21847...
+2026-05-04 00:15:44,594 - INFO - Container for sympy__sympy-21847 created: 415872c9bfac8320379155846e6b8619c7cef161573678745e0682674142b523
+2026-05-04 00:15:44,748 - INFO - Container for sympy__sympy-21847 started: 415872c9bfac8320379155846e6b8619c7cef161573678745e0682674142b523
+2026-05-04 00:15:44,748 - INFO - Intermediate patch for sympy__sympy-21847 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-21847/patch.diff, now applying to container...
+2026-05-04 00:15:44,931 - INFO - >>>>> Applied Patch:
+Checking patch sympy/polys/monomials.py...
+Applied patch sympy/polys/monomials.py cleanly.
+
+2026-05-04 00:15:45,299 - INFO - Git diff before:
+diff --git a/sympy/polys/monomials.py b/sympy/polys/monomials.py
+index 0e84403307..ae8036c79a 100644
+--- a/sympy/polys/monomials.py
++++ b/sympy/polys/monomials.py
+@@ -124,11 +124,11 @@ def itermonomials(variables, max_degrees, min_degrees=None):
+                 powers = dict()
+                 for variable in variables:
+                     powers[variable] = 0
+-                for variable in item:
+-                    if variable != 1:
+-                        powers[variable] += 1
+-                if max(powers.values()) >= min_degree:
+-                    monomials_list_comm.append(Mul(*item))
++            for variable in item:
++                if variable != 1:
++                    powers[variable] += 1
++            if sum(powers.values()) >= min_degree:
++                monomials_list_comm.append(Mul(*item))
+             yield from set(monomials_list_comm)
+         else:
+             monomials_list_non_comm = []
+@@ -136,11 +136,11 @@ def itermonomials(variables, max_degrees, min_degrees=None):
+                 powers = dict()
+                 for variable in variables:
+                     powers[variable] = 0
+-                for variable in item:
+-                    if variable != 1:
+-                        powers[variable] += 1
+-                if max(powers.values()) >= min_degree:
+-                    monomials_list_non_comm.append(Mul(*item))
++            for variable in item:
++                if variable != 1:
++                    powers[variable] += 1
++            if sum(powers.values()) >= min_degree:
++                monomials_list_non_comm.append(Mul(*item))
+             yield from set(monomials_list_non_comm)
+     else:
+         if any(min_degrees[i] > max_degrees[i] for i in range(n)):
+2026-05-04 00:15:45,299 - INFO - Eval script for sympy__sympy-21847 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-21847/eval.sh; copying to container...
+2026-05-04 00:15:48,019 - INFO - Test runtime: 2.64 seconds
+2026-05-04 00:15:48,019 - INFO - Test output for sympy__sympy-21847 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sympy__sympy-21847/test_output.txt
+2026-05-04 00:15:48,084 - INFO - Git diff after:
+diff --git a/sympy/polys/monomials.py b/sympy/polys/monomials.py
+index 0e84403307..ae8036c79a 100644
+--- a/sympy/polys/monomials.py
++++ b/sympy/polys/monomials.py
+@@ -124,11 +124,11 @@ def itermonomials(variables, max_degrees, min_degrees=None):
+                 powers = dict()
+                 for variable in variables:
+                     powers[variable] = 0
+-                for variable in item:
+-                    if variable != 1:
+-                        powers[variable] += 1
+-                if max(powers.values()) >= min_degree:
+-                    monomials_list_comm.append(Mul(*item))
++            for variable in item:
++                if variable != 1:
++                    powers[variable] += 1
++            if sum(powers.values()) >= min_degree:
++                monomials_list_comm.append(Mul(*item))
+             yield from set(monomials_list_comm)
+         else:
+             monomials_list_non_comm = []
+@@ -136,11 +136,11 @@ def itermonomials(variables, max_degrees, min_degrees=None):
+                 powers = dict()
+                 for variable in variables:
+                     powers[variable] = 0
+-                for variable in item:
+-                    if variable != 1:
+-                        powers[variable] += 1
+-                if max(powers.values()) >= min_degree:
+-                    monomials_list_non_comm.append(Mul(*item))
++            for variable in item:
++                if variable != 1:
++                    powers[variable] += 1
++            if sum(powers.values()) >= min_degree:
++                monomials_list_non_comm.append(Mul(*item))
+             yield from set(monomials_list_non_comm)
+     else:
+         if any(min_degrees[i] > max_degrees[i] for i in range(n)):
+2026-05-04 00:15:48,084 - INFO - Grading answer for sympy__sympy-21847...
+2026-05-04 00:15:48,084 - INFO - report: {'sympy__sympy-21847': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_monomials']}, 'PASS_TO_PASS': {'success': ['test_monomial_count', 'test_monomial_mul', 'test_monomial_div', 'test_monomial_gcd', 'test_monomial_lcm', 'test_monomial_max', 'test_monomial_pow', 'test_monomial_min', 'test_monomial_divides'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-21847: resolved: False
+2026-05-04 00:15:48,084 - INFO - Attempting to stop container sweb.eval.sympy__sympy-21847.cases1_100_work3_eval...
+2026-05-04 00:16:03,445 - INFO - Attempting to remove container sweb.eval.sympy__sympy-21847.cases1_100_work3_eval...
+2026-05-04 00:16:03,469 - INFO - Container sweb.eval.sympy__sympy-21847.cases1_100_work3_eval removed.
+2026-05-04 00:16:03,469 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sympy_1776_sympy-21847:latest...
+2026-05-04 00:16:04,297 - INFO - Image swebench/sweb.eval.x86_64.sympy_1776_sympy-21847:latest removed.

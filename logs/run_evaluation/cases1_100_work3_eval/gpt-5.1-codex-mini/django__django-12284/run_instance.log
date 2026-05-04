@@ -1,0 +1,159 @@
+2026-05-03 22:30:28,950 - INFO - Creating container for django__django-12284...
+2026-05-03 22:30:29,028 - INFO - Container for django__django-12284 created: b0529582dc5e9a1ba134ac41beb0de20ed17dbf67ffc58d181069fdce095f901
+2026-05-03 22:30:29,212 - INFO - Container for django__django-12284 started: b0529582dc5e9a1ba134ac41beb0de20ed17dbf67ffc58d181069fdce095f901
+2026-05-03 22:30:29,212 - INFO - Intermediate patch for django__django-12284 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/django__django-12284/patch.diff, now applying to container...
+2026-05-03 22:30:29,364 - INFO - >>>>> Applied Patch:
+Checking patch django/utils/html.py...
+Applied patch django/utils/html.py cleanly.
+
+2026-05-03 22:30:31,032 - INFO - Git diff before:
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd3..978ee1071a 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -29,6 +29,27 @@ simple_url_2_re = _lazy_re_compile(
+     re.IGNORECASE
+ )
+ 
++def _validate_simple_url(value):
++    return bool(simple_url_re.match(value))
++
++def _validate_www_url(value):
++    return bool(simple_url_2_re.match(value))
++
++def _validate_email(value):
++    """Return True if value looks like an email address."""
++    # An @ must be in the middle of the value.
++    if '@' not in value or value.startswith('@') or value.endswith('@'):
++        return False
++    try:
++        _, domain = value.split('@')
++    except ValueError:
++        # value contains more than one @.
++        return False
++    # Dot must be in domain (e.g. example.com)
++    if '.' not in domain or domain.startswith('.'):
++        return False
++    return True
++
+ 
+ @keep_lazy(str, SafeString)
+ def escape(text):
+@@ -288,21 +309,6 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+                 trimmed_something = True
+         return lead, middle, trail
+ 
+-    def is_email_simple(value):
+-        """Return True if value looks like an email address."""
+-        # An @ must be in the middle of the value.
+-        if '@' not in value or value.startswith('@') or value.endswith('@'):
+-            return False
+-        try:
+-            p1, p2 = value.split('@')
+-        except ValueError:
+-            # value contains more than one @.
+-            return False
+-        # Dot must be in p2 (e.g. example.com)
+-        if '.' not in p2 or p2.startswith('.'):
+-            return False
+-        return True
+-
+     words = word_split_re.split(str(text))
+     for i, word in enumerate(words):
+         if '.' in word or '@' in word or ':' in word:
+@@ -316,11 +322,11 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+             # Make URL we want to point to.
+             url = None
+             nofollow_attr = ' rel="nofollow"' if nofollow else ''
+-            if simple_url_re.match(middle):
++            if _validate_simple_url(middle):
+                 url = smart_urlquote(html.unescape(middle))
+-            elif simple_url_2_re.match(middle):
++            elif _validate_www_url(middle):
+                 url = smart_urlquote('http://%s' % html.unescape(middle))
+-            elif ':' not in middle and is_email_simple(middle):
++            elif ':' not in middle and _validate_email(middle):
+                 local, domain = middle.rsplit('@', 1)
+                 try:
+                     domain = punycode(domain)
+2026-05-03 22:30:31,033 - INFO - Eval script for django__django-12284 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/django__django-12284/eval.sh; copying to container...
+2026-05-03 22:30:35,655 - INFO - Test runtime: 4.54 seconds
+2026-05-03 22:30:35,655 - INFO - Test output for django__django-12284 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/django__django-12284/test_output.txt
+2026-05-03 22:30:35,739 - INFO - Git diff after:
+diff --git a/django/utils/html.py b/django/utils/html.py
+index 3bc02b8dd3..978ee1071a 100644
+--- a/django/utils/html.py
++++ b/django/utils/html.py
+@@ -29,6 +29,27 @@ simple_url_2_re = _lazy_re_compile(
+     re.IGNORECASE
+ )
+ 
++def _validate_simple_url(value):
++    return bool(simple_url_re.match(value))
++
++def _validate_www_url(value):
++    return bool(simple_url_2_re.match(value))
++
++def _validate_email(value):
++    """Return True if value looks like an email address."""
++    # An @ must be in the middle of the value.
++    if '@' not in value or value.startswith('@') or value.endswith('@'):
++        return False
++    try:
++        _, domain = value.split('@')
++    except ValueError:
++        # value contains more than one @.
++        return False
++    # Dot must be in domain (e.g. example.com)
++    if '.' not in domain or domain.startswith('.'):
++        return False
++    return True
++
+ 
+ @keep_lazy(str, SafeString)
+ def escape(text):
+@@ -288,21 +309,6 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+                 trimmed_something = True
+         return lead, middle, trail
+ 
+-    def is_email_simple(value):
+-        """Return True if value looks like an email address."""
+-        # An @ must be in the middle of the value.
+-        if '@' not in value or value.startswith('@') or value.endswith('@'):
+-            return False
+-        try:
+-            p1, p2 = value.split('@')
+-        except ValueError:
+-            # value contains more than one @.
+-            return False
+-        # Dot must be in p2 (e.g. example.com)
+-        if '.' not in p2 or p2.startswith('.'):
+-            return False
+-        return True
+-
+     words = word_split_re.split(str(text))
+     for i, word in enumerate(words):
+         if '.' in word or '@' in word or ':' in word:
+@@ -316,11 +322,11 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
+             # Make URL we want to point to.
+             url = None
+             nofollow_attr = ' rel="nofollow"' if nofollow else ''
+-            if simple_url_re.match(middle):
++            if _validate_simple_url(middle):
+                 url = smart_urlquote(html.unescape(middle))
+-            elif simple_url_2_re.match(middle):
++            elif _validate_www_url(middle):
+                 url = smart_urlquote('http://%s' % html.unescape(middle))
+-            elif ':' not in middle and is_email_simple(middle):
++            elif ':' not in middle and _validate_email(middle):
+                 local, domain = middle.rsplit('@', 1)
+                 try:
+                     domain = punycode(domain)
+2026-05-03 22:30:35,739 - INFO - Grading answer for django__django-12284...
+2026-05-03 22:30:35,740 - INFO - report: {'django__django-12284': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_overriding_inherited_FIELD_display (model_fields.tests.GetFieldDisplayTests)']}, 'PASS_TO_PASS': {'success': ['test_blank_in_choices (model_fields.tests.GetChoicesTests)', 'test_blank_in_grouped_choices (model_fields.tests.GetChoicesTests)', 'test_empty_choices (model_fields.tests.GetChoicesTests)', 'test_lazy_strings_not_evaluated (model_fields.tests.GetChoicesTests)', 'test_choices_and_field_display (model_fields.tests.GetFieldDisplayTests)', 'test_empty_iterator_choices (model_fields.tests.GetFieldDisplayTests)', 'A translated display value is coerced to str.', 'test_iterator_choices (model_fields.tests.GetFieldDisplayTests)', 'test_overriding_FIELD_display (model_fields.tests.GetFieldDisplayTests)', 'test_check (model_fields.tests.ChoicesTests)', 'test_choices (model_fields.tests.ChoicesTests)', 'test_flatchoices (model_fields.tests.ChoicesTests)', 'test_formfield (model_fields.tests.ChoicesTests)', 'test_invalid_choice (model_fields.tests.ChoicesTests)', 'test_get_choices (model_fields.tests.GetChoicesLimitChoicesToTests)', 'test_get_choices_reverse_related_field (model_fields.tests.GetChoicesLimitChoicesToTests)', 'Can supply a custom choices form class to Field.formfield()', 'deconstruct() uses __qualname__ for nested class support.', 'Field instances can be pickled.', 'test_field_name (model_fields.tests.BasicFieldTests)', 'Fields are ordered based on their creation.', 'test_field_repr (model_fields.tests.BasicFieldTests)', '__repr__() uses __qualname__ for nested class support.', 'test_field_str (model_fields.tests.BasicFieldTests)', 'test_field_verbose_name (model_fields.tests.BasicFieldTests)', 'Field.formfield() sets disabled for fields with choices.', 'test_show_hidden_initial (model_fields.tests.BasicFieldTests)', 'test_get_choices (model_fields.tests.GetChoicesOrderingTests)', 'test_get_choices_default_ordering (model_fields.tests.GetChoicesOrderingTests)', 'test_get_choices_reverse_related_field (model_fields.tests.GetChoicesOrderingTests)', 'test_get_choices_reverse_related_field_default_ordering (model_fields.tests.GetChoicesOrderingTests)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-12284: resolved: False
+2026-05-03 22:30:35,740 - INFO - Attempting to stop container sweb.eval.django__django-12284.cases1_100_work3_eval...
+2026-05-03 22:30:51,005 - INFO - Attempting to remove container sweb.eval.django__django-12284.cases1_100_work3_eval...
+2026-05-03 22:30:51,029 - INFO - Container sweb.eval.django__django-12284.cases1_100_work3_eval removed.
+2026-05-03 22:30:51,029 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.django_1776_django-12284:latest...
+2026-05-03 22:30:51,150 - INFO - Image swebench/sweb.eval.x86_64.django_1776_django-12284:latest removed.

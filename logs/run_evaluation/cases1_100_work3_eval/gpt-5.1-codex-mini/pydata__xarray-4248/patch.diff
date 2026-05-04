@@ -1,0 +1,31 @@
+diff --git a/xarray/tests/test_formatting.py b/xarray/tests/test_formatting.py
+index 82de808..e24cf42 100644
+--- a/xarray/tests/test_formatting.py
++++ b/xarray/tests/test_formatting.py
+@@ -390,6 +390,26 @@ class TestFormatting:
+ 
+         assert actual == expected
+ 
++    def test_inline_variable_array_repr_custom_repr(self):
++        called_lengths = []
++
++        class CustomArray(np.ndarray):
++            def __new__(cls, data):
++                return np.asarray(data).view(cls)
++
++            def __array_finalize__(self, obj):
++                if obj is None:
++                    return
++
++            def _repr_short_(self, length):
++                called_lengths.append(length)
++                return f"custom({length})"
++
++        var = xr.Variable(("x",), CustomArray([0, 1, 2]), {"units": "m"})
++        actual = formatting.inline_variable_array_repr(var)
++        assert called_lengths
++        assert "custom(" in actual
++
+ 
+ def test_set_numpy_options():
+     original_options = np.get_printoptions()

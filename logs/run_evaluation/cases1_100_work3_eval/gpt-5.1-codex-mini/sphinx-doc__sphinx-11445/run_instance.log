@@ -1,0 +1,82 @@
+2026-05-03 23:45:33,509 - INFO - Creating container for sphinx-doc__sphinx-11445...
+2026-05-03 23:45:34,249 - INFO - Container for sphinx-doc__sphinx-11445 created: d040d9edc0da21163611958c7b781d3a44ee3c56fd895b67973a2892ae33004e
+2026-05-03 23:45:34,408 - INFO - Container for sphinx-doc__sphinx-11445 started: d040d9edc0da21163611958c7b781d3a44ee3c56fd895b67973a2892ae33004e
+2026-05-03 23:45:34,408 - INFO - Intermediate patch for sphinx-doc__sphinx-11445 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sphinx-doc__sphinx-11445/patch.diff, now applying to container...
+2026-05-03 23:45:34,562 - INFO - >>>>> Applied Patch:
+Checking patch tests/test_util_rst.py...
+Applied patch tests/test_util_rst.py cleanly.
+
+2026-05-03 23:45:34,795 - INFO - Git diff before:
+diff --git a/tests/test_util_rst.py b/tests/test_util_rst.py
+index 40a2ee68b..a36205462 100644
+--- a/tests/test_util_rst.py
++++ b/tests/test_util_rst.py
+@@ -78,6 +78,54 @@ def test_prepend_prolog_without_CR(app):
+                                       ('dummy.rst', 1, 'Sphinx is a document generator')]
+ 
+ 
++def test_prepend_prolog_with_roles_in_sections_with_newline(app):
++    prolog = 'this is rst_prolog\nhello reST!\n'
++    content = StringList([':mod:`mypackage2`',
++                          '=================',
++                          '',
++                          'Content',
++                          '',
++                          'Subheading',
++                          '----------'],
++                         'dummy.rst')
++    prepend_prolog(content, prolog)
++
++    assert list(content.xitems()) == [('<rst_prolog>', 0, 'this is rst_prolog'),
++                                      ('<rst_prolog>', 1, 'hello reST!'),
++                                      ('<generated>', 0, ''),
++                                      ('dummy.rst', 0, ':mod:`mypackage2`'),
++                                      ('dummy.rst', 1, '================='),
++                                      ('dummy.rst', 2, ''),
++                                      ('dummy.rst', 3, 'Content'),
++                                      ('dummy.rst', 4, ''),
++                                      ('dummy.rst', 5, 'Subheading'),
++                                      ('dummy.rst', 6, '----------')]
++
++
++def test_prepend_prolog_with_roles_in_sections_without_newline(app):
++    prolog = 'this is rst_prolog\nhello reST!'
++    content = StringList([':mod:`mypackage2`',
++                          '=================',
++                          '',
++                          'Content',
++                          '',
++                          'Subheading',
++                          '----------'],
++                         'dummy.rst')
++    prepend_prolog(content, prolog)
++
++    assert list(content.xitems()) == [('<rst_prolog>', 0, 'this is rst_prolog'),
++                                      ('<rst_prolog>', 1, 'hello reST!'),
++                                      ('<generated>', 0, ''),
++                                      ('dummy.rst', 0, ':mod:`mypackage2`'),
++                                      ('dummy.rst', 1, '================='),
++                                      ('dummy.rst', 2, ''),
++                                      ('dummy.rst', 3, 'Content'),
++                                      ('dummy.rst', 4, ''),
++                                      ('dummy.rst', 5, 'Subheading'),
++                                      ('dummy.rst', 6, '----------')]
++
++
+ def test_textwidth():
+     assert textwidth('Hello') == 5
+     assert textwidth('русский язык') == 12
+2026-05-03 23:45:34,796 - INFO - Eval script for sphinx-doc__sphinx-11445 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sphinx-doc__sphinx-11445/eval.sh; copying to container...
+2026-05-03 23:45:37,582 - INFO - Test runtime: 2.71 seconds
+2026-05-03 23:45:37,582 - INFO - Test output for sphinx-doc__sphinx-11445 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/sphinx-doc__sphinx-11445/test_output.txt
+2026-05-03 23:45:37,654 - INFO - Git diff after:
+
+2026-05-03 23:45:37,654 - INFO - Git diff changed after running eval script
+2026-05-03 23:45:37,654 - INFO - Grading answer for sphinx-doc__sphinx-11445...
+2026-05-03 23:45:37,656 - INFO - report: {'sphinx-doc__sphinx-11445': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['tests/test_util_rst.py::test_prepend_prolog_with_roles_in_sections_with_newline', 'tests/test_util_rst.py::test_prepend_prolog_with_roles_in_sections_without_newline']}, 'PASS_TO_PASS': {'success': ['tests/test_util_rst.py::test_escape', 'tests/test_util_rst.py::test_append_epilog', 'tests/test_util_rst.py::test_prepend_prolog', 'tests/test_util_rst.py::test_prepend_prolog_with_CR', 'tests/test_util_rst.py::test_prepend_prolog_without_CR', 'tests/test_util_rst.py::test_prepend_prolog_with_roles_in_sections', 'tests/test_util_rst.py::test_textwidth', 'tests/test_util_rst.py::test_heading'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sphinx-doc__sphinx-11445: resolved: False
+2026-05-03 23:45:37,656 - INFO - Attempting to stop container sweb.eval.sphinx-doc__sphinx-11445.cases1_100_work3_eval...
+2026-05-03 23:45:52,915 - INFO - Attempting to remove container sweb.eval.sphinx-doc__sphinx-11445.cases1_100_work3_eval...
+2026-05-03 23:45:52,935 - INFO - Container sweb.eval.sphinx-doc__sphinx-11445.cases1_100_work3_eval removed.
+2026-05-03 23:45:52,935 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-11445:latest...
+2026-05-03 23:45:53,271 - INFO - Image swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-11445:latest removed.
