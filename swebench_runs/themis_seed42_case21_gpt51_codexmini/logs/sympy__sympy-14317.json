@@ -1,0 +1,20 @@
+{
+  "instance_id": "sympy__sympy-14317",
+  "repo": "sympy/sympy",
+  "base_commit": "fb536869fb7aa28b2695ad7a3b70949926b291c4",
+  "selected_files": [
+    "sympy/interactive/printing.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 13.782908916473389,
+  "meta": {},
+  "error": "Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************************************************************************************************NCAs. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}",
+  "patch_chars": 0
+}

@@ -1,0 +1,128 @@
+{
+  "instance_id": "django__django-15819",
+  "repo": "django/django",
+  "base_commit": "877c800f255ccaa7abde1fb944de45d1616f5cc9",
+  "selected_files": [
+    "django/core/checks/messages.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 195.35357785224915,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 5
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.1,
+      "processing_time": 127.70773005485535,
+      "findings_count": 6,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 18123,
+      "completion_tokens": 18208,
+      "total_tokens": 36331,
+      "successful_requests": 36
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1383,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 0,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 2,
+        "effective_change": true,
+        "last_error": "Developer returned no rewrites; search_replace mode requires at least one search_replace_edit.",
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1,
+        "recoverable_failure_count": 1,
+        "recovery_succeeded": true,
+        "fallback_modes_tried": [
+          "search_replace",
+          "symbol_rewrite"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/core/checks/messages.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [],
+        "expanded_targets": [],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_disabled",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Extend CheckMessage.__str__ to append a short related_name conflict note whenever the provided hint references related_name.",
+        "execution_result": {},
+        "hypothesis_root_cause": "inspectdb still needs to emit related_name data for same-table relationships, but the only editable target here is the messaging layer; the best we can do is surface related_name conflicts more clearly.",
+        "expected_invariant": "When a CheckMessage hint mentions related_name, the rendered message makes the conflict visible so downstream investigation can proceed.",
+        "patch_strategy": "Extend CheckMessage.__str__ to append a short related_name conflict note whenever the provided hint references related_name.",
+        "failure_class": "mixed_or_unknown",
+        "fault_space_signal": "unknown",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 754
+}

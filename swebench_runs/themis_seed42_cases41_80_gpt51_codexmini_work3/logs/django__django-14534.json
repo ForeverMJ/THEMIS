@@ -1,0 +1,177 @@
+{
+  "instance_id": "django__django-14534",
+  "repo": "django/django",
+  "base_commit": "910ecd1b8df7678f45c3d507dde6bcb1faafa243",
+  "selected_files": [
+    "django/forms/boundfield.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 303.6367781162262,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=14, advisory=35\nBlocking conflicts (must fix):\nB1. REQ-022 -> BoundWidget | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.50, symbol_specific\nB2. REQ-022 -> _widget_data_value | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB3. REQ-022 -> as_widget | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.70, symbol_specific\nB4. REQ-022 -> build_widget_attrs | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\nB5. REQ-022 -> field.hidden_widget | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB6. REQ-022 -> hidden_widget | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB7. REQ-022 -> label_tag | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.30, symbol_specific\nB8. REQ-022 -> self.as_widget | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB9. REQ-022 -> self.build_widget_attrs | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\nB10. REQ-022 -> self.parent_widget | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB11. REQ-022 -> widget.id_for_label | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\nB12. REQ-022 -> widget.render | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB13. REQ-022 -> widget.use_required_attribute | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\nB14. REQ-022 -> widget_type | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\n\nAdvisory conflicts (non-blocking): 35\nA1. REQ-022 -> BoundField | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.30, symbol_specific\nA2. REQ-022 -> BoundWidget.__init__ | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40, symbol_specific\nA3. REQ-022 -> get | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.70\nA4. REQ-022 -> subwidgets | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.70\nA5. REQ-021 -> BoundField | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.50, symbol_specific\nA6. REQ-021 -> BoundWidget | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40, symbol_specific\nA7. REQ-021 -> BoundWidget.__init__ | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40, symbol_specific\nA8. REQ-021 -> _ | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA9. REQ-021 -> _widget_data_value | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\nA10. REQ-021 -> as_widget | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, requirement_symbol_overlap, mapping_relevance:0.60, symbol_specific\nA11. REQ-021 -> build_widget_attrs | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\nA12. REQ-021 -> field.hidden_widget | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\n... 23 more advisory conflicts omitted\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.25,
+      "processing_time": 283.97133684158325,
+      "findings_count": 7,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 48061,
+      "completion_tokens": 39111,
+      "total_tokens": 87172,
+      "successful_requests": 67
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 5265,
+        "violates_count": 14,
+        "blocking_conflicts_count": 14,
+        "advisory_conflicts_count": 35,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 8,
+        "target_symbols_hit": 0,
+        "changed_line_count": 3,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/forms/boundfield.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "as_widget",
+          "build_widget_attrs",
+          "self.build_widget_attrs"
+        ],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [
+          "as_widget",
+          "build_widget_attrs",
+          "self.build_widget_attrs",
+          "widget.id_for_label",
+          "id_for_label",
+          "widget.use_required_attribute",
+          "use_required_attribute",
+          "_widget_data_value"
+        ],
+        "expanded_targets": [
+          "as_widget",
+          "build_widget_attrs",
+          "self.build_widget_attrs",
+          "widget.id_for_label",
+          "id_for_label",
+          "widget.use_required_attribute",
+          "use_required_attribute",
+          "_widget_data_value"
+        ],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_disabled",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Update id_for_label to prefer the attrs['id'] if present, otherwise fall back to the legacy generated id.",
+        "execution_result": {},
+        "hypothesis_root_cause": "BoundWidget.id_for_label always generates 'id_%s_%s' instead of using explicit ids provided in self.data['attrs'].",
+        "expected_invariant": "When an explicit 'id' is provided through widget attrs (e.g. from ChoiceWidget.options or auto_id), BoundWidget.id_for_label returns that id.",
+        "patch_strategy": "Update id_for_label to prefer the attrs['id'] if present, otherwise fall back to the legacy generated id.",
+        "failure_class": "fault_space_weak",
+        "fault_space_signal": "weak",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 1,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-022",
+      "target_symbol": "BoundWidget.id_for_label",
+      "related_symbols": [
+        "BoundField.subwidgets"
+      ],
+      "issue_summary": "When CheckboxSelectMultiple subwidgets are rendered with a custom auto_id, BoundWidget.id_for_label ignores the id available through self.data['attrs']['id'] (populated in BoundField.subwidgets) and instead generates a synthetic id, so labels do not match the rendered input ids.",
+      "expected_behavior": "BoundWidget.id_for_label should return the id supplied via self.data['attrs']['id'] (or gracefully fall back) so label tags use the same id that the widget has.",
+      "minimal_change_hint": "Return self.data['attrs'].get('id', existing fallback) from id_for_label instead of recomputing with name/index.",
+      "blocking": true,
+      "confidence": 0.73,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-022",
+        "target_symbol": "BoundWidget.id_for_label",
+        "related_symbols": [
+          "BoundField.subwidgets"
+        ],
+        "issue_summary": "When CheckboxSelectMultiple subwidgets are rendered with a custom auto_id, BoundWidget.id_for_label ignores the id available through self.data['attrs']['id'] (populated in BoundField.subwidgets) and instead generates a synthetic id, so labels do not match the rendered input ids.",
+        "expected_behavior": "BoundWidget.id_for_label should return the id supplied via self.data['attrs']['id'] (or gracefully fall back) so label tags use the same id that the widget has.",
+        "minimal_change_hint": "Return self.data['attrs'].get('id', existing fallback) from id_for_label instead of recomputing with name/index.",
+        "blocking": true,
+        "confidence": 0.73,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 444
+}

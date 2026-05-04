@@ -1,0 +1,129 @@
+{
+  "instance_id": "mwaskom__seaborn-3010",
+  "repo": "mwaskom/seaborn",
+  "base_commit": "0f5a013e2cf43562deec3b879458e59a73853813",
+  "selected_files": [
+    "tests/_stats/test_regression.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 1116.611909866333,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 6
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.64,
+      "processing_time": 652.0212109088898,
+      "findings_count": 7,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 75734,
+      "completion_tokens": 46771,
+      "total_tokens": 122505,
+      "successful_requests": 128
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 815,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 0,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 3,
+        "effective_change": true,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: tests/_stats/test_regression.py:TestPolyFit.test_missing_data -> Developer proposed unknown symbol: TestPolyFit.test_missing_data",
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 2,
+        "recovery_succeeded": true,
+        "fallback_modes_tried": [
+          "search_replace",
+          "symbol_rewrite",
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "tests/_stats/test_regression.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [],
+        "expanded_targets": [],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_disabled",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Add a regression test that feeds PolyFit a DataFrame with a missing x value and asserts that the resulting grid is well defined and matches the expected range.",
+        "execution_result": {},
+        "hypothesis_root_cause": "Missing data in the input to PolyFit propagates NaNs into the downstream numpy call, causing np.polyfit to fail; we need explicit coverage to ensure PolyFit drops those rows before fitting.",
+        "expected_invariant": "Running the PolyFit stat on data containing missing x values should still produce a full grid with no NaNs and consistent fitted values.",
+        "patch_strategy": "Add a regression test that feeds PolyFit a DataFrame with a missing x value and asserts that the resulting grid is well defined and matches the expected range.",
+        "failure_class": "mixed_or_unknown",
+        "fault_space_signal": "unknown",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 897
+}

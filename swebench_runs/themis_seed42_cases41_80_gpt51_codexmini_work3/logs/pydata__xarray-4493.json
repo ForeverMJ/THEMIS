@@ -1,0 +1,169 @@
+{
+  "instance_id": "pydata__xarray-4493",
+  "repo": "pydata/xarray",
+  "base_commit": "a5f53e203c52a7605d5db799864046471115d04f",
+  "selected_files": [
+    "xarray/tests/test_variable.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 415.3992667198181,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=2, advisory=15\nBlocking conflicts (must fix):\nB1. REQ-029 -> Dataset | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, requirement_symbol_overlap, mapping_relevance:0.80\nB2. REQ-030 -> Dataset | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, requirement_symbol_overlap, mapping_relevance:0.80\n\nAdvisory conflicts (non-blocking): 15\nA1. REQ-029 -> TestVariable | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.30, symbol_specific\nA2. REQ-029 -> chunk | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA3. REQ-029 -> t | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA4. REQ-030 -> chunk | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA5. REQ-030 -> t | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA6. REQ-031 -> chunk | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA7. REQ-031 -> t | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA8. REQ-032 -> dict | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA9. REQ-032 -> t | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA10. REQ-033 -> chunk | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA11. REQ-033 -> dict | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA12. REQ-033 -> t | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\n... 3 more advisory conflicts omitted\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.6,
+      "processing_time": 298.4115390777588,
+      "findings_count": 14,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 84357,
+      "completion_tokens": 33358,
+      "total_tokens": 117715,
+      "successful_requests": 100
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 2590,
+        "violates_count": 2,
+        "blocking_conflicts_count": 2,
+        "advisory_conflicts_count": 15,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": true,
+        "target_hit_rate": 1.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 1,
+        "changed_line_count": 9,
+        "target_hit_via": "changed_lines",
+        "applied_symbols_count": 1,
+        "applied_symbols": [
+          "TestVariable.test_as_variable"
+        ],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "xarray/tests/test_variable.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "Dataset"
+        ],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [
+          "Dataset"
+        ],
+        "expanded_targets": [
+          "Dataset"
+        ],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "primary",
+        "fallback_would_have_triggered_but_not_used_reason": "primary_targets_sufficient",
+        "selected_hypothesis_label": "H2",
+        "selected_hypothesis_targets": [
+          "H2"
+        ],
+        "selection_reason": "Add regression coverage in TestVariable.test_as_variable to assert that converting a DataArray with chunked dask data retains the original dask array.",
+        "execution_result": {},
+        "hypothesis_root_cause": "as_variable currently materializes the underlying array when given a chunked dask-backed DataArray, which masks the bug in Dataset.update that causes eager evaluation.",
+        "expected_invariant": "as_variable keeps returning the underlying dask array so that chunk metadata survives conversions without forcing computation.",
+        "patch_strategy": "Add regression coverage in TestVariable.test_as_variable to assert that converting a DataArray with chunked dask data retains the original dask array.",
+        "failure_class": "semantics_space_weak",
+        "fault_space_signal": "strong",
+        "semantics_space_signal": "weak"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 1,
+      "target_rounds": 1,
+      "target_hit_rate": 1.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-029",
+      "target_symbol": "xarray.core.variable.as_compatible_data",
+      "related_symbols": [
+        "Dataset",
+        "TestVariable",
+        "chunk",
+        "t"
+      ],
+      "issue_summary": "`Dataset.update` (and similar paths) converts tuple-style entries containing a DataArray into eager numpy data because `as_compatible_data` always falls back to `.values` for unknown inputs, so chunked dask arrays lose their chunks.",
+      "expected_behavior": "When `as_compatible_data` is handed a DataArray, it should preserve the underlying chunked data (e.g., returning `data.data`) so that higher-level APIs such as `Dataset.update` leave dask chunking intact.",
+      "minimal_change_hint": "Treat `DataArray` like `Variable` in `as_compatible_data` (e.g., return `data.data` for both) rather than always calling `.values`; focus on the smallest added guard in that helper.",
+      "blocking": true,
+      "confidence": 0.54,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-029",
+        "target_symbol": "xarray.core.variable.as_compatible_data",
+        "related_symbols": [
+          "Dataset",
+          "TestVariable",
+          "chunk",
+          "t"
+        ],
+        "issue_summary": "`Dataset.update` (and similar paths) converts tuple-style entries containing a DataArray into eager numpy data because `as_compatible_data` always falls back to `.values` for unknown inputs, so chunked dask arrays lose their chunks.",
+        "expected_behavior": "When `as_compatible_data` is handed a DataArray, it should preserve the underlying chunked data (e.g., returning `data.data`) so that higher-level APIs such as `Dataset.update` leave dask chunking intact.",
+        "minimal_change_hint": "Treat `DataArray` like `Variable` in `as_compatible_data` (e.g., return `data.data` for both) rather than always calling `.values`; focus on the smallest added guard in that helper.",
+        "blocking": true,
+        "confidence": 0.54,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 888
+}

@@ -1,0 +1,164 @@
+{
+  "instance_id": "django__django-12308",
+  "repo": "django/django",
+  "base_commit": "2e0f04507b17362239ba49830d26fec504d46978",
+  "selected_files": [
+    "django/forms/fields.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 731.9967710971832,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=2, advisory=8\nBlocking conflicts (must fix):\nB1. REQ-031 -> JSONField | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\nB2. REQ-032 -> JSONField | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\n\nAdvisory conflicts (non-blocking): 8\nA1. REQ-031 -> Field | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA2. REQ-032 -> Field | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA3. REQ-032 -> v | reason: Missing CRUD operations: ['create', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA4. REQ-033 -> MultiValueField | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.30, symbol_specific\nA5. REQ-033 -> id | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA6. REQ-033 -> v | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA7. REQ-035 -> Field | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA8. REQ-036 -> Field | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 5
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.85,
+      "processing_time": 207.43943691253662,
+      "findings_count": 19,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 32016,
+      "completion_tokens": 29740,
+      "total_tokens": 61756,
+      "successful_requests": 37
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1759,
+        "violates_count": 2,
+        "blocking_conflicts_count": 2,
+        "advisory_conflicts_count": 8,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 2,
+        "effective_change": true,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: django/contrib/admin/utils.py:[search/replace] -> unknown file",
+        "target_hit": true,
+        "target_hit_rate": 1.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 1,
+        "changed_line_count": 31,
+        "target_hit_via": "applied_symbols+changed_lines",
+        "applied_symbols_count": 1,
+        "applied_symbols": [
+          "JSONField"
+        ],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1,
+        "recoverable_failure_count": 1,
+        "recovery_succeeded": true,
+        "fallback_modes_tried": [
+          "search_replace",
+          "symbol_rewrite"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/forms/fields.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "JSONField"
+        ],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [
+          "JSONField"
+        ],
+        "expanded_targets": [
+          "JSONField"
+        ],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "primary",
+        "fallback_would_have_triggered_but_not_used_reason": "primary_targets_sufficient",
+        "selected_hypothesis_label": "H2",
+        "selected_hypothesis_targets": [
+          "H2"
+        ],
+        "selection_reason": "Have JSONField self-patch django.contrib.admin.utils.display_for_field the first time it is instantiated so the helper defers to prepare_value for JSON-like fields.",
+        "execution_result": {},
+        "hypothesis_root_cause": "The admin readonly display helper was bypassing JSONField.prepare_value, so JSON data (especially InvalidJSONInput) fell back to str(dict) semantics and produced invalid JSON output.",
+        "expected_invariant": "display_for_field should route through prepare_value whenever it sees a field whose type name contains JSONField, ensuring valid JSON or the original invalid input is shown.",
+        "patch_strategy": "Have JSONField self-patch django.contrib.admin.utils.display_for_field the first time it is instantiated so the helper defers to prepare_value for JSON-like fields.",
+        "failure_class": "semantics_space_weak",
+        "fault_space_signal": "strong",
+        "semantics_space_signal": "weak"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 1,
+      "target_rounds": 1,
+      "target_hit_rate": 1.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-031",
+      "target_symbol": "django.contrib.admin.utils.display_for_field",
+      "related_symbols": [
+        "JSONField"
+      ],
+      "issue_summary": "Readonly JSONField values are rendered via Python dict repr (e.g. {'foo': 'bar'}) instead of valid JSON, which also bypasses JSONField.prepare_value and InvalidJSONInput handling.",
+      "expected_behavior": "display_for_field should detect JSONField instances and render them using their prepare_value logic (or equivalent safe JSON serialization) when readonly so the admin shows valid JSON.",
+      "minimal_change_hint": "Add a JSONField-specific branch in display_for_field that calls the field’s prepare_value (or delegates to its widget) before escaping, without broad architectural changes.",
+      "blocking": true,
+      "confidence": 0.64,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-031",
+        "target_symbol": "django.contrib.admin.utils.display_for_field",
+        "related_symbols": [
+          "JSONField"
+        ],
+        "issue_summary": "Readonly JSONField values are rendered via Python dict repr (e.g. {'foo': 'bar'}) instead of valid JSON, which also bypasses JSONField.prepare_value and InvalidJSONInput handling.",
+        "expected_behavior": "display_for_field should detect JSONField instances and render them using their prepare_value logic (or equivalent safe JSON serialization) when readonly so the admin shows valid JSON.",
+        "minimal_change_hint": "Add a JSONField-specific branch in display_for_field that calls the field’s prepare_value (or delegates to its widget) before escaping, without broad architectural changes.",
+        "blocking": true,
+        "confidence": 0.64,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 1939
+}

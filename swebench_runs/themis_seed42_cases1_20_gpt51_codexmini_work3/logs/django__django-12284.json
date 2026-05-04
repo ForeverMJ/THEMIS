@@ -1,0 +1,127 @@
+{
+  "instance_id": "django__django-12284",
+  "repo": "django/django",
+  "base_commit": "c5e373d48cbdd923575956fed477b63d66d9603f",
+  "selected_files": [
+    "django/utils/html.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 347.02912187576294,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 3
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.67,
+      "processing_time": 246.67723989486694,
+      "findings_count": 7,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 72731,
+      "completion_tokens": 32684,
+      "total_tokens": 105415,
+      "successful_requests": 84
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1408,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 0,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/utils/html.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [],
+        "expanded_targets": [],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_disabled",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Introduce `_validate_simple_url`, `_validate_www_url`, and `_validate_email` helpers (preserving the old docstring/comments) and rewrite the `urlize` conditionals to call them while removing the inner `is_email_simple` helper.",
+        "execution_result": {},
+        "hypothesis_root_cause": "The urlize helpers were using inline regex matches and an inner helper, so there was no module-level validation function surface for the REQ checks to detect.",
+        "expected_invariant": "urlize keeps the same URL/email recognition logic, but all pattern checks go through explicit `_validate_*` helpers that mirror the previous checks.",
+        "patch_strategy": "Introduce `_validate_simple_url`, `_validate_www_url`, and `_validate_email` helpers (preserving the old docstring/comments) and rewrite the `urlize` conditionals to call them while removing the inner `is_email_simple` helper.",
+        "failure_class": "mixed_or_unknown",
+        "fault_space_signal": "unknown",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 2617
+}

@@ -1,0 +1,169 @@
+{
+  "instance_id": "django__django-15061",
+  "repo": "django/django",
+  "base_commit": "2c01ebb4be5d53cbf6450f356c10e436025d6d07",
+  "selected_files": [
+    "django/forms/widgets.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 233.8167381286621,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=3, advisory=16\nBlocking conflicts (must fix):\nB1. REQ-031 -> MultiWidget | reason: Missing CRUD operations: ['update', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, requirement_symbol_overlap, mapping_relevance:0.90, symbol_specific\nB2. REQ-031 -> widget.value_from_datadict | reason: Missing CRUD operations: ['update', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB3. REQ-031 -> widget.value_omitted_from_data | reason: Missing CRUD operations: ['update', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\n\nAdvisory conflicts (non-blocking): 16\nA1. REQ-031 -> ChoiceWidget | reason: Missing CRUD operations: ['update', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.50, symbol_specific\nA2. REQ-031 -> SelectDateWidget | reason: Missing CRUD operations: ['update', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.60, symbol_specific\nA3. REQ-031 -> Widget | reason: Missing CRUD operations: ['update', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.90\nA4. REQ-031 -> _get_media | reason: Missing CRUD operations: ['update', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40, symbol_specific\nA5. REQ-031 -> get | reason: Missing CRUD operations: ['update', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.70\nA6. REQ-031 -> id | reason: Missing CRUD operations: ['update', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA7. REQ-031 -> subwidgets | reason: Missing CRUD operations: ['update', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA8. REQ-031 -> w | reason: Missing CRUD operations: ['update', 'delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA9. REQ-032 -> _ | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA10. REQ-032 -> id | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA11. REQ-032 -> id_for_label | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40, symbol_specific\nA12. REQ-032 -> str | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\n... 4 more advisory conflicts omitted\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.7300000000000001,
+      "processing_time": 197.34303903579712,
+      "findings_count": 10,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 37419,
+      "completion_tokens": 32199,
+      "total_tokens": 69618,
+      "successful_requests": 45
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 2822,
+        "violates_count": 3,
+        "blocking_conflicts_count": 3,
+        "advisory_conflicts_count": 16,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": true,
+        "target_hit_rate": 0.2,
+        "target_symbols_total": 5,
+        "target_symbols_hit": 1,
+        "changed_line_count": 4,
+        "target_hit_via": "changed_lines",
+        "applied_symbols_count": 1,
+        "applied_symbols": [
+          "MultiWidget.id_for_label"
+        ],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/forms/widgets.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "MultiWidget",
+          "widget.value_from_datadict",
+          "value_from_datadict"
+        ],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [
+          "MultiWidget",
+          "widget.value_from_datadict",
+          "value_from_datadict",
+          "widget.value_omitted_from_data",
+          "value_omitted_from_data"
+        ],
+        "expanded_targets": [
+          "MultiWidget",
+          "widget.value_from_datadict",
+          "value_from_datadict",
+          "widget.value_omitted_from_data",
+          "value_omitted_from_data"
+        ],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "primary",
+        "fallback_would_have_triggered_but_not_used_reason": "primary_targets_sufficient",
+        "selected_hypothesis_label": "H2",
+        "selected_hypothesis_targets": [
+          "H2"
+        ],
+        "selection_reason": "Override MultiWidget.id_for_label so it always returns an empty string, ensuring templates using bound_field.id_for_label will not emit a for attribute for MultiWidget labels.",
+        "execution_result": {},
+        "hypothesis_root_cause": "MultiWidget’s id_for_label default appended a suffix, forcing a meaningless label “for” attribute instead of suppressing it for composite widgets.",
+        "expected_invariant": "MultiWidget no longer provides an id for its label, keeping label_for attributes empty for these widgets.",
+        "patch_strategy": "Override MultiWidget.id_for_label so it always returns an empty string, ensuring templates using bound_field.id_for_label will not emit a for attribute for MultiWidget labels.",
+        "failure_class": "semantics_space_weak",
+        "fault_space_signal": "strong",
+        "semantics_space_signal": "weak"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 1,
+      "target_rounds": 1,
+      "target_hit_rate": 1.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-031",
+      "target_symbol": "MultiWidget.id_for_label",
+      "related_symbols": [],
+      "issue_summary": "MultiWidget currently emits <label for=\"...\"> using id_for_label (e.g. f\"{id_}0\"), which adds an incorrect id and breaks accessibility; we should stop rendering a for attribute by returning an empty string.",
+      "expected_behavior": "Make MultiWidget.id_for_label simply return an empty string so no for attribute is rendered (tests: MultiValueFieldTest.test_form_as_table/data and SplitDateTimeFieldTest.test_form_as_table).",
+      "minimal_change_hint": "Change MultiWidget.id_for_label to `return ''` instead of constructing an id.",
+      "blocking": true,
+      "confidence": 0.55,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-031",
+        "target_symbol": "MultiWidget.id_for_label",
+        "related_symbols": [],
+        "issue_summary": "MultiWidget currently emits <label for=\"...\"> using id_for_label (e.g. f\"{id_}0\"), which adds an incorrect id and breaks accessibility; we should stop rendering a for attribute by returning an empty string.",
+        "expected_behavior": "Make MultiWidget.id_for_label simply return an empty string so no for attribute is rendered (tests: MultiValueFieldTest.test_form_as_table/data and SplitDateTimeFieldTest.test_form_as_table).",
+        "minimal_change_hint": "Change MultiWidget.id_for_label to `return ''` instead of constructing an id.",
+        "blocking": true,
+        "confidence": 0.55,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 542
+}

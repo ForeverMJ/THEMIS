@@ -1,0 +1,161 @@
+{
+  "instance_id": "pylint-dev__pylint-5859",
+  "repo": "pylint-dev/pylint",
+  "base_commit": "182cc539b8154c0710fcea7e522267e42eba8899",
+  "selected_files": [
+    "tests/checkers/unittest_misc.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 262.9184720516205,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=2, advisory=52\nBlocking conflicts (must fix):\nB1. REQ-048 -> TestFixme | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.70, symbol_specific\nB2. REQ-048 -> test_non_alphanumeric_codetag | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.70, symbol_specific\n\nAdvisory conflicts (non-blocking): 52\nA1. REQ-041 -> TestFixme | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, symbol_specific\nA2. REQ-041 -> test_todo_without_message | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, symbol_specific\nA3. REQ-041 -> test_xxx_without_space | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, symbol_specific\nA4. REQ-042 -> MessageTest | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40, symbol_specific\nA5. REQ-042 -> TestFixme | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.60, symbol_specific\nA6. REQ-042 -> test_absent_codetag | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nA7. REQ-042 -> test_dont_trigger_on_todoist | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nA8. REQ-042 -> test_issue_2321_should_trigger | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nA9. REQ-042 -> test_non_alphanumeric_codetag | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nA10. REQ-042 -> test_other_present_codetag | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nA11. REQ-042 -> test_todo_without_message | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nA12. REQ-042 -> test_xxx_middle | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\n... 40 more advisory conflicts omitted\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.30000000000000004,
+      "processing_time": 151.22080516815186,
+      "findings_count": 10,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 22171,
+      "completion_tokens": 22104,
+      "total_tokens": 44275,
+      "successful_requests": 35
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 2695,
+        "violates_count": 2,
+        "blocking_conflicts_count": 2,
+        "advisory_conflicts_count": 52,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 0,
+        "changed_line_count": 8,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "tests/checkers/unittest_misc.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "TestFixme"
+        ],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [
+          "TestFixme"
+        ],
+        "expanded_targets": [
+          "TestFixme"
+        ],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_disabled",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Add a targeted unit test (guard condition) asserting that a purely punctuation note tag configured via notes generates the expected fixme message.",
+        "execution_result": {},
+        "hypothesis_root_cause": "The punctuation-only note tag was not being covered by existing tests. No tests ensure such tags (like “???”) configured via --notes trigger fixme warnings.",
+        "expected_invariant": "Configuring a punctuation-only code tag via notes should cause the misc checker to report a fixme warning.",
+        "patch_strategy": "Add a targeted unit test (guard condition) asserting that a purely punctuation note tag configured via notes generates the expected fixme message.",
+        "failure_class": "fault_space_weak",
+        "fault_space_signal": "weak",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 1,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-048",
+      "target_symbol": "FixmeChecker.__init__",
+      "related_symbols": [
+        "test_non_alphanumeric_codetag"
+      ],
+      "issue_summary": "The `FixmeChecker` builds the regex for the `--notes` option from the comma-separated codetags verbatim, so a pure-punctuation tag like `???` is treated as a regex pattern and never matches its literal comment.",
+      "expected_behavior": "Escape each codetag that comes from the `--notes` option before joining/compiling into the regex stored on the checker so that punctuation-only tags are handled as literals and W0511 is emitted for them.",
+      "minimal_change_hint": "In `FixmeChecker.__init__`, wrap the split `notes` codetags with `re.escape` (or similar) before combining them into the regex that drives fixme detection.",
+      "blocking": true,
+      "confidence": 0.71,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-048",
+        "target_symbol": "FixmeChecker.__init__",
+        "related_symbols": [
+          "test_non_alphanumeric_codetag"
+        ],
+        "issue_summary": "The `FixmeChecker` builds the regex for the `--notes` option from the comma-separated codetags verbatim, so a pure-punctuation tag like `???` is treated as a regex pattern and never matches its literal comment.",
+        "expected_behavior": "Escape each codetag that comes from the `--notes` option before joining/compiling into the regex stored on the checker so that punctuation-only tags are handled as literals and W0511 is emitted for them.",
+        "minimal_change_hint": "In `FixmeChecker.__init__`, wrap the split `notes` codetags with `re.escape` (or similar) before combining them into the regex that drives fixme detection.",
+        "blocking": true,
+        "confidence": 0.71,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 786
+}

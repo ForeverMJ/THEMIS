@@ -1,0 +1,170 @@
+{
+  "instance_id": "django__django-13447",
+  "repo": "django/django",
+  "base_commit": "0456d3e42795481a186db05719300691fe2a1029",
+  "selected_files": [
+    "django/contrib/admin/sites.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 530.8040111064911,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=2, advisory=8\nBlocking conflicts (must fix):\nB1. REQ-016 -> app_index | reason: Missing CRUD operations: ['delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\nB2. REQ-016 -> index | reason: Missing CRUD operations: ['delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50\n\nAdvisory conflicts (non-blocking): 8\nA1. REQ-016 -> AdminSite | reason: Missing CRUD operations: ['delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.30, symbol_specific\nA2. REQ-016 -> _ | reason: Missing CRUD operations: ['delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA3. REQ-016 -> _build_app_dict | reason: Missing CRUD operations: ['delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.70, symbol_specific\nA4. REQ-016 -> view | reason: Missing CRUD operations: ['delete'] | confidence: 0.70 | evidence: confidence>=0.65, generic_reason, mapping_relevance:0.40\nA5. REQ-018 -> AdminSite | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40, symbol_specific\nA6. REQ-018 -> _ | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA7. REQ-018 -> admin_view | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40, symbol_specific\nA8. REQ-018 -> view | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.55,
+      "processing_time": 244.75123596191406,
+      "findings_count": 13,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 31587,
+      "completion_tokens": 36136,
+      "total_tokens": 67723,
+      "successful_requests": 39
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1779,
+        "violates_count": 2,
+        "blocking_conflicts_count": 2,
+        "advisory_conflicts_count": 8,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 2,
+        "target_symbols_hit": 0,
+        "changed_line_count": 1,
+        "target_hit_via": null,
+        "applied_symbols_count": 1,
+        "applied_symbols": [
+          "AdminSite._build_app_dict"
+        ],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/contrib/admin/sites.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "app_index",
+          "index"
+        ],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [
+          "app_index",
+          "index"
+        ],
+        "expanded_targets": [
+          "app_index",
+          "index"
+        ],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_disabled",
+        "selected_hypothesis_label": "H2",
+        "selected_hypothesis_targets": [
+          "H2"
+        ],
+        "selection_reason": "Add the model reference into each model_dict so the helper powering app_index/index consistently exposes the class needed by custom consumers.",
+        "execution_result": {},
+        "hypothesis_root_cause": "app_index builds its context from _build_app_dict, but each entry omits the registered Model class, so the available_apps payload lacks the model key expected by the failing test.",
+        "expected_invariant": "Every model_dict returned from _build_app_dict carries a model key referencing the actual registered Model class, keeping app_index’s context intact.",
+        "patch_strategy": "Add the model reference into each model_dict so the helper powering app_index/index consistently exposes the class needed by custom consumers.",
+        "failure_class": "fault_space_weak",
+        "fault_space_signal": "weak",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 1,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-016",
+      "target_symbol": "AdminSite._build_app_dict",
+      "related_symbols": [
+        "app_index",
+        "index",
+        "AdminSite.build_app_dict"
+      ],
+      "issue_summary": "The admin’s app list dictionaries are missing the underlying model class and the helper remains private, so custom views can’t access the actual models and the available-apps test is failing.",
+      "expected_behavior": "Expose the builder as a public method that produces app_list entries containing the model class (e.g., `model` or `model_class`) so `app_index`/`index` can reuse it and the available-apps test passes.",
+      "minimal_change_hint": "Update `_build_app_dict` to include the model class in each app/model dict and add or rename a public wrapper (`build_app_dict`) so views can call it directly.",
+      "blocking": true,
+      "confidence": 0.7,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-016",
+        "target_symbol": "AdminSite._build_app_dict",
+        "related_symbols": [
+          "app_index",
+          "index",
+          "AdminSite.build_app_dict"
+        ],
+        "issue_summary": "The admin’s app list dictionaries are missing the underlying model class and the helper remains private, so custom views can’t access the actual models and the available-apps test is failing.",
+        "expected_behavior": "Expose the builder as a public method that produces app_list entries containing the model class (e.g., `model` or `model_class`) so `app_index`/`index` can reuse it and the available-apps test passes.",
+        "minimal_change_hint": "Update `_build_app_dict` to include the model class in each app/model dict and add or rename a public wrapper (`build_app_dict`) so views can call it directly.",
+        "blocking": true,
+        "confidence": 0.7,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 492
+}
