@@ -1,0 +1,167 @@
+{
+  "instance_id": "django__django-11848",
+  "repo": "django/django",
+  "base_commit": "f0adf3b9b7a19cdee05368ff0c0c2d087f011180",
+  "selected_files": [
+    "django/utils/http.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 234.7538230419159,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=3, advisory=5\nBlocking conflicts (must fix):\nB1. REQ-031 -> http_date | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\nB2. REQ-031 -> parse_http_date | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\nB3. REQ-034 -> quote | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50\n\nAdvisory conflicts (non-blocking): 5\nA1. REQ-031 -> url_has_allowed_host_and_scheme | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.30, symbol_specific\nA2. REQ-035 -> urlencode | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason\nA3. REQ-035 -> urlsafe_base64_decode | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, symbol_specific\nA4. REQ-035 -> urlsafe_base64_encode | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, symbol_specific\nA5. REQ-032 -> format | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, requirement_symbol_overlap, mapping_relevance:0.50\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.73,
+      "processing_time": 190.4634928703308,
+      "findings_count": 13,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 50248,
+      "completion_tokens": 25544,
+      "total_tokens": 75792,
+      "successful_requests": 51
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1714,
+        "violates_count": 3,
+        "blocking_conflicts_count": 3,
+        "advisory_conflicts_count": 5,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 3,
+        "target_symbols_hit": 0,
+        "changed_line_count": 5,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/utils/http.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "http_date",
+          "parse_http_date",
+          "quote"
+        ],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [
+          "http_date",
+          "parse_http_date",
+          "quote"
+        ],
+        "expanded_targets": [
+          "http_date",
+          "parse_http_date",
+          "quote"
+        ],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_disabled",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Adjust the two-digit year handling inside parse_http_date to compute the candidate using the current UTC century and subtract a century when that candidate exceeds the RFC-defined future threshold.",
+        "execution_result": {},
+        "hypothesis_root_cause": "parse_http_date still uses the hardcoded 70/30 split for two-digit years, so RFC850 dates are interpreted against fixed 1900/2000 centuries instead of relative to now.",
+        "expected_invariant": "Two-digit years are mapped to the nearest matching century, rolling back a century only when the candidate would lie more than 50 years in the future.",
+        "patch_strategy": "Adjust the two-digit year handling inside parse_http_date to compute the candidate using the current UTC century and subtract a century when that candidate exceeds the RFC-defined future threshold.",
+        "failure_class": "fault_space_weak",
+        "fault_space_signal": "weak",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 1,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-031",
+      "target_symbol": "django.utils.http.parse_http_date",
+      "related_symbols": [
+        "django.utils.http.http_date"
+      ],
+      "issue_summary": "RFC 7231 requires RFC850 dates with a two-digit year to roll back to the most recent past year when the parsed year would be more than 50 years in the future, but `parse_http_date` currently hardcodes 00-69→2000-2069 and 70-99→1970-1999.",
+      "expected_behavior": "Modify `parse_http_date` so that when parsing RFC850 dates it compares the interpreted year to the current year and, if more than 50 years ahead, subtracts 100 years to return the most recent matching past year, and ensure the regression tests (`test_parsing_rfc850`, `test_parsing_year_less_than_70`) pass against deterministic current-year fixtures.",
+      "minimal_change_hint": "Adjust the two-digit-year handling branch in `parse_http_date` to reference `datetime.now().year` and roll back 100 years when the computed RFC850 date exceeds current year + 50.",
+      "blocking": true,
+      "confidence": 0.73,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-031",
+        "target_symbol": "django.utils.http.parse_http_date",
+        "related_symbols": [
+          "django.utils.http.http_date"
+        ],
+        "issue_summary": "RFC 7231 requires RFC850 dates with a two-digit year to roll back to the most recent past year when the parsed year would be more than 50 years in the future, but `parse_http_date` currently hardcodes 00-69→2000-2069 and 70-99→1970-1999.",
+        "expected_behavior": "Modify `parse_http_date` so that when parsing RFC850 dates it compares the interpreted year to the current year and, if more than 50 years ahead, subtracts 100 years to return the most recent matching past year, and ensure the regression tests (`test_parsing_rfc850`, `test_parsing_year_less_than_70`) pass against deterministic current-year fixtures.",
+        "minimal_change_hint": "Adjust the two-digit-year handling branch in `parse_http_date` to reference `datetime.now().year` and roll back 100 years when the computed RFC850 date exceeds current year + 50.",
+        "blocking": true,
+        "confidence": 0.73,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 687
+}

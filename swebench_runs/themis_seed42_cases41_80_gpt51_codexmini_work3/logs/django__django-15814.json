@@ -1,0 +1,251 @@
+{
+  "instance_id": "django__django-15814",
+  "repo": "django/django",
+  "base_commit": "5eb6a2b33d70b9889e1cafa12594ad6f80773d3a",
+  "selected_files": [
+    "django/db/models/sql/query.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 1162.0173211097717,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=1, advisory=0\nBlocking conflicts (must fix):\nB1. REQ-004 -> output_field | reason: No explicit error handling functions found | confidence: 0.80 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, symbol_specific\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 8
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.6,
+      "processing_time": 464.8710398674011,
+      "findings_count": 14,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 84545,
+      "completion_tokens": 61988,
+      "total_tokens": 146533,
+      "successful_requests": 128
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 327,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 0,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      },
+      {
+        "conflict_len": 327,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 0,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": false,
+        "delta_violates": 0,
+        "delta_blocking_conflicts": 0,
+        "delta_advisory_conflicts": 0,
+        "delta_conflict_len": 0
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 3,
+        "effective_change": false,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: django/db/models/sql/query.py:[search/replace] -> Search block not found in django/db/models/sql/query.py (best ratio: 0.70). Copy exact lines from the file.",
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 3,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace",
+          "symbol_rewrite",
+          "search_replace"
+        ],
+        "failed_rewrites_count": 1,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/db/models/sql/query.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "output_field"
+        ],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [
+          "output_field"
+        ],
+        "expanded_targets": [
+          "output_field"
+        ],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_disabled",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "After setting cur_model from klass_info, immediately switch to cur_model._meta.concrete_model before grabbing opts so the rest of __init__ works with the concrete table definitions.",
+        "execution_result": {},
+        "hypothesis_root_cause": "RelatedPopulator was still building metadata off the proxy model, so the init_list of concrete columns didn’t include the concrete model’s pk and the pk lookup later failed.",
+        "expected_invariant": "The concrete model’s options are used when computing init_list/opts, so the pk_attname used for RelatedPopulator exists there even for proxies.",
+        "patch_strategy": "After setting cur_model from klass_info, immediately switch to cur_model._meta.concrete_model before grabbing opts so the rest of __init__ works with the concrete table definitions.",
+        "failure_class": "fault_space_weak",
+        "fault_space_signal": "weak",
+        "semantics_space_signal": "unknown"
+      },
+      {
+        "revision": 0,
+        "attempts_used": 2,
+        "effective_change": true,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: django/db/models/sql/query.py:[search/replace] -> Search block not found in django/db/models/sql/query.py (best ratio: 0.76). Copy exact lines from the file.",
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 0,
+        "changed_line_count": 2,
+        "target_hit_via": null,
+        "applied_symbols_count": 1,
+        "applied_symbols": [
+          "Query.deferred_to_data"
+        ],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1,
+        "recoverable_failure_count": 1,
+        "recovery_succeeded": true,
+        "fallback_modes_tried": [
+          "search_replace",
+          "symbol_rewrite"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/db/models/sql/query.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "RelatedPopulator.__init__",
+          "get_related_populators"
+        ],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [
+          "get_related_populators"
+        ],
+        "expanded_targets": [
+          "get_related_populators"
+        ],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_disabled",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "In Query.deferred_to_data, normalize cur_model to cur_model._meta.concrete_model before retrieving opts, ensuring proxies contribute the same metadata (especially pk) as their concrete models when select_related()/only() builds its deferred field map.",
+        "execution_result": {},
+        "hypothesis_root_cause": "select_related().only() walked proxy models while building deferred-loading metadata, so the pk attname never entered the init_list because we were reading the proxy _meta and RelatedPopulator later could not find the required output_field, triggering REQ-003’s implicit invariants.",
+        "expected_invariant": "deferred_to_data always resolves cur_model to its concrete backing model before touching _meta so that must_include/seen always use fields that actually exist (pk included) and RelatedPopulator can find the requested output_field.",
+        "patch_strategy": "In Query.deferred_to_data, normalize cur_model to cur_model._meta.concrete_model before retrieving opts, ensuring proxies contribute the same metadata (especially pk) as their concrete models when select_related()/only() builds its deferred field map.",
+        "failure_class": "fault_space_weak",
+        "fault_space_signal": "weak",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 2,
+      "effective_rounds": 1,
+      "effective_modification_rate": 0.5,
+      "target_hit_rounds": 0,
+      "target_rounds": 2,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-004",
+      "target_symbol": "django.db.models.query.Query.get_related_populators",
+      "related_symbols": [],
+      "issue_summary": "Calling select_related().only() via a proxy model crashes in get_related_populators because opts is taken from the proxy’s Meta instead of its concrete model, so the concrete PK attname (e.g. “id”) is not found in init_list.",
+      "expected_behavior": "get_related_populators should tolerate proxy models by resolving the concrete_model before looking up fields, allowing select_related().only() to work without ValueError.",
+      "minimal_change_hint": "Normalize cur_model to cur_model._meta.concrete_model before deriving opts (e.g. assign cur_model = cur_model._meta.concrete_model just before opts = cur_model._meta).",
+      "blocking": true,
+      "confidence": 0.59,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-003",
+        "target_symbol": "get_related_populators",
+        "related_symbols": [
+          "RelatedPopulator.__init__"
+        ],
+        "issue_summary": "select_related().only() on proxy models raises `ValueError: 'id' is not in list` because `get_related_populators` iterates over proxy model metadata instead of the concrete model, so the primary key column is missing from `init_list`.",
+        "expected_behavior": "Update `get_related_populators` so it resolves `cur_model` to its concrete backing model before inspecting `_meta`, allowing select_related().only() to work for proxy models.",
+        "minimal_change_hint": "Derive `cur_model = cur_model._meta.concrete_model` (or similar) before reading `_meta` inside `get_related_populators`.",
+        "blocking": true,
+        "confidence": 0.32,
+        "source": "llm"
+      },
+      {
+        "requirement_id": "REQ-004",
+        "target_symbol": "django.db.models.query.Query.get_related_populators",
+        "related_symbols": [],
+        "issue_summary": "Calling select_related().only() via a proxy model crashes in get_related_populators because opts is taken from the proxy’s Meta instead of its concrete model, so the concrete PK attname (e.g. “id”) is not found in init_list.",
+        "expected_behavior": "get_related_populators should tolerate proxy models by resolving the concrete_model before looking up fields, allowing select_related().only() to work without ValueError.",
+        "minimal_change_hint": "Normalize cur_model to cur_model._meta.concrete_model before deriving opts (e.g. assign cur_model = cur_model._meta.concrete_model just before opts = cur_model._meta).",
+        "blocking": true,
+        "confidence": 0.59,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 1058
+}

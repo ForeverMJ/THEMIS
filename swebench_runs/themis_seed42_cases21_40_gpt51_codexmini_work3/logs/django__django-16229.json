@@ -1,0 +1,157 @@
+{
+  "instance_id": "django__django-16229",
+  "repo": "django/django",
+  "base_commit": "04b15022e8d1f49af69d8a1e6cd678f31f1280ff",
+  "selected_files": [
+    "django/db/models/fields/__init__.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 846.9624729156494,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 1.0,
+      "processing_time": 424.9552700519562,
+      "findings_count": 24,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 65637,
+      "completion_tokens": 60167,
+      "total_tokens": 125804,
+      "successful_requests": 91
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 2480,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 5,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "django/db/models/fields/__init__.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [],
+        "expanded_targets": [],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_disabled",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Point the ModelForm field’s initial back to the bound Field.get_default() method instead of the raw callable so the default value is recomputed for every rendering, keeping the hidden value in sync.",
+        "execution_result": {},
+        "hypothesis_root_cause": "When a model field uses a callable default, the form field’s hidden initial value keeps reusing the callable itself, so rebinding a formset after a validation error can leave that hidden value stuck on the previous POST rather than rerunning the default.",
+        "expected_invariant": "A callable default should be re-evaluated each time the form renders, ensuring hidden initial widgets reflect the fresh default value instead of stale POST data.",
+        "patch_strategy": "Point the ModelForm field’s initial back to the bound Field.get_default() method instead of the raw callable so the default value is recomputed for every rendering, keeping the hidden value in sync.",
+        "failure_class": "mixed_or_unknown",
+        "fault_space_signal": "unknown",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-017",
+      "target_symbol": "Field",
+      "related_symbols": [
+        "all",
+        "v"
+      ],
+      "issue_summary": "No clear relationship found",
+      "expected_behavior": "Update `Field` so `REQ-017` is satisfied without introducing unrelated edits.",
+      "minimal_change_hint": "Start from the smallest method related to `Field`, especially `all`.",
+      "blocking": false,
+      "confidence": 0.2,
+      "source": "graph"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-017",
+        "target_symbol": "Field",
+        "related_symbols": [
+          "all",
+          "v"
+        ],
+        "issue_summary": "No clear relationship found",
+        "expected_behavior": "Update `Field` so `REQ-017` is satisfied without introducing unrelated edits.",
+        "minimal_change_hint": "Start from the smallest method related to `Field`, especially `all`.",
+        "blocking": false,
+        "confidence": 0.2,
+        "source": "graph"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 583
+}

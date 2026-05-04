@@ -1,0 +1,177 @@
+{
+  "instance_id": "sympy__sympy-18532",
+  "repo": "sympy/sympy",
+  "base_commit": "74227f900b05009d4eed62e34a166228788a32ca",
+  "selected_files": [
+    "sympy/vector/tests/test_field_functions.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 333.183541059494,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=9, advisory=10\nBlocking conflicts (must fix):\nB1. REQ-028 -> test_conservative | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB2. REQ-028 -> test_del_operator | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB3. REQ-028 -> test_differential_operators_curvilinear_system | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB4. REQ-028 -> test_directional_derivative | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB5. REQ-028 -> test_mixed_coordinates | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB6. REQ-028 -> test_product_rules | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB7. REQ-028 -> test_scalar_potential | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB8. REQ-028 -> test_scalar_potential_difference | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\nB9. REQ-028 -> test_solenoidal | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.40, symbol_specific\n\nAdvisory conflicts (non-blocking): 10\nA1. REQ-024 -> S | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40\nA2. REQ-025 -> S | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40\nA3. REQ-027 -> S | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40\nA4. REQ-028 -> S | reason: Most CRUD operations missing: ['create', 'read', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40\nA5. REQ-026 -> S | reason: No explicit error handling functions found | confidence: 0.80 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40\nA6. REQ-021 -> S | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA7. REQ-022 -> S | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA8. REQ-023 -> S | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA9. REQ-029 -> S | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nA10. REQ-030 -> S | reason: No clear relationship found | confidence: 0.20 | evidence: generic_reason, mapping_relevance:0.40\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 3
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.30000000000000004,
+      "processing_time": 255.21063709259033,
+      "findings_count": 8,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 52268,
+      "completion_tokens": 35615,
+      "total_tokens": 87883,
+      "successful_requests": 72
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 3910,
+        "violates_count": 9,
+        "blocking_conflicts_count": 9,
+        "advisory_conflicts_count": 10,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 1,
+        "effective_change": true,
+        "last_error": null,
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 8,
+        "target_symbols_hit": 0,
+        "changed_line_count": 1,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 0,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "sympy/vector/tests/test_field_functions.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "test_conservative",
+          "test_del_operator",
+          "test_differential_operators_curvilinear_system"
+        ],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [
+          "test_conservative",
+          "test_del_operator",
+          "test_differential_operators_curvilinear_system",
+          "test_directional_derivative",
+          "test_mixed_coordinates",
+          "test_product_rules",
+          "test_scalar_potential",
+          "test_scalar_potential_difference"
+        ],
+        "expanded_targets": [
+          "test_conservative",
+          "test_del_operator",
+          "test_differential_operators_curvilinear_system",
+          "test_directional_derivative",
+          "test_mixed_coordinates",
+          "test_product_rules",
+          "test_scalar_potential",
+          "test_scalar_potential_difference"
+        ],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_disabled",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Add a minimal assertion in test_conservative that verifies vector_field is not reported as conservative, keeping the change localized to the test suite.",
+        "execution_result": {},
+        "hypothesis_root_cause": "After the atoms change, the existing conservative-field test suite no longer exercises the vector_field defined above, so regressions around that vector literal could go unnoticed.",
+        "expected_invariant": "test_conservative should assert the known non-conservative behavior of vector_field to keep the coverage aligned with the new atom semantics.",
+        "patch_strategy": "Add a minimal assertion in test_conservative that verifies vector_field is not reported as conservative, keeping the change localized to the test suite.",
+        "failure_class": "fault_space_weak",
+        "fault_space_signal": "weak",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 1,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-ATOMS-01",
+      "target_symbol": "sympy.core.basic.Basic.atoms",
+      "related_symbols": [
+        "sympy.core.tests.test_basic.test_atoms"
+      ],
+      "issue_summary": "Basic.atoms currently treats every Atom subclass as a leaf even when it has args; the requirement is that expr.atoms() should return any node that has no .args regardless of whether it inherits from Atom.",
+      "expected_behavior": "Change Basic.atoms so that when no types are passed it considers an expression a leaf if it has no .args (instead of relying on x.is_Atom), update the atoms() docstring to describe the “leaf = no args” definition, and expand the atoms test to cover a non-Atom leaf.",
+      "minimal_change_hint": "Replace the is_Atom check under the “no types” branch with a `not expr.args` check and tweak the docstring/test accordingly so leaves with empty args (even if not Atom) are returned.",
+      "blocking": true,
+      "confidence": 0.49,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-ATOMS-01",
+        "target_symbol": "sympy.core.basic.Basic.atoms",
+        "related_symbols": [
+          "sympy.core.tests.test_basic.test_atoms"
+        ],
+        "issue_summary": "Basic.atoms currently treats every Atom subclass as a leaf even when it has args; the requirement is that expr.atoms() should return any node that has no .args regardless of whether it inherits from Atom.",
+        "expected_behavior": "Change Basic.atoms so that when no types are passed it considers an expression a leaf if it has no .args (instead of relying on x.is_Atom), update the atoms() docstring to describe the “leaf = no args” definition, and expand the atoms test to cover a non-Atom leaf.",
+        "minimal_change_hint": "Replace the is_Atom check under the “no types” branch with a `not expr.args` check and tweak the docstring/test accordingly so leaves with empty args (even if not Atom) are returned.",
+        "blocking": true,
+        "confidence": 0.49,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 593
+}

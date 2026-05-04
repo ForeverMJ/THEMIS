@@ -1,0 +1,253 @@
+{
+  "instance_id": "sympy__sympy-24152",
+  "repo": "sympy/sympy",
+  "base_commit": "b9af885473ad7e34b5b0826cb424dd26d8934670",
+  "selected_files": [
+    "sympy/core/add.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 539.8468327522278,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=1, advisory=4\nBlocking conflicts (must fix):\nB1. REQ-012 -> Mul | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50\n\nAdvisory conflicts (non-blocking): 4\nA1. REQ-012 -> Add | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.30\nA2. REQ-012 -> all | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.40\nA3. REQ-012 -> as_two_terms | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.30, symbol_specific\nA4. REQ-012 -> primitive | reason: No validation functions found in codebase | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, mapping_relevance:0.30\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 8
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.35,
+      "processing_time": 322.16473507881165,
+      "findings_count": 9,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 69743,
+      "completion_tokens": 47791,
+      "total_tokens": 117534,
+      "successful_requests": 83
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 1030,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 4,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      },
+      {
+        "conflict_len": 1030,
+        "violates_count": 1,
+        "blocking_conflicts_count": 1,
+        "advisory_conflicts_count": 4,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": false,
+        "delta_violates": 0,
+        "delta_blocking_conflicts": 0,
+        "delta_advisory_conflicts": 0,
+        "delta_conflict_len": 0
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 3,
+        "effective_change": false,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: sympy/physics/quantum/tensorproduct.py:[search/replace] -> unknown file",
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 3,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace",
+          "symbol_rewrite",
+          "search_replace"
+        ],
+        "failed_rewrites_count": 1,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "sympy/core/add.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [],
+        "expanded_targets": [],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_disabled",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Split the commutative (scalar) part from the constructed tp, recurse on the TensorProduct in the non-commutative portion, and reassemble the term via Mul to preserve scalars while ensuring the expansion is complete.",
+        "execution_result": {},
+        "hypothesis_root_cause": "TensorProduct expansion aborted whenever the recursive construction returned a Mul with scalar factors instead of a pure TensorProduct, so the previous isinstance check never recursed.",
+        "expected_invariant": "Every constructed sub-TensorProduct is recursively expanded and recombined with its scalar multipliers so that .expand(tensorproduct=True) terminates with all tensor factors expanded.",
+        "patch_strategy": "Split the commutative (scalar) part from the constructed tp, recurse on the TensorProduct in the non-commutative portion, and reassemble the term via Mul to preserve scalars while ensuring the expansion is complete.",
+        "failure_class": "mixed_or_unknown",
+        "fault_space_signal": "weak",
+        "semantics_space_signal": "unknown"
+      },
+      {
+        "revision": 0,
+        "attempts_used": 3,
+        "effective_change": false,
+        "last_error": "Developer returned no rewrites; search_replace mode requires at least one search_replace_edit.",
+        "target_hit": false,
+        "target_hit_rate": 0.0,
+        "target_symbols_total": 1,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 2,
+        "recovery_succeeded": false,
+        "fallback_modes_tried": [
+          "search_replace",
+          "symbol_rewrite",
+          "search_replace"
+        ],
+        "failed_rewrites_count": 1,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "sympy/core/add.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "TensorProduct",
+          "Mul",
+          "TensorProduct._eval_expand_tensorproduct"
+        ],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [
+          "TensorProduct._eval_expand_tensorproduct"
+        ],
+        "expanded_targets": [
+          "TensorProduct._eval_expand_tensorproduct"
+        ],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_disabled",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "After building `tp`, split it via `args_cnc()` so that the sole TensorProduct in the non-commutative part can be recursively expanded before multiplying it back with the commutative factors.",
+        "execution_result": {},
+        "hypothesis_root_cause": "TensorProduct._eval_expand_tensorproduct() stops recursion when TensorProduct.__new__ pulls out commutative scalars into a Mul, so the scalar-removing constructor hides the remaining tensor part from the recursive call.",
+        "expected_invariant": "After reconstructing each partial tensor product, any scalars pulled out by TensorProduct.__new__ are split off and the remaining TensorProduct is recursively expanded before recombining with the scalars.",
+        "patch_strategy": "After building `tp`, split it via `args_cnc()` so that the sole TensorProduct in the non-commutative part can be recursively expanded before multiplying it back with the commutative factors.",
+        "failure_class": "fault_space_weak",
+        "fault_space_signal": "weak",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 2,
+      "effective_rounds": 0,
+      "effective_modification_rate": 0.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 1,
+      "target_hit_rate": 0.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-012",
+      "target_symbol": "TensorProduct._eval_expand_tensorproduct",
+      "related_symbols": [
+        "Mul",
+        "TensorProduct",
+        "TensorProduct.__new__"
+      ],
+      "issue_summary": "TensorProduct.expand(tensorproduct=True) fails to fully expand when intermediate TensorProduct constructions return commutative scalars, because _eval_expand_tensorproduct skips recursive expansion once the new term becomes a Mul with scalar prefix.",
+      "expected_behavior": "Ensure _eval_expand_tensorproduct strips commutative scalar factors (from tp.args_cnc()) and recursively expands the sole non-commutative TensorProduct before recombining, so expand(tensorproduct=True) always fully expands tensor products.",
+      "minimal_change_hint": "Within TensorProduct._eval_expand_tensorproduct(), after constructing tp, split its cnc args, recursively expand nc TensorProduct entries, and rebuild the term using those pieces instead of assuming tp is itself a TensorProduct.",
+      "blocking": true,
+      "confidence": 0.36,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-009",
+        "target_symbol": "TensorProduct._eval_expand_tensorproduct",
+        "related_symbols": [
+          "TensorProduct",
+          "Mul"
+        ],
+        "issue_summary": "TensorProduct.expand(tensorproduct=True) skips tensor factors when intermediate TensorProduct objects return Mul with scalar parts, so recursive expansion stops prematurely.",
+        "expected_behavior": "Ensure _eval_expand_tensorproduct splits commutative factors from the TensorProduct returned by the constructor and recursively expands the tensor component before recombining scalars, so expand(tensorproduct=True) fully expands any TensorProduct.",
+        "minimal_change_hint": "After constructing tp, decompose it via tp.args_cnc(), expand the sole TensorProduct in nc_part, then rebuild the term with Mul(*c_part)*Mul(*nc_part).",
+        "blocking": true,
+        "confidence": 0.54,
+        "source": "llm"
+      },
+      {
+        "requirement_id": "REQ-012",
+        "target_symbol": "TensorProduct._eval_expand_tensorproduct",
+        "related_symbols": [
+          "Mul",
+          "TensorProduct",
+          "TensorProduct.__new__"
+        ],
+        "issue_summary": "TensorProduct.expand(tensorproduct=True) fails to fully expand when intermediate TensorProduct constructions return commutative scalars, because _eval_expand_tensorproduct skips recursive expansion once the new term becomes a Mul with scalar prefix.",
+        "expected_behavior": "Ensure _eval_expand_tensorproduct strips commutative scalar factors (from tp.args_cnc()) and recursively expands the sole non-commutative TensorProduct before recombining, so expand(tensorproduct=True) always fully expands tensor products.",
+        "minimal_change_hint": "Within TensorProduct._eval_expand_tensorproduct(), after constructing tp, split its cnc args, recursively expand nc TensorProduct entries, and rebuild the term using those pieces instead of assuming tp is itself a TensorProduct.",
+        "blocking": true,
+        "confidence": 0.36,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": false,
+    "patch_source": "final_files",
+    "empty_patch_reason": "no_effective_changes_in_workflow"
+  },
+  "patch_chars": 0
+}

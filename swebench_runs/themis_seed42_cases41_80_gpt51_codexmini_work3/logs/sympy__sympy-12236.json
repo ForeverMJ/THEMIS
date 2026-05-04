@@ -1,0 +1,128 @@
+{
+  "instance_id": "sympy__sympy-12236",
+  "repo": "sympy/sympy",
+  "base_commit": "d60497958f6dea7f5e25bc41e9107a6a63694d01",
+  "selected_files": [
+    "setup.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 320.7340862751007,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 0,
+    "final_conflict_report": null,
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 4
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.1,
+      "processing_time": 271.299320936203,
+      "findings_count": 8,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 71400,
+      "completion_tokens": 31663,
+      "total_tokens": 103063,
+      "successful_requests": 88
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 0,
+        "violates_count": 0,
+        "blocking_conflicts_count": 0,
+        "advisory_conflicts_count": 0,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 2,
+        "effective_change": true,
+        "last_error": "Developer returned no rewrites; search_replace mode requires at least one search_replace_edit.",
+        "target_hit": null,
+        "target_hit_rate": null,
+        "target_symbols_total": 0,
+        "target_symbols_hit": 0,
+        "changed_line_count": 0,
+        "target_hit_via": null,
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 1,
+        "proposed_rewrites": 1,
+        "recoverable_failure_count": 1,
+        "recovery_succeeded": true,
+        "fallback_modes_tried": [
+          "search_replace",
+          "symbol_rewrite"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "setup.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [],
+        "expanded_targets": [],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "none",
+        "fallback_would_have_triggered_but_not_used_reason": "fallback_disabled",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Update the domain coercion logic around parallel_poly_from_expr (and the preceding reduction) so that the combined symbol set is inspected and a suitable field domain is selected before creating Poly instances and calling div. This ensures that operations involving denominators or parameters get promoted to, e.g., QQ[y] -> QQ(y) and avoid truncating fractional results (fixing test_div).",
+        "execution_result": {},
+        "hypothesis_root_cause": "parallel_poly_from_expr (and the univariate reduction logic in apart) currently detects a ZZ[y] ring domain even when the numerators/denominators need QQ coefficients, so Poly.div drops fractional terms (e.g., 1/2) and produces incorrect partial fractions.",
+        "expected_invariant": "apart() should promote to a field (like QQ or QQ(y)) whenever the combination of symbols or numerators/denominators requires rational coefficients, so Poly.div does not lose fractional parts and apart returns the correct decomposition.",
+        "patch_strategy": "Update the domain coercion logic around parallel_poly_from_expr (and the preceding reduction) so that the combined symbol set is inspected and a suitable field domain is selected before creating Poly instances and calling div. This ensures that operations involving denominators or parameters get promoted to, e.g., QQ[y] -> QQ(y) and avoid truncating fractional results (fixing test_div).",
+        "failure_class": "mixed_or_unknown",
+        "fault_space_signal": "unknown",
+        "semantics_space_signal": "unknown"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 0,
+      "target_rounds": 0,
+      "target_hit_rate": 0.0
+    },
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 469
+}

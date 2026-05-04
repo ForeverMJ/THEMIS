@@ -1,0 +1,169 @@
+{
+  "instance_id": "pallets__flask-4992",
+  "repo": "pallets/flask",
+  "base_commit": "4c288bc97ea371817199908d0d9b12de9dae327e",
+  "selected_files": [
+    "tests/test_config.py"
+  ],
+  "mode": "integrated",
+  "experiment_preset": "default",
+  "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+  "model": "gpt-5.1-codex-mini",
+  "analysis_model": "gpt-5.1-codex-mini",
+  "analysis_strategy": "auto_select",
+  "max_revisions": 1,
+  "dry_run": false,
+  "duration_s": 507.6491708755493,
+  "meta": {
+    "workflow_builder": "run_experiment_integrated:build_integrated_workflow",
+    "revision_count": 1,
+    "final_conflict_report": "Detected explicit graph conflicts: blocking=3, advisory=0\nBlocking conflicts (must fix):\nB1. REQ-023 -> Config | reason: Most CRUD operations missing: ['create', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50\nB2. REQ-023 -> Flask | reason: Most CRUD operations missing: ['create', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50\nB3. REQ-023 -> from_file | reason: Most CRUD operations missing: ['create', 'update', 'delete'] | confidence: 0.90 | evidence: confidence>=0.78, generic_reason, requirement_symbol_overlap, mapping_relevance:0.50, symbol_specific\nCompletion gate: no blocking conflicts in graph.",
+    "chat_usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "successful_requests": 6
+    },
+    "advanced_summary": {
+      "strategy": "integrated",
+      "confidence": 0.55,
+      "processing_time": 198.70070815086365,
+      "findings_count": 13,
+      "recommendations_count": 1
+    },
+    "advanced_usage": {
+      "prompt_tokens": 39202,
+      "completion_tokens": 27939,
+      "total_tokens": 67141,
+      "successful_requests": 63
+    },
+    "conflict_metrics_history": [
+      {
+        "conflict_len": 783,
+        "violates_count": 3,
+        "blocking_conflicts_count": 3,
+        "advisory_conflicts_count": 0,
+        "metrics_source": "analysis_report",
+        "revision": 0,
+        "conflict_down": null,
+        "delta_violates": null,
+        "delta_blocking_conflicts": null,
+        "delta_advisory_conflicts": null,
+        "delta_conflict_len": null
+      }
+    ],
+    "developer_metrics_history": [
+      {
+        "revision": 0,
+        "attempts_used": 3,
+        "effective_change": true,
+        "last_error": "Developer returned rewrites but no effective file changes. Failures: tests/test_config.py:test_config_from_file_toml -> Developer proposed unknown symbol: test_config_from_file_toml",
+        "target_hit": true,
+        "target_hit_rate": 1.0,
+        "target_symbols_total": 3,
+        "target_symbols_hit": 3,
+        "changed_line_count": 9,
+        "target_hit_via": "changed_lines",
+        "applied_symbols_count": 0,
+        "applied_symbols": [],
+        "applied_rewrites": 0,
+        "proposed_rewrites": 0,
+        "recoverable_failure_count": 1,
+        "recovery_succeeded": true,
+        "fallback_modes_tried": [
+          "search_replace",
+          "symbol_rewrite",
+          "search_replace"
+        ],
+        "failed_rewrites_count": 0,
+        "context_narrowed": false,
+        "context_file_count": 1,
+        "selected_files": [
+          "tests/test_config.py"
+        ],
+        "relocalized": false,
+        "previous_target": null,
+        "alternative_targets": [
+          "from_file",
+          "Config",
+          "Flask"
+        ],
+        "fallback_enabled": false,
+        "target_expansion_mode": "disabled",
+        "entered_fallback": false,
+        "primary_targets": [
+          "from_file",
+          "Config",
+          "Flask"
+        ],
+        "expanded_targets": [
+          "from_file",
+          "Config",
+          "Flask"
+        ],
+        "fallback_added_targets": [],
+        "fallback_target_hit": null,
+        "fallback_target_hit_rate": null,
+        "fallback_targets_total": 0,
+        "fallback_targets_hit": 0,
+        "expansion_anchor_file": null,
+        "expansion_anchor_symbol": null,
+        "selected_target_source": "primary",
+        "fallback_would_have_triggered_but_not_used_reason": "primary_targets_sufficient",
+        "selected_hypothesis_label": "H1",
+        "selected_hypothesis_targets": [
+          "H1"
+        ],
+        "selection_reason": "Add a dedicated test that writes a TOML file, uses tomllib.load with mode=\"rb\", and verifies the configuration values while skipping when tomllib is unavailable.",
+        "execution_result": {},
+        "hypothesis_root_cause": "The new TOML test assumes Config.from_file accepts a mode so loaders like tomllib.load() can consume binary files.",
+        "expected_invariant": "Config.from_file loads binary files when mode=\"rb\" is supplied and tomllib.load() succeeds.",
+        "patch_strategy": "Add a dedicated test that writes a TOML file, uses tomllib.load with mode=\"rb\", and verifies the configuration values while skipping when tomllib is unavailable.",
+        "failure_class": "semantics_space_weak",
+        "fault_space_signal": "strong",
+        "semantics_space_signal": "weak"
+      }
+    ],
+    "loop_summary": {
+      "developer_rounds": 1,
+      "effective_rounds": 1,
+      "effective_modification_rate": 1.0,
+      "target_hit_rounds": 1,
+      "target_rounds": 1,
+      "target_hit_rate": 1.0
+    },
+    "repair_brief": {
+      "requirement_id": "REQ-023",
+      "target_symbol": "flask.Config.from_file",
+      "related_symbols": [
+        "Toml load"
+      ],
+      "issue_summary": "`flask.Config.from_file` always opens files in text mode, so passing binary-only loaders like `tomllib.load` fails and tests for TOML loading break.",
+      "expected_behavior": "Add a `mode` parameter (or equivalent `text=True/False`) to `Config.from_file` so callers can open files in binary mode when needed, allowing `app.config.from_file(\"config.toml\", tomllib.load, mode=\"b\")` to work.",
+      "minimal_change_hint": "Extend `Config.from_file` to accept a file mode argument and use it when calling `open` (defaulting to the existing text mode).",
+      "blocking": true,
+      "confidence": 0.67,
+      "source": "llm"
+    },
+    "repair_brief_history": [
+      {
+        "requirement_id": "REQ-023",
+        "target_symbol": "flask.Config.from_file",
+        "related_symbols": [
+          "Toml load"
+        ],
+        "issue_summary": "`flask.Config.from_file` always opens files in text mode, so passing binary-only loaders like `tomllib.load` fails and tests for TOML loading break.",
+        "expected_behavior": "Add a `mode` parameter (or equivalent `text=True/False`) to `Config.from_file` so callers can open files in binary mode when needed, allowing `app.config.from_file(\"config.toml\", tomllib.load, mode=\"b\")` to work.",
+        "minimal_change_hint": "Extend `Config.from_file` to accept a file mode argument and use it when calling `open` (defaulting to the existing text mode).",
+        "blocking": true,
+        "confidence": 0.67,
+        "source": "llm"
+      }
+    ],
+    "last_effective_files_available": true,
+    "last_effective_revision": 0,
+    "patch_source": "final_files",
+    "empty_patch_reason": null
+  },
+  "patch_chars": 671
+}
