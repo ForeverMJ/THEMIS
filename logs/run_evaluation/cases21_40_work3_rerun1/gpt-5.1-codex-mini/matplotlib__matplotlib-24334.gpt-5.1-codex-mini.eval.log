@@ -1,0 +1,23 @@
+[group-setup-failure] Harness failed before per-instance evaluation
+Instance ID: matplotlib__matplotlib-24334
+Model: gpt-5.1-codex-mini
+Predictions path: testbed/cases21_40_work3_rerun1/gpt-5.1-codex-mini/matplotlib/3.6/gpt-5.1-codex-mini_matplotlib__matplotlib_3.6_gpt-5.1-codex-mini.themis_swebench_lite_seed42_cases21_40_work3.json
+Error: CalledProcessError: Command '['/Users/tao/Dev/THEMIS/testbed/cases21_40_work3_rerun1/gpt-5.1-codex-mini/matplotlib/3.6/tmpi1tm__qh/miniconda3/bin/conda', 'env', 'create', '--file', '/Users/tao/Dev/THEMIS/testbed/cases21_40_work3_rerun1/gpt-5.1-codex-mini/matplotlib/3.6/tmpkoyapbah/environment.yml']' returned non-zero exit status 1.
+Traceback (most recent call last):
+  File "/Users/tao/Dev/THEMIS/.venv/lib/python3.9/site-packages/swebench/harness/run_evaluation.py", line 224, in main
+    eval_engine(args)
+  File "/Users/tao/Dev/THEMIS/.venv/lib/python3.9/site-packages/swebench/harness/engine_evaluation.py", line 177, in main
+    setup_testbed(data_groups[0])
+  File "/Users/tao/Dev/THEMIS/.venv/lib/python3.9/site-packages/swebench/harness/engine_validation.py", line 91, in setup_testbed
+    with TestbedContextManager(
+  File "/Users/tao/Dev/THEMIS/.venv/lib/python3.9/site-packages/swebench/harness/context_manager.py", line 393, in __enter__
+    self.exec(cmd.split(" "))
+  File "/Users/tao/Dev/THEMIS/.venv/lib/python3.9/site-packages/swebench/harness/context_manager.py", line 95, in __call__
+    raise e
+  File "/Users/tao/Dev/THEMIS/.venv/lib/python3.9/site-packages/swebench/harness/context_manager.py", line 82, in __call__
+    output = subprocess.run(cmd, **combined_args)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 528, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/Users/tao/Dev/THEMIS/testbed/cases21_40_work3_rerun1/gpt-5.1-codex-mini/matplotlib/3.6/tmpi1tm__qh/miniconda3/bin/conda', 'env', 'create', '--file', '/Users/tao/Dev/THEMIS/testbed/cases21_40_work3_rerun1/gpt-5.1-codex-mini/matplotlib/3.6/tmpkoyapbah/environment.yml']' returned non-zero exit status 1.
+
+>>>>> Init Failed: group setup failure before per-instance evaluation
