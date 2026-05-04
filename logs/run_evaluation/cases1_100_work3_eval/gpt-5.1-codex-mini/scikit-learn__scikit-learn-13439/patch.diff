@@ -1,0 +1,18 @@
+diff --git a/sklearn/tests/test_pipeline.py b/sklearn/tests/test_pipeline.py
+index 8d6fe8f..fc3d770 100644
+--- a/sklearn/tests/test_pipeline.py
++++ b/sklearn/tests/test_pipeline.py
+@@ -540,6 +540,13 @@ def test_pipeline_slice():
+     assert_raises(ValueError, lambda: pipe[::-1])
+ 
+ 
++def test_pipeline_len():
++    pipe = Pipeline([('transf', Transf()), ('clf', FitParamT())])
++    assert len(pipe) == len(pipe.steps)
++    assert len(pipe[:len(pipe)]) == len(pipe)
++    assert pipe[:len(pipe)].steps == pipe.steps
++
++
+ def test_pipeline_index():
+     transf = Transf()
+     clf = FitParamT()

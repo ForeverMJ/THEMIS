@@ -1,0 +1,20 @@
+diff --git a/xarray/tests/test_variable.py b/xarray/tests/test_variable.py
+index e1ae3e1..013d40a 100644
+--- a/xarray/tests/test_variable.py
++++ b/xarray/tests/test_variable.py
+@@ -1081,6 +1081,15 @@ class TestVariable(VariableSubclassobjects):
+         td = np.array([timedelta(days=x) for x in range(10)])
+         assert as_variable(td, "time").dtype.kind == "m"
+ 
++        if dask_array_type is not None:
++            import dask.array as da
++
++            chunked = da.arange(6, chunks=3).reshape(2, 3)
++            ds_chunked = Dataset({"foo": (("x", "y"), chunked)})
++            actual_chunked = as_variable(ds_chunked["foo"])
++            assert isinstance(actual_chunked.data, dask_array_type)
++            assert actual_chunked.data is chunked
++
+     def test_repr(self):
+         v = Variable(["time", "x"], [[1, 2, 3], [4, 5, 6]], {"foo": "bar"})
+         expected = dedent(

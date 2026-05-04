@@ -1,0 +1,46 @@
+2026-05-03 23:16:56,089 - INFO - Creating container for mwaskom__seaborn-3010...
+2026-05-03 23:16:56,966 - INFO - Container for mwaskom__seaborn-3010 created: cf0ef9b4cb05752847891878ff66cdc5af4e57ad9f2f33078b71d6d0929ebcf7
+2026-05-03 23:16:57,116 - INFO - Container for mwaskom__seaborn-3010 started: cf0ef9b4cb05752847891878ff66cdc5af4e57ad9f2f33078b71d6d0929ebcf7
+2026-05-03 23:16:57,116 - INFO - Intermediate patch for mwaskom__seaborn-3010 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/mwaskom__seaborn-3010/patch.diff, now applying to container...
+2026-05-03 23:16:57,278 - INFO - >>>>> Applied Patch:
+Checking patch tests/_stats/test_regression.py...
+Applied patch tests/_stats/test_regression.py cleanly.
+
+2026-05-03 23:16:57,412 - INFO - Git diff before:
+diff --git a/tests/_stats/test_regression.py b/tests/_stats/test_regression.py
+index 7facf75d..5e67154e 100644
+--- a/tests/_stats/test_regression.py
++++ b/tests/_stats/test_regression.py
+@@ -50,3 +50,18 @@ class TestPolyFit:
+             grid = np.linspace(part["x"].min(), part["x"].max(), gridsize)
+             assert_array_equal(part["x"], grid)
+             assert part["y"].diff().diff().dropna().abs().gt(0).all()
++
++    def test_missing_data(self):
++        groupby = GroupBy(["group"])
++        data = pd.DataFrame(dict(
++            x=[0, 1, np.nan, 3],
++            y=[0, 1, 2, 3],
++        ))
++        res = PolyFit(gridsize=20, order=1)(data, groupby, "x", {})
++
++        assert not res["x"].isna().any()
++        assert not res["y"].isna().any()
++
++        grid = np.linspace(0, 3, 20)
++        assert_array_equal(res["x"], grid)
++        assert_array_almost_equal(res["y"], res["x"])
+2026-05-03 23:16:57,412 - INFO - Eval script for mwaskom__seaborn-3010 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/mwaskom__seaborn-3010/eval.sh; copying to container...
+2026-05-03 23:17:00,490 - INFO - Test runtime: 3.01 seconds
+2026-05-03 23:17:00,491 - INFO - Test output for mwaskom__seaborn-3010 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/mwaskom__seaborn-3010/test_output.txt
+2026-05-03 23:17:00,557 - INFO - Git diff after:
+
+2026-05-03 23:17:00,557 - INFO - Git diff changed after running eval script
+2026-05-03 23:17:00,557 - INFO - Grading answer for mwaskom__seaborn-3010...
+2026-05-03 23:17:00,557 - INFO - report: {'mwaskom__seaborn-3010': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['tests/_stats/test_regression.py::TestPolyFit::test_missing_data']}, 'PASS_TO_PASS': {'success': ['tests/_stats/test_regression.py::TestPolyFit::test_no_grouper', 'tests/_stats/test_regression.py::TestPolyFit::test_one_grouper'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for mwaskom__seaborn-3010: resolved: False
+2026-05-03 23:17:00,557 - INFO - Attempting to stop container sweb.eval.mwaskom__seaborn-3010.cases1_100_work3_eval...
+2026-05-03 23:17:15,814 - INFO - Attempting to remove container sweb.eval.mwaskom__seaborn-3010.cases1_100_work3_eval...
+2026-05-03 23:17:15,831 - INFO - Container sweb.eval.mwaskom__seaborn-3010.cases1_100_work3_eval removed.
+2026-05-03 23:17:15,831 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.mwaskom_1776_seaborn-3010:latest...
+2026-05-03 23:17:16,217 - INFO - Image swebench/sweb.eval.x86_64.mwaskom_1776_seaborn-3010:latest removed.

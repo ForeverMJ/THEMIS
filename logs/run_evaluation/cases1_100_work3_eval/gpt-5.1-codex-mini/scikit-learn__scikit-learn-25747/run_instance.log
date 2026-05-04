@@ -1,0 +1,50 @@
+2026-05-03 23:51:06,381 - INFO - Creating container for scikit-learn__scikit-learn-25747...
+2026-05-03 23:51:07,392 - INFO - Container for scikit-learn__scikit-learn-25747 created: de831af8ff142fec967eb7a604705d32d99a32daab12eb4bda5f2082886db9e8
+2026-05-03 23:51:07,580 - INFO - Container for scikit-learn__scikit-learn-25747 started: de831af8ff142fec967eb7a604705d32d99a32daab12eb4bda5f2082886db9e8
+2026-05-03 23:51:07,580 - INFO - Intermediate patch for scikit-learn__scikit-learn-25747 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/scikit-learn__scikit-learn-25747/patch.diff, now applying to container...
+2026-05-03 23:51:07,747 - INFO - >>>>> Applied Patch:
+Checking patch sklearn/utils/tests/test_set_output.py...
+Applied patch sklearn/utils/tests/test_set_output.py cleanly.
+
+2026-05-03 23:51:07,990 - INFO - Git diff before:
+diff --git a/sklearn/utils/tests/test_set_output.py b/sklearn/utils/tests/test_set_output.py
+index ac73ca094..08db27fca 100644
+--- a/sklearn/utils/tests/test_set_output.py
++++ b/sklearn/utils/tests/test_set_output.py
+@@ -135,6 +135,23 @@ def test_set_output_method():
+     assert isinstance(X_trans_pd, pd.DataFrame)
+ 
+ 
++def test_set_output_pandas_keep_index():
++    """Check pandas output keeps the original index."""
++    pd = pytest.importorskip("pandas")
++
++    X = pd.DataFrame(
++        [[1, 0, 3], [0, 0, 1]],
++        columns=["a", "b", "c"],
++        index=pd.Index([10, 12], name="sample"),
++    )
++
++    est = EstimatorWithSetOutput().fit(np.asarray(X))
++    est.set_output(transform="pandas")
++
++    X_trans_pd = est.transform(X)
++    assert_array_equal(X_trans_pd.index, X.index)
++
++
+ def test_set_output_method_error():
+     """Check transform fails with invalid transform."""
+2026-05-03 23:51:07,991 - INFO - Eval script for scikit-learn__scikit-learn-25747 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/scikit-learn__scikit-learn-25747/eval.sh; copying to container...
+2026-05-03 23:51:11,791 - INFO - Test runtime: 3.72 seconds
+2026-05-03 23:51:11,792 - INFO - Test output for scikit-learn__scikit-learn-25747 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/scikit-learn__scikit-learn-25747/test_output.txt
+2026-05-03 23:51:11,866 - INFO - Git diff after:
+
+2026-05-03 23:51:11,866 - INFO - Git diff changed after running eval script
+2026-05-03 23:51:11,866 - INFO - Grading answer for scikit-learn__scikit-learn-25747...
+2026-05-03 23:51:11,867 - INFO - report: {'scikit-learn__scikit-learn-25747': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['sklearn/utils/tests/test_set_output.py::test_set_output_pandas_keep_index']}, 'PASS_TO_PASS': {'success': ['sklearn/utils/tests/test_set_output.py::test__wrap_in_pandas_container_dense', 'sklearn/utils/tests/test_set_output.py::test__wrap_in_pandas_container_dense_update_columns_and_index', 'sklearn/utils/tests/test_set_output.py::test__wrap_in_pandas_container_error_validation', 'sklearn/utils/tests/test_set_output.py::test__safe_set_output', 'sklearn/utils/tests/test_set_output.py::test_set_output_mixin', 'sklearn/utils/tests/test_set_output.py::test__safe_set_output_error', 'sklearn/utils/tests/test_set_output.py::test_set_output_method', 'sklearn/utils/tests/test_set_output.py::test_set_output_method_error', 'sklearn/utils/tests/test_set_output.py::test__get_output_config', 'sklearn/utils/tests/test_set_output.py::test_get_output_auto_wrap_false', 'sklearn/utils/tests/test_set_output.py::test_auto_wrap_output_keys_errors_with_incorrect_input', 'sklearn/utils/tests/test_set_output.py::test_set_output_mixin_custom_mixin', 'sklearn/utils/tests/test_set_output.py::test__wrap_in_pandas_container_column_errors', 'sklearn/utils/tests/test_set_output.py::test_set_output_mro'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for scikit-learn__scikit-learn-25747: resolved: False
+2026-05-03 23:51:11,868 - INFO - Attempting to stop container sweb.eval.scikit-learn__scikit-learn-25747.cases1_100_work3_eval...
+2026-05-03 23:51:27,180 - INFO - Attempting to remove container sweb.eval.scikit-learn__scikit-learn-25747.cases1_100_work3_eval...
+2026-05-03 23:51:27,197 - INFO - Container sweb.eval.scikit-learn__scikit-learn-25747.cases1_100_work3_eval removed.
+2026-05-03 23:51:27,197 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-25747:latest...
+2026-05-03 23:51:28,057 - INFO - Image swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-25747:latest removed.

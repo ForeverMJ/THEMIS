@@ -1,0 +1,16 @@
+diff --git a/release/fabfile.py b/release/fabfile.py
+index f3259e9..7599d36 100644
+--- a/release/fabfile.py
++++ b/release/fabfile.py
+@@ -198,8 +198,9 @@ def gitrepos(branch=None, fork='sympy'):
+     with cd("/home/vagrant/repos"):
+         run("git clone --reference ../sympy-cache.git https://github.com/{fork}/sympy.git".format(fork=fork))
+         with cd("/home/vagrant/repos/sympy"):
+-            run("git checkout -t origin/%s" % branch)
+-
++             run("git checkout -t origin/%s" % branch)
++             ensure_seq_formula_latex_delimiters("/home/vagrant/repos/sympy")
++ 
+ @task
+ def get_sympy_version(version_cache=[]):
+     """

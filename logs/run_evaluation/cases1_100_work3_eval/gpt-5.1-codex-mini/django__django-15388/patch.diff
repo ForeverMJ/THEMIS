@@ -1,0 +1,16 @@
+diff --git a/django/utils/autoreload.py b/django/utils/autoreload.py
+index 583c2be6..ad5a071b 100644
+--- a/django/utils/autoreload.py
++++ b/django/utils/autoreload.py
+@@ -358,9 +358,10 @@ class BaseReloader:
+         raise NotImplementedError('subclasses must implement check_availability().')
+ 
+     def notify_file_changed(self, path):
++        path = Path(path)
+         results = file_changed.send(sender=self, file_path=path)
+         logger.debug('%s notified as changed. Signal results: %s.', path, results)
+-        if not any(res[1] for res in results):
++        if path.suffix == '.py' or not any(res[1] for res in results):
+             trigger_reload(path)
+ 
+     # These are primarily used for testing.

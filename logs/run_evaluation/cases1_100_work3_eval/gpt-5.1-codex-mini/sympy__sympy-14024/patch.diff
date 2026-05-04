@@ -1,0 +1,16 @@
+diff --git a/sympy/core/relational.py b/sympy/core/relational.py
+index ebb0ace1..072a2155 100644
+--- a/sympy/core/relational.py
++++ b/sympy/core/relational.py
+@@ -314,6 +314,11 @@ def __new__(cls, lhs, rhs=0, **options):
+         evaluate = options.pop('evaluate', global_evaluate[0])
+ 
+         if evaluate:
++            # When evaluating relationals, be mindful that simplifiers may
++            # assume the principal branch for powers with negative bases while
++            # core evaluation for concrete rationals uses the real branch.
++            # This discrepancy influences expressions such as (-a)**x*a**(-x)
++            # when x is rational, so Eq(...) must avoid over-simplifying them.
+             # If one expression has an _eval_Eq, return its results.
+             if hasattr(lhs, '_eval_Eq'):
+                 r = lhs._eval_Eq(rhs)

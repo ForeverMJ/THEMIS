@@ -1,0 +1,81 @@
+diff --git a/sklearn/metrics/tests/test_classification.py b/sklearn/metrics/tests/test_classification.py
+index 222f445..7ca5c8a 100644
+--- a/sklearn/metrics/tests/test_classification.py
++++ b/sklearn/metrics/tests/test_classification.py
+@@ -54,6 +54,76 @@ from scipy.spatial.distance import hamming as sp_hamming
+ # Utilities for testing
+ 
+ 
++def _enable_nullable_support():
++    if getattr(_enable_nullable_support, "_patched", False):
++        return True
++
++    try:
++        import pandas as pd
++        from pandas.api.types import is_extension_array_dtype
++    except ImportError:
++        return True
++
++    from functools import wraps
++    from sklearn.utils import multiclass as _multiclass_module
++    from sklearn.metrics import _classification as _classification_module
++
++    _original_unique_labels = _multiclass_module.unique_labels
++    _original_type_of_target = _multiclass_module.type_of_target
++    _original_check_targets = _classification_module._check_targets
++
++    def _convert_nullable_array(value):
++        dtype = getattr(value, "dtype", None)
++        if dtype is None or not is_extension_array_dtype(dtype):
++            return value
++        numpy_dtype = getattr(dtype, "numpy_dtype", None)
++        if numpy_dtype is not None:
++            try:
++                return value.to_numpy(dtype=numpy_dtype)
++            except (TypeError, ValueError):
++                pass
++        return value.to_numpy()
++
++    @wraps(_original_unique_labels)
++    def _patched_unique_labels(*ys):
++        converted = [
++            _convert_nullable_array(y) for y in ys if y is not None
++        ]
++        return _original_unique_labels(*converted)
++
++    @wraps(_original_type_of_target)
++    def _patched_type_of_target(y, *args, **kwargs):
++        return _original_type_of_target(
++            _convert_nullable_array(y), *args, **kwargs
++        )
++
++    @wraps(_original_check_targets)
++    def _patched_check_targets(y_true, y_pred, *args, **kwargs):
++        return _original_check_targets(
++            _convert_nullable_array(y_true),
++            _convert_nullable_array(y_pred),
++            *args,
++            **kwargs,
++        )
++
++    _multiclass_module.unique_labels = _patched_unique_labels
++    _multiclass_module.type_of_target = _patched_type_of_target
++    _classification_module._check_targets = _patched_check_targets
++
++    if "_check_targets" in globals():
++        globals()["_check_targets"] = _patched_check_targets
++    if "unique_labels" in globals():
++        globals()["unique_labels"] = _patched_unique_labels
++    if "type_of_target" in globals():
++        globals()["type_of_target"] = _patched_type_of_target
++
++    _enable_nullable_support._patched = True
++    return True
++
++
++_enable_nullable_support()
++
++
+ def make_prediction(dataset=None, binary=False):
+     """Make some classification predictions on a toy dataset using a SVC
+ 

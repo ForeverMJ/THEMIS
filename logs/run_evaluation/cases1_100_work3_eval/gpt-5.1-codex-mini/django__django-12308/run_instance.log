@@ -1,0 +1,121 @@
+2026-05-03 22:34:46,234 - INFO - Creating container for django__django-12308...
+2026-05-03 22:34:46,382 - INFO - Container for django__django-12308 created: 14fc9fa74ea6e5b441e0f7c5e3aaec459b1807402584bec4cc98ad38fd09acb7
+2026-05-03 22:34:46,552 - INFO - Container for django__django-12308 started: 14fc9fa74ea6e5b441e0f7c5e3aaec459b1807402584bec4cc98ad38fd09acb7
+2026-05-03 22:34:46,552 - INFO - Intermediate patch for django__django-12308 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/django__django-12308/patch.diff, now applying to container...
+2026-05-03 22:34:46,694 - INFO - >>>>> Applied Patch:
+Checking patch django/forms/fields.py...
+Applied patch django/forms/fields.py cleanly.
+
+2026-05-03 22:34:47,239 - INFO - Git diff before:
+diff --git a/django/forms/fields.py b/django/forms/fields.py
+index 36dad72704..a73460772e 100644
+--- a/django/forms/fields.py
++++ b/django/forms/fields.py
+@@ -1228,10 +1228,12 @@ class JSONField(CharField):
+         'invalid': _('Enter a valid JSON.'),
+     }
+     widget = Textarea
++    _admin_display_patch_done = False
+ 
+     def __init__(self, encoder=None, decoder=None, **kwargs):
+         self.encoder = encoder
+         self.decoder = decoder
++        self._patch_admin_display_for_field()
+         super().__init__(**kwargs)
+ 
+     def to_python(self, value):
+@@ -1276,3 +1278,32 @@ class JSONField(CharField):
+             json.dumps(initial, sort_keys=True, cls=self.encoder) !=
+             json.dumps(self.to_python(data), sort_keys=True, cls=self.encoder)
+         )
++
++    @classmethod
++    def _patch_admin_display_for_field(cls):
++        if cls._admin_display_patch_done:
++            return
++        try:
++            from django.contrib.admin import utils as admin_utils
++        except ImportError:
++            return
++        original_display_for_field = admin_utils.display_for_field
++        if getattr(original_display_for_field, '_django_jsonfield_patched', False):
++            cls._admin_display_patch_done = True
++            return
++
++        def patched_display_for_field(value, field, empty_value_display):
++            if (
++                field is not None and
++                'JSONField' in getattr(field.__class__, '__name__', '') and
++                hasattr(field, 'prepare_value')
++            ):
++                try:
++                    value = field.prepare_value(value)
++                except Exception:
++                    pass
++            return original_display_for_field(value, field, empty_value_display)
++
++        patched_display_for_field._django_jsonfield_patched = True
++        admin_utils.display_for_field = patched_display_for_field
++        cls._admin_display_patch_done = True
+2026-05-03 22:34:47,239 - INFO - Eval script for django__django-12308 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/django__django-12308/eval.sh; copying to container...
+2026-05-03 22:34:51,412 - INFO - Test runtime: 4.10 seconds
+2026-05-03 22:34:51,412 - INFO - Test output for django__django-12308 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/django__django-12308/test_output.txt
+2026-05-03 22:34:51,518 - INFO - Git diff after:
+diff --git a/django/forms/fields.py b/django/forms/fields.py
+index 36dad72704..a73460772e 100644
+--- a/django/forms/fields.py
++++ b/django/forms/fields.py
+@@ -1228,10 +1228,12 @@ class JSONField(CharField):
+         'invalid': _('Enter a valid JSON.'),
+     }
+     widget = Textarea
++    _admin_display_patch_done = False
+ 
+     def __init__(self, encoder=None, decoder=None, **kwargs):
+         self.encoder = encoder
+         self.decoder = decoder
++        self._patch_admin_display_for_field()
+         super().__init__(**kwargs)
+ 
+     def to_python(self, value):
+@@ -1276,3 +1278,32 @@ class JSONField(CharField):
+             json.dumps(initial, sort_keys=True, cls=self.encoder) !=
+             json.dumps(self.to_python(data), sort_keys=True, cls=self.encoder)
+         )
++
++    @classmethod
++    def _patch_admin_display_for_field(cls):
++        if cls._admin_display_patch_done:
++            return
++        try:
++            from django.contrib.admin import utils as admin_utils
++        except ImportError:
++            return
++        original_display_for_field = admin_utils.display_for_field
++        if getattr(original_display_for_field, '_django_jsonfield_patched', False):
++            cls._admin_display_patch_done = True
++            return
++
++        def patched_display_for_field(value, field, empty_value_display):
++            if (
++                field is not None and
++                'JSONField' in getattr(field.__class__, '__name__', '') and
++                hasattr(field, 'prepare_value')
++            ):
++                try:
++                    value = field.prepare_value(value)
++                except Exception:
++                    pass
++            return original_display_for_field(value, field, empty_value_display)
++
++        patched_display_for_field._django_jsonfield_patched = True
++        admin_utils.display_for_field = patched_display_for_field
++        cls._admin_display_patch_done = True
+2026-05-03 22:34:51,518 - INFO - Grading answer for django__django-12308...
+2026-05-03 22:34:51,519 - INFO - report: {'django__django-12308': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_json_display_for_field (admin_utils.tests.UtilsTests)', 'test_label_for_field (admin_utils.tests.UtilsTests)']}, 'PASS_TO_PASS': {'success': ['test_cyclic (admin_utils.tests.NestedObjectsTests)', 'test_non_added_parent (admin_utils.tests.NestedObjectsTests)', 'test_on_delete_do_nothing (admin_utils.tests.NestedObjectsTests)', 'test_queries (admin_utils.tests.NestedObjectsTests)', 'test_relation_on_abstract (admin_utils.tests.NestedObjectsTests)', 'test_siblings (admin_utils.tests.NestedObjectsTests)', 'test_unrelated_roots (admin_utils.tests.NestedObjectsTests)', 'test_flatten (admin_utils.tests.UtilsTests)', 'test_flatten_fieldsets (admin_utils.tests.UtilsTests)', 'test_label_for_field_form_argument (admin_utils.tests.UtilsTests)', 'test_label_for_property (admin_utils.tests.UtilsTests)', 'test_list_display_for_value (admin_utils.tests.UtilsTests)', 'test_list_display_for_value_boolean (admin_utils.tests.UtilsTests)', 'test_null_display_for_field (admin_utils.tests.UtilsTests)', 'test_number_formats_display_for_field (admin_utils.tests.UtilsTests)', 'test_number_formats_with_thousand_separator_display_for_field (admin_utils.tests.UtilsTests)', 'test_quote (admin_utils.tests.UtilsTests)', 'test_related_name (admin_utils.tests.UtilsTests)', 'test_safestring_in_field_label (admin_utils.tests.UtilsTests)', 'test_values_from_lookup_field (admin_utils.tests.UtilsTests)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-12308: resolved: False
+2026-05-03 22:34:51,519 - INFO - Attempting to stop container sweb.eval.django__django-12308.cases1_100_work3_eval...
+2026-05-03 22:35:06,878 - INFO - Attempting to remove container sweb.eval.django__django-12308.cases1_100_work3_eval...
+2026-05-03 22:35:06,914 - INFO - Container sweb.eval.django__django-12308.cases1_100_work3_eval removed.
+2026-05-03 22:35:06,914 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.django_1776_django-12308:latest...
+2026-05-03 22:35:07,306 - INFO - Image swebench/sweb.eval.x86_64.django_1776_django-12308:latest removed.

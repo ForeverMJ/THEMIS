@@ -1,0 +1,57 @@
+2026-05-03 22:29:35,836 - INFO - Creating container for astropy__astropy-14182...
+2026-05-03 22:29:36,057 - INFO - Container for astropy__astropy-14182 created: a3253926f6d2f0555c46e43168c7e7df4536da720a5be958d3f497f215e8dc5e
+2026-05-03 22:29:36,242 - INFO - Container for astropy__astropy-14182 started: a3253926f6d2f0555c46e43168c7e7df4536da720a5be958d3f497f215e8dc5e
+2026-05-03 22:29:36,242 - INFO - Intermediate patch for astropy__astropy-14182 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/astropy__astropy-14182/patch.diff, now applying to container...
+2026-05-03 22:29:36,431 - INFO - >>>>> Applied Patch:
+Checking patch astropy/io/ascii/tests/test_rst.py...
+Applied patch astropy/io/ascii/tests/test_rst.py cleanly.
+
+2026-05-03 22:29:36,789 - INFO - Git diff before:
+diff --git a/astropy/io/ascii/tests/test_rst.py b/astropy/io/ascii/tests/test_rst.py
+index 84d6fed40..698d6b35a 100644
+--- a/astropy/io/ascii/tests/test_rst.py
++++ b/astropy/io/ascii/tests/test_rst.py
+@@ -2,6 +2,9 @@
+ 
+ from io import StringIO
+ 
++from astropy.table import QTable
++import astropy.units as u
++
+ from astropy.io import ascii
+ 
+ from .common import assert_almost_equal, assert_equal
+@@ -185,3 +188,19 @@ Col1      Col2 Col3 Col4
+ ==== ========= ==== ====
+ """,
+     )
++
++
++def test_rst_with_header_rows():
++    """Write a table as a SimpleRST Table with explicit header rows."""
++    tbl = QTable(
++        {"wave": [350, 950] * u.nm, "response": [0.7, 1.2] * u.count}
++    )
++    out = StringIO()
++    ascii.write(tbl, out, Writer=ascii.RST, header_rows=["name", "unit"])
++    lines = out.getvalue().splitlines()
++    assert any("nm" in line and "ct" in line for line in lines)
++    header_index = next(
++        i for i, line in enumerate(lines) if "nm" in line and "ct" in line
++    )
++    data_index = next(i for i, line in enumerate(lines) if "350.0" in line)
++    assert header_index < data_index
+2026-05-03 22:29:36,790 - INFO - Eval script for astropy__astropy-14182 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/astropy__astropy-14182/eval.sh; copying to container...
+2026-05-03 22:30:26,293 - INFO - Test runtime: 49.40 seconds
+2026-05-03 22:30:26,294 - INFO - Test output for astropy__astropy-14182 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/astropy__astropy-14182/test_output.txt
+2026-05-03 22:30:26,388 - INFO - Git diff after:
+
+2026-05-03 22:30:26,388 - INFO - Git diff changed after running eval script
+2026-05-03 22:30:26,388 - INFO - Grading answer for astropy__astropy-14182...
+2026-05-03 22:30:26,390 - INFO - report: {'astropy__astropy-14182': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows']}, 'PASS_TO_PASS': {'success': ['astropy/io/ascii/tests/test_rst.py::test_read_normal', 'astropy/io/ascii/tests/test_rst.py::test_read_normal_names', 'astropy/io/ascii/tests/test_rst.py::test_read_normal_names_include', 'astropy/io/ascii/tests/test_rst.py::test_read_normal_exclude', 'astropy/io/ascii/tests/test_rst.py::test_read_unbounded_right_column', 'astropy/io/ascii/tests/test_rst.py::test_read_unbounded_right_column_header', 'astropy/io/ascii/tests/test_rst.py::test_read_right_indented_table', 'astropy/io/ascii/tests/test_rst.py::test_trailing_spaces_in_row_definition', 'astropy/io/ascii/tests/test_rst.py::test_write_normal'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for astropy__astropy-14182: resolved: False
+2026-05-03 22:30:26,390 - INFO - Attempting to stop container sweb.eval.astropy__astropy-14182.cases1_100_work3_eval...
+2026-05-03 22:30:41,671 - INFO - Attempting to remove container sweb.eval.astropy__astropy-14182.cases1_100_work3_eval...
+2026-05-03 22:30:41,695 - INFO - Container sweb.eval.astropy__astropy-14182.cases1_100_work3_eval removed.
+2026-05-03 22:30:41,695 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.astropy_1776_astropy-14182:latest...
+2026-05-03 22:30:41,985 - INFO - Image swebench/sweb.eval.x86_64.astropy_1776_astropy-14182:latest removed.

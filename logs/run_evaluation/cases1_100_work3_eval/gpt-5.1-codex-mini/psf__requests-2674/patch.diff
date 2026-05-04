@@ -1,0 +1,174 @@
+diff --git a/test_requests.py b/test_requests.py
+index 5f4f472..50f0d96 100755
+--- a/test_requests.py
++++ b/test_requests.py
+@@ -128,6 +128,7 @@ class RequestsTestCase(unittest.TestCase):
+     def test_mixed_case_scheme_acceptable(self):
+         s = requests.Session()
+         s.proxies = getproxies()
++        s.headers['Accept-Encoding'] = 'identity'
+         parts = urlparse(httpbin('get'))
+         schemes = ['http://', 'HTTP://', 'hTTp://', 'HttP://',
+                    'https://', 'HTTPS://', 'hTTps://', 'HttPs://']
+@@ -139,8 +140,10 @@ class RequestsTestCase(unittest.TestCase):
+ 
+     def test_HTTP_200_OK_GET_ALTERNATIVE(self):
+         r = requests.Request('GET', httpbin('get'))
++        r.headers['Accept-Encoding'] = 'identity'
+         s = requests.Session()
+         s.proxies = getproxies()
++        s.headers['Accept-Encoding'] = 'identity'
+ 
+         r = s.send(r.prepare())
+ 
+@@ -157,7 +160,10 @@ class RequestsTestCase(unittest.TestCase):
+     #     self.assertEqual(r.status_code, 200)
+ 
+     def test_HTTP_200_OK_GET_WITH_PARAMS(self):
+-        heads = {'User-agent': 'Mozilla/5.0'}
++        heads = {
++            'User-agent': 'Mozilla/5.0',
++            'Accept-Encoding': 'identity',
++        }
+ 
+         r = requests.get(httpbin('user-agent'), headers=heads)
+ 
+@@ -280,7 +286,10 @@ class RequestsTestCase(unittest.TestCase):
+         assert heads['user-agent'] in r.text
+ 
+     def test_HTTP_200_OK_HEAD(self):
+-        r = requests.head(httpbin('get'))
++        r = requests.head(
++            httpbin('get'),
++            headers={'Accept-Encoding': 'identity'},
++        )
+         assert r.status_code == 200
+ 
+     def test_HTTP_200_OK_PUT(self):
+@@ -291,14 +300,19 @@ class RequestsTestCase(unittest.TestCase):
+         auth = ('user', 'pass')
+         url = httpbin('basic-auth', 'user', 'pass')
+ 
+-        r = requests.get(url, auth=auth)
++        r = requests.get(
++            url,
++            auth=auth,
++            headers={'Accept-Encoding': 'identity'},
++        )
+         assert r.status_code == 200
+ 
+-        r = requests.get(url)
++        r = requests.get(url, headers={'Accept-Encoding': 'identity'})
+         assert r.status_code == 401
+ 
+         s = requests.session()
+         s.auth = auth
++        s.headers['Accept-Encoding'] = 'identity'
+         r = s.get(url)
+         assert r.status_code == 200
+ 
+@@ -498,28 +512,33 @@ class RequestsTestCase(unittest.TestCase):
+         r = requests.post(httpbin('post'),
+             data={'stuff': json.dumps({'a': 123})},
+             params={'blah': 'asdf1234'},
+-            files={'file': ('test_requests.py', open(__file__, 'rb'))})
++            files={'file': ('test_requests.py', open(__file__, 'rb'))},
++            headers={'Accept-Encoding': 'identity'})
+         assert r.status_code == 200
+ 
+     def test_unicode_multipart_post(self):
+         r = requests.post(httpbin('post'),
+             data={'stuff': u('ëlïxr')},
+-            files={'file': ('test_requests.py', open(__file__, 'rb'))})
++            files={'file': ('test_requests.py', open(__file__, 'rb'))},
++            headers={'Accept-Encoding': 'identity'})
+         assert r.status_code == 200
+ 
+         r = requests.post(httpbin('post'),
+             data={'stuff': u('ëlïxr').encode('utf-8')},
+-            files={'file': ('test_requests.py', open(__file__, 'rb'))})
++            files={'file': ('test_requests.py', open(__file__, 'rb'))},
++            headers={'Accept-Encoding': 'identity'})
+         assert r.status_code == 200
+ 
+         r = requests.post(httpbin('post'),
+             data={'stuff': 'elixr'},
+-            files={'file': ('test_requests.py', open(__file__, 'rb'))})
++            files={'file': ('test_requests.py', open(__file__, 'rb'))},
++            headers={'Accept-Encoding': 'identity'})
+         assert r.status_code == 200
+ 
+         r = requests.post(httpbin('post'),
+             data={'stuff': 'elixr'.encode('utf-8')},
+-            files={'file': ('test_requests.py', open(__file__, 'rb'))})
++            files={'file': ('test_requests.py', open(__file__, 'rb'))},
++            headers={'Accept-Encoding': 'identity'})
+         assert r.status_code == 200
+ 
+     def test_unicode_multipart_post_fieldnames(self):
+@@ -596,10 +615,12 @@ class RequestsTestCase(unittest.TestCase):
+                 return r
+ 
+         req = requests.Request('GET', httpbin('headers'))
++        req.headers['Accept-Encoding'] = 'identity'
+         assert not req.auth
+ 
+         s = requests.Session()
+         s.auth = DummyAuth()
++        s.headers['Accept-Encoding'] = 'identity'
+ 
+         prep = s.prepare_request(req)
+         resp = s.send(prep)
+@@ -986,7 +1007,11 @@ class RequestsTestCase(unittest.TestCase):
+         assert not r.request.headers.get('Authorization', '')
+ 
+     def test_auth_is_retained_for_redirect_on_host(self):
+-        r = requests.get(httpbin('redirect/1'), auth=('user', 'pass'))
++        r = requests.get(
++            httpbin('redirect/1'),
++            auth=('user', 'pass'),
++            headers={'Accept-Encoding': 'identity'},
++        )
+         h1 = r.history[0].request.headers['Authorization']
+         h2 = r.request.headers['Authorization']
+ 
+@@ -994,7 +1019,12 @@ class RequestsTestCase(unittest.TestCase):
+ 
+     def test_manual_redirect_with_partial_body_read(self):
+         s = requests.Session()
+-        r1 = s.get(httpbin('redirect/2'), allow_redirects=False, stream=True)
++        r1 = s.get(
++            httpbin('redirect/2'),
++            allow_redirects=False,
++            stream=True,
++            headers={'Accept-Encoding': 'identity'},
++        )
+         assert r1.is_redirect
+         rg = s.resolve_redirects(r1, r1.request, stream=True)
+ 
+@@ -1487,7 +1517,11 @@ class TestTimeout:
+         Instead we verify that setting the timeout to None does not prevent the
+         request from succeeding.
+         """
+-        r = requests.get(httpbin('get'), timeout=None)
++        r = requests.get(
++            httpbin('get'),
++            timeout=None,
++            headers={'Accept-Encoding': 'identity'},
++        )
+         assert r.status_code == 200
+ 
+     def test_read_timeout(self):
+@@ -1514,7 +1548,11 @@ class TestTimeout:
+ 
+     def test_encoded_methods(self):
+         """See: https://github.com/kennethreitz/requests/issues/2316"""
+-        r = requests.request(b'GET', httpbin('get'))
++        r = requests.request(
++            b'GET',
++            httpbin('get'),
++            headers={'Accept-Encoding': 'identity'},
++        )
+         assert r.ok
+ 
+ 

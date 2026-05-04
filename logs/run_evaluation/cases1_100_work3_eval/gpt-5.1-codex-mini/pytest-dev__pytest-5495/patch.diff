@@ -1,0 +1,23 @@
+diff --git a/testing/test_assertion.py b/testing/test_assertion.py
+index 0fcfd9f..c4e36bd 100644
+--- a/testing/test_assertion.py
++++ b/testing/test_assertion.py
+@@ -586,6 +586,18 @@ class TestAssert_reprcompare:
+         msg = "\n".join(expl)
+         assert msg
+ 
++    def test_bytes_diff_normal(self):
++        expl = callequal(b"", b"42")
++        assert "contains more items" not in "\n".join(expl)
++        assert expl[:2] == ["b'' == b'42'", "Full diff:"]
++        assert expl[-2:] == ["+ b'42'", "?   ++"]
++
++    def test_bytes_diff_verbose(self):
++        expl = callequal(b"", b"42", verbose=True)
++        assert "contains more items" not in "\n".join(expl)
++        assert expl[1] == "Full diff:"
++        assert "?   ++" in expl
++
+ 
+ class TestAssert_reprcompare_dataclass:
+     @pytest.mark.skipif(sys.version_info < (3, 7), reason="Dataclasses in Python3.7+")

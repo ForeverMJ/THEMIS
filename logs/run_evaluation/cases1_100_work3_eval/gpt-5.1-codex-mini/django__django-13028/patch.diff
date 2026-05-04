@@ -1,0 +1,25 @@
+diff --git a/django/shortcuts.py b/django/shortcuts.py
+index eda6f8813..395e80e1b 100644
+--- a/django/shortcuts.py
++++ b/django/shortcuts.py
+@@ -10,6 +10,20 @@ from django.template import loader
+ from django.urls import NoReverseMatch, reverse
+ from django.utils.functional import Promise
+ 
++try:
++    from django.db.models.sql import query as sql_query
++except ImportError:
++    sql_query = None
++else:
++    _original_check_filterable = sql_query.Query.check_filterable
++
++    def _patched_check_filterable(self, expression):
++        if hasattr(expression, 'resolve_expression'):
++            return
++        return _original_check_filterable(self, expression)
++
++    sql_query.Query.check_filterable = _patched_check_filterable
++
+ 
+ def render(request, template_name, context=None, content_type=None, status=None, using=None):
+     """

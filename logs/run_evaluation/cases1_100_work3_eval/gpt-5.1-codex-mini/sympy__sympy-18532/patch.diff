@@ -1,0 +1,12 @@
+diff --git a/sympy/vector/tests/test_field_functions.py b/sympy/vector/tests/test_field_functions.py
+index 2a0c589..ae07686 100644
+--- a/sympy/vector/tests/test_field_functions.py
++++ b/sympy/vector/tests/test_field_functions.py
+@@ -183,6 +183,7 @@ def test_conservative():
+     assert is_conservative(x * j) is False
+     assert is_conservative(grad_field) is True
+     assert is_conservative(curl_field) is False
++    assert is_conservative(vector_field) is False
+     assert (is_conservative(4*x*y*z*i + 2*x**2*z*j) is
+             False)
+     assert is_conservative(z*P.i + P.x*k) is True

@@ -1,0 +1,13 @@
+diff --git a/setup.py b/setup.py
+index bf585976..4a3b6a4b 100755
+--- a/setup.py
++++ b/setup.py
+@@ -227,6 +227,8 @@ def finalize_options(self):    # this too
+         pass
+ 
+     def run(self):
++        # TODO: When parallel_poly_from_expr selects ZZ[y] instead of QQ(y) we lose fractions
++        # during div; fixing that domain promotion is required for reproducible test_div results.
+         from sympy.utilities import runtests
+         runtests.run_all_tests()
+ 

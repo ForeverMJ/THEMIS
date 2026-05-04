@@ -1,0 +1,15 @@
+diff --git a/sympy/core/cache.py b/sympy/core/cache.py
+index 3d8cd39..93d8150 100644
+--- a/sympy/core/cache.py
++++ b/sympy/core/cache.py
+@@ -31,6 +31,10 @@ def clear_cache(self):
+                 else:
+                     myfunc = myfunc.__wrapped__
+ 
++    def mark_accepts_exp(self, printer):
++        """Annotate a printer as accepting an `exp` keyword argument."""
++        setattr(printer, "_accepts_exp", True)
++
+ 
+ # global cache registry:
+ CACHE = _cache()

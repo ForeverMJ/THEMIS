@@ -1,0 +1,25 @@
+diff --git a/testing/test_tmpdir.py b/testing/test_tmpdir.py
+index d123287..8f72b6a 100644
+--- a/testing/test_tmpdir.py
++++ b/testing/test_tmpdir.py
+@@ -184,6 +184,20 @@ def test_tmpdir_factory(pytester: Pytester) -> None:
+     reprec.assertoutcome(passed=1)
+ 
+ 
++def test_tmp_path_factory_handles_invalid_dir_characters(
++    monkeypatch, tmp_path: Path
++) -> None:
++    tmpdir_module = sys.modules["_pytest.tmpdir"]
++    monkeypatch.setattr(
++        tmpdir_module, "get_user", lambda: r"contoso\john_doe"
++    )
++    config = cast(Config, FakeConfig(tmp_path))
++    factory = TempPathFactory.from_config(config, _ispytest=True)
++    basetemp = factory.getbasetemp()
++    assert basetemp.name.startswith("pytest-of-")
++    assert factory.mktemp("foobar").is_dir()
++
++
+ def test_tmpdir_fallback_tox_env(pytester: Pytester, monkeypatch) -> None:
+     """Test that tmpdir works even if environment variables required by getpass
+     module are missing (#1010).

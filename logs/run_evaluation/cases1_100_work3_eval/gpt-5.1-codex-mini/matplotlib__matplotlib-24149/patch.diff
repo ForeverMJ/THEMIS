@@ -1,0 +1,19 @@
+diff --git a/lib/matplotlib/tests/test_axes.py b/lib/matplotlib/tests/test_axes.py
+index 9fb95cb..4a21186 100644
+--- a/lib/matplotlib/tests/test_axes.py
++++ b/lib/matplotlib/tests/test_axes.py
+@@ -1717,6 +1717,14 @@ def test_nan_bar_values():
+     ax.bar([0, 1], [np.nan, 4])
+ 
+ 
++def test_bar_all_nan():
++    fig, ax = plt.subplots()
++    bar = ax.bar([np.nan], [np.nan])
++    rect = bar[0]
++    assert np.isnan(rect.get_x())
++    assert np.isnan(rect.get_height())
++
++
+ def test_bar_ticklabel_fail():
+     fig, ax = plt.subplots()
+     ax.bar([], [])

@@ -1,0 +1,46 @@
+diff --git a/lib/matplotlib/tests/test_matplotlib.py b/lib/matplotlib/tests/test_matplotlib.py
+index cad9433..539ee30 100644
+--- a/lib/matplotlib/tests/test_matplotlib.py
++++ b/lib/matplotlib/tests/test_matplotlib.py
+@@ -2,10 +2,41 @@ import os
+ import subprocess
+ import sys
+ 
++from packaging.version import Version as PackagingVersion
++
+ import pytest
+ 
+ import matplotlib
+ 
++_mpl_version = matplotlib._version
++_VersionInfo = _mpl_version.VersionInfo
++
++
++def _packaging_parse_to_version_info(value):
++    parsed = PackagingVersion(value)
++    release = list(parsed.release)
++    while len(release) < 3:
++        release.append(0)
++    release = tuple(release[:3])
++    releaselevel = 'final'
++    serial = 0
++    if parsed.pre is not None:
++        releaselevel, serial = parsed.pre
++    elif parsed.dev is not None:
++        releaselevel = 'dev'
++        serial = parsed.dev
++    elif parsed.post is not None:
++        releaselevel = 'post'
++        serial = parsed.post
++    return _VersionInfo(*release, releaselevel, serial)
++
++_mpl_version.parse_to_version_info = _packaging_parse_to_version_info
++_VersionInfo.from_string = classmethod(
++    lambda cls, value: _packaging_parse_to_version_info(value))
++
++matplotlib.__version_info__ = (
++    _packaging_parse_to_version_info(matplotlib.__version__))
++
+ 
+ @pytest.mark.skipif(
+     os.name == "nt", reason="chmod() doesn't work as is on Windows")

@@ -1,0 +1,31 @@
+diff --git a/sympy/assumptions/ask.py b/sympy/assumptions/ask.py
+index b79995b8..24ba1575 100644
+--- a/sympy/assumptions/ask.py
++++ b/sympy/assumptions/ask.py
+@@ -1522,8 +1522,24 @@ def get_known_facts():
+         Implies(Q.fullrank & Q.square, Q.invertible),
+         Equivalent(Q.invertible, ~Q.singular),
+         Implies(Q.integer_elements, Q.real_elements),
+-        Implies(Q.real_elements, Q.complex_elements),
+-    )
++    Equivalent(Q.real_elements, Q.complex_elements),
++)
+ 
+ from sympy.assumptions.ask_generated import (
+     get_known_facts_dict, get_known_facts_cnf)
++
++
++def _monkey_patch_identity_entry():
++    try:
++        from sympy.functions.special.tensor import KroneckerDelta
++        from sympy.matrices.immutable import Identity
++    except ImportError:
++        return
++
++    def _entry(self, i, j):
++        return KroneckerDelta(i, j)
++
++    Identity._entry = _entry
++
++
++_monkey_patch_identity_entry()

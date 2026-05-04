@@ -1,0 +1,33 @@
+diff --git a/sympy/core/expr.py b/sympy/core/expr.py
+index 1c7ef70..b15c3c8 100644
+--- a/sympy/core/expr.py
++++ b/sympy/core/expr.py
+@@ -9,6 +9,7 @@
+ from .decorators import call_highest_priority, sympify_method_args, sympify_return
+ from .cache import cacheit
+ from .compatibility import as_int, default_sort_key
++from sympy.polys.polyerrors import PolynomialError
+ from sympy.utilities.misc import func_name
+ from mpmath.libmp import mpf_log, prec_to_dps
+ 
+@@ -277,12 +278,18 @@ def __rtruediv__(self, other):
+     @sympify_return([('other', 'Expr')], NotImplemented)
+     @call_highest_priority('__rmod__')
+     def __mod__(self, other):
+-        return Mod(self, other)
++        try:
++            return Mod(self, other)
++        except PolynomialError:
++            return Mod(self, other, evaluate=False)
+ 
+     @sympify_return([('other', 'Expr')], NotImplemented)
+     @call_highest_priority('__mod__')
+     def __rmod__(self, other):
+-        return Mod(other, self)
++        try:
++            return Mod(other, self)
++        except PolynomialError:
++            return Mod(other, self, evaluate=False)
+ 
+     @sympify_return([('other', 'Expr')], NotImplemented)
+     @call_highest_priority('__rfloordiv__')

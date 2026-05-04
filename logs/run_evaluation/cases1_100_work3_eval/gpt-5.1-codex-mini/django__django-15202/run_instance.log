@@ -1,0 +1,63 @@
+2026-05-03 22:43:40,757 - INFO - Creating container for django__django-15202...
+2026-05-03 22:43:41,943 - INFO - Container for django__django-15202 created: b0ba96d10fd57485686b83816aca08fd40263d87fddab7ea36d393e2126e9286
+2026-05-03 22:43:42,157 - INFO - Container for django__django-15202 started: b0ba96d10fd57485686b83816aca08fd40263d87fddab7ea36d393e2126e9286
+2026-05-03 22:43:42,158 - INFO - Intermediate patch for django__django-15202 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/django__django-15202/patch.diff, now applying to container...
+2026-05-03 22:43:42,300 - INFO - >>>>> Applied Patch:
+Checking patch django/forms/fields.py...
+Applied patch django/forms/fields.py cleanly.
+
+2026-05-03 22:43:42,875 - INFO - Git diff before:
+diff --git a/django/forms/fields.py b/django/forms/fields.py
+index 65d6a9ec82..7e08a45dbe 100644
+--- a/django/forms/fields.py
++++ b/django/forms/fields.py
+@@ -706,8 +706,14 @@ class URLField(CharField):
+                 # Rebuild the url_fields list, since the domain segment may now
+                 # contain the path too.
+                 url_fields = split_url(urlunsplit(url_fields))
+-            value = urlunsplit(url_fields)
+-        return value
++        value = urlunsplit(url_fields)
++    return value
++
++def clean(self, value):
++    try:
++        return super().clean(value)
++    except ValueError as exc:
++        raise ValidationError(self.error_messages['invalid'], code='invalid') from exc
+ 
+ 
+ class BooleanField(Field):
+2026-05-03 22:43:42,875 - INFO - Eval script for django__django-15202 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/django__django-15202/eval.sh; copying to container...
+2026-05-03 22:43:48,177 - INFO - Test runtime: 5.21 seconds
+2026-05-03 22:43:48,177 - INFO - Test output for django__django-15202 written to logs/run_evaluation/cases1_100_work3_eval/gpt-5.1-codex-mini/django__django-15202/test_output.txt
+2026-05-03 22:43:48,256 - INFO - Git diff after:
+diff --git a/django/forms/fields.py b/django/forms/fields.py
+index 65d6a9ec82..7e08a45dbe 100644
+--- a/django/forms/fields.py
++++ b/django/forms/fields.py
+@@ -706,8 +706,14 @@ class URLField(CharField):
+                 # Rebuild the url_fields list, since the domain segment may now
+                 # contain the path too.
+                 url_fields = split_url(urlunsplit(url_fields))
+-            value = urlunsplit(url_fields)
+-        return value
++        value = urlunsplit(url_fields)
++    return value
++
++def clean(self, value):
++    try:
++        return super().clean(value)
++    except ValueError as exc:
++        raise ValidationError(self.error_messages['invalid'], code='invalid') from exc
+ 
+ 
+ class BooleanField(Field):
+2026-05-03 22:43:48,256 - INFO - Grading answer for django__django-15202...
+2026-05-03 22:43:48,258 - INFO - report: {'django__django-15202': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_urlfield_clean_invalid (forms_tests.field_tests.test_urlfield.URLFieldTest)', 'test_urlfield_clean_not_required (forms_tests.field_tests.test_urlfield.URLFieldTest)']}, 'PASS_TO_PASS': {'success': [], 'failure': ['test_urlfield_clean (forms_tests.field_tests.test_urlfield.URLFieldTest)', 'test_urlfield_clean_required (forms_tests.field_tests.test_urlfield.URLFieldTest)', 'test_urlfield_strip_on_none_value (forms_tests.field_tests.test_urlfield.URLFieldTest)', 'test_urlfield_unable_to_set_strip_kwarg (forms_tests.field_tests.test_urlfield.URLFieldTest)', 'test_urlfield_widget (forms_tests.field_tests.test_urlfield.URLFieldTest)', 'test_urlfield_widget_max_min_length (forms_tests.field_tests.test_urlfield.URLFieldTest)']}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-15202: resolved: False
+2026-05-03 22:43:48,258 - INFO - Attempting to stop container sweb.eval.django__django-15202.cases1_100_work3_eval...
+2026-05-03 22:44:03,540 - INFO - Attempting to remove container sweb.eval.django__django-15202.cases1_100_work3_eval...
+2026-05-03 22:44:03,564 - INFO - Container sweb.eval.django__django-15202.cases1_100_work3_eval removed.
+2026-05-03 22:44:03,564 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.django_1776_django-15202:latest...
+2026-05-03 22:44:03,728 - INFO - Image swebench/sweb.eval.x86_64.django_1776_django-15202:latest removed.

@@ -1,0 +1,21 @@
+diff --git a/tests/test_domain_std.py b/tests/test_domain_std.py
+index 7ee1d6c..39badf4 100644
+--- a/tests/test_domain_std.py
++++ b/tests/test_domain_std.py
+@@ -303,6 +303,16 @@ def test_cmdoption(app):
+     assert domain.progoptions[('ls', '-l')] == ('index', 'cmdoption-ls-l')
+ 
+ 
++def test_cmd_option_starting_with_bracket(app):
++    text = (".. program:: tracer\n"
++            "\n"
++            ".. option:: [enable=]PATTERN\n")
++    domain = app.env.get_domain('std')
++    restructuredtext.parse(app, text)
++    assert ('tracer', '[enable=]PATTERN') in domain.progoptions
++    assert domain.progoptions[('tracer', '[enable=]PATTERN')][0] == 'index'
++
++
+ def test_multiple_cmdoptions(app):
+     text = (".. program:: cmd\n"
+             "\n"

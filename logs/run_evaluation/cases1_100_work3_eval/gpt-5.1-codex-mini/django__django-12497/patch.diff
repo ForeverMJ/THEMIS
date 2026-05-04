@@ -1,0 +1,149 @@
+diff --git a/django/db/models/fields/related.py b/django/db/models/fields/related.py
+index 8ddbb5ba..9b591c2a 100644
+--- a/django/db/models/fields/related.py
++++ b/django/db/models/fields/related.py
+@@ -1267,14 +1267,30 @@ class ManyToManyField(RelatedField):
+                 to_model_name = to_model._meta.object_name
+             relationship_model_name = self.remote_field.through._meta.object_name
+             self_referential = from_model == to_model
+-            # Count foreign keys in intermediate model
+-            if self_referential:
+-                seen_self = sum(
+-                    from_model == getattr(field.remote_field, 'model', None)
+-                    for field in self.remote_field.through._meta.fields
++            intermediary_fields = self.remote_field.through._meta.fields
++
++            def _foreign_key_field_names(target_model):
++                return sorted(
++                    field.name
++                    for field in intermediary_fields
++                    if getattr(field, 'remote_field', None) and
++                       getattr(field.remote_field, 'model', None) == target_model
+                 )
++            from_field_names = _foreign_key_field_names(from_model)
++            to_field_names = _foreign_key_field_names(to_model)
++            seen_from = len(from_field_names)
++            seen_to = len(to_field_names)
+ 
+-                if seen_self > 2 and not self.remote_field.through_fields:
++            # Count foreign keys in intermediate model
++            if self_referential:
++                if seen_from > 2 and not self.remote_field.through_fields:
++                    conflicting_fields = ", ".join(
++                        "'%s.%s'" % (relationship_model_name, name)
++                        for name in from_field_names
++                    )
++                    example_fields = "'%s', '%s'" % (
++                        from_field_names[0], from_field_names[1]
++                    )
+                     errors.append(
+                         checks.Error(
+                             "The model is used as an intermediate model by "
+@@ -1282,7 +1298,19 @@ class ManyToManyField(RelatedField):
+                             "to '%s', which is ambiguous. You must specify "
+                             "which two foreign keys Django should use via the "
+                             "through_fields keyword argument." % (self, from_model_name),
+-                            hint="Use through_fields to specify which two foreign keys Django should use.",
++                            hint=(
++                                "Django found multiple foreign keys to '%s' on '%s' "
++                                "(%s). Specify which two the ManyToManyField should "
++                                "use via through_fields, for example "
++                                "ManyToManyField('self', through='%s', "
++                                "through_fields=(%s), symmetrical=False)."
++                            ) % (
++                                from_model_name,
++                                relationship_model_name,
++                                conflicting_fields,
++                                relationship_model_name,
++                                example_fields,
++                            ),
+                             obj=self.remote_field.through,
+                             id='fields.E333',
+                         )
+@@ -1300,6 +1328,22 @@ class ManyToManyField(RelatedField):
+                 )
+ 
+                 if seen_from > 1 and not self.remote_field.through_fields:
++                    ambiguous_from_fields = ", ".join(
++                        "'%s.%s'" % (relationship_model_name, name)
++                        for name in from_field_names
++                    )
++                    example_from_field = from_field_names[0]
++                    example_to_field = to_field_names[0] if to_field_names else 'target_field'
++                    example_m2m = (
++                        "ManyToManyField('%s', through='%s', "
++                        "through_fields=('%s', '%s'))"
++                        % (
++                            to_model_name,
++                            relationship_model_name,
++                            example_from_field,
++                            example_to_field,
++                        )
++                    )
+                     errors.append(
+                         checks.Error(
+                             ("The model is used as an intermediate model by "
+@@ -1308,11 +1352,15 @@ class ManyToManyField(RelatedField):
+                              "which foreign key Django should use via the "
+                              "through_fields keyword argument.") % (self, from_model_name),
+                             hint=(
+-                                'If you want to create a recursive relationship, '
+-                                'use ForeignKey("%s", symmetrical=False, through="%s").'
++                                "Django found multiple foreign keys from '%s' on '%s' "
++                                "(%s). Specify which foreign key should be used via "
++                                "through_fields and declare the relation explicitly, "
++                                "for example %s."
+                             ) % (
+-                                RECURSIVE_RELATIONSHIP_CONSTANT,
++                                from_model_name,
+                                 relationship_model_name,
++                                ambiguous_from_fields,
++                                example_m2m,
+                             ),
+                             obj=self,
+                             id='fields.E334',
+@@ -1320,6 +1368,22 @@ class ManyToManyField(RelatedField):
+                     )
+ 
+                 if seen_to > 1 and not self.remote_field.through_fields:
++                    ambiguous_to_fields = ", ".join(
++                        "'%s.%s'" % (relationship_model_name, name)
++                        for name in to_field_names
++                    )
++                    example_from_field = from_field_names[0] if from_field_names else 'source_field'
++                    example_to_field = to_field_names[0]
++                    example_m2m = (
++                        "ManyToManyField('%s', through='%s', "
++                        "through_fields=('%s', '%s'))"
++                        % (
++                            to_model_name,
++                            relationship_model_name,
++                            example_from_field,
++                            example_to_field,
++                        )
++                    )
+                     errors.append(
+                         checks.Error(
+                             "The model is used as an intermediate model by "
+@@ -1328,13 +1392,17 @@ class ManyToManyField(RelatedField):
+                             "which foreign key Django should use via the "
+                             "through_fields keyword argument." % (self, to_model_name),
+                             hint=(
+-                                'If you want to create a recursive relationship, '
+-                                'use ForeignKey("%s", symmetrical=False, through="%s").'
++                                "Django found multiple foreign keys to '%s' on '%s' "
++                                "(%s). Use through_fields to indicate which foreign "
++                                "key should be used for the target side, for "
++                                "example %s."
+                             ) % (
+-                                RECURSIVE_RELATIONSHIP_CONSTANT,
++                                to_model_name,
+                                 relationship_model_name,
++                                ambiguous_to_fields,
++                                example_m2m,
+                             ),
+-                            obj=self,
++                            obj=self.remote_field.through,
+                             id='fields.E335',
+                         )
+                     )

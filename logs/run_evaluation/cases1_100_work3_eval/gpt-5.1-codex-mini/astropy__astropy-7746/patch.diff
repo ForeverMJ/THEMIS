@@ -1,0 +1,30 @@
+diff --git a/astropy/wcs/tests/test_wcs.py b/astropy/wcs/tests/test_wcs.py
+index 85853e1..e3b3b3b 100644
+--- a/astropy/wcs/tests/test_wcs.py
++++ b/astropy/wcs/tests/test_wcs.py
+@@ -275,6 +275,25 @@ def test_shape_mismatch():
+     assert xw.shape == (42,)
+ 
+ 
++def test_zero_size_input():
++    w = wcs.WCS(naxis=2)
++
++    x = np.empty(0)
++    y = np.empty(0)
++
++    xp, yp = w.wcs_pix2world(x, y, 0)
++    assert xp.shape == (0,)
++    assert yp.shape == (0,)
++
++    xp, yp = w.wcs_world2pix(x, y, 0)
++    assert xp.shape == (0,)
++    assert yp.shape == (0,)
++
++    empty_xy = np.empty((0, 2))
++    xy_world = w.wcs_pix2world(empty_xy, 0)
++    assert xy_world.shape == (0, 2)
++
++
+ def test_invalid_shape():
+     # Issue #1395
+     w = wcs.WCS(naxis=2)

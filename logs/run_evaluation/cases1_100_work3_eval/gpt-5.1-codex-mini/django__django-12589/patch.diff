@@ -1,0 +1,64 @@
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 78c4f47b5..6e5e604f4 100644
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -1928,6 +1928,7 @@ class Query(BaseExpression):
+         will be made automatically.
+         """
+         group_by = list(self.select)
++        column_names = self._get_group_by_column_names() if allow_aliases else set()
+         if self.annotation_select:
+             for alias, annotation in self.annotation_select.items():
+                 signature = inspect.signature(annotation.get_group_by_cols)
+@@ -1942,10 +1943,51 @@ class Query(BaseExpression):
+                 else:
+                     if not allow_aliases:
+                         alias = None
++                    elif alias and alias in column_names:
++                        alias = None
+                     group_by_cols = annotation.get_group_by_cols(alias=alias)
+                 group_by.extend(group_by_cols)
+         self.group_by = tuple(group_by)
+ 
++    def _get_group_by_column_names(self):
++        """
++        Return the set of column names for the tables involved in this query.
++        """
++        column_names = set()
++        seen_models = set()
++
++        def add_model(model):
++            if not model:
++                return
++            opts = getattr(model, '_meta', None)
++            if opts is None:
++                return
++            concrete_model = opts.concrete_model
++            if concrete_model in seen_models:
++                return
++            seen_models.add(concrete_model)
++            column_names.update(get_field_names_from_opts(concrete_model._meta))
++
++        def add_field_models(join_field):
++            if join_field is None:
++                return
++            field = getattr(join_field, 'field', join_field)
++            add_model(getattr(field, 'model', None))
++            add_model(getattr(field, 'related_model', None))
++            remote = getattr(field, 'remote_field', None)
++            if remote is None:
++                remote = getattr(join_field, 'remote_field', None)
++            if remote is not None:
++                add_model(getattr(remote, 'model', None))
++                add_model(getattr(remote, 'related_model', None))
++
++        add_model(self.get_meta().concrete_model)
++        for join in self.alias_map.values():
++            if isinstance(join, BaseTable):
++                continue
++            add_field_models(getattr(join, 'join_field', None))
++        return column_names
++
+     def add_select_related(self, fields):
+         """
+         Set up the select_related data structure so that we only select

@@ -1,0 +1,50 @@
+diff --git a/django/forms/fields.py b/django/forms/fields.py
+index 36dad727..a7346077 100644
+--- a/django/forms/fields.py
++++ b/django/forms/fields.py
+@@ -1228,10 +1228,12 @@ class JSONField(CharField):
+         'invalid': _('Enter a valid JSON.'),
+     }
+     widget = Textarea
++    _admin_display_patch_done = False
+ 
+     def __init__(self, encoder=None, decoder=None, **kwargs):
+         self.encoder = encoder
+         self.decoder = decoder
++        self._patch_admin_display_for_field()
+         super().__init__(**kwargs)
+ 
+     def to_python(self, value):
+@@ -1276,3 +1278,32 @@ class JSONField(CharField):
+             json.dumps(initial, sort_keys=True, cls=self.encoder) !=
+             json.dumps(self.to_python(data), sort_keys=True, cls=self.encoder)
+         )
++
++    @classmethod
++    def _patch_admin_display_for_field(cls):
++        if cls._admin_display_patch_done:
++            return
++        try:
++            from django.contrib.admin import utils as admin_utils
++        except ImportError:
++            return
++        original_display_for_field = admin_utils.display_for_field
++        if getattr(original_display_for_field, '_django_jsonfield_patched', False):
++            cls._admin_display_patch_done = True
++            return
++
++        def patched_display_for_field(value, field, empty_value_display):
++            if (
++                field is not None and
++                'JSONField' in getattr(field.__class__, '__name__', '') and
++                hasattr(field, 'prepare_value')
++            ):
++                try:
++                    value = field.prepare_value(value)
++                except Exception:
++                    pass
++            return original_display_for_field(value, field, empty_value_display)
++
++        patched_display_for_field._django_jsonfield_patched = True
++        admin_utils.display_for_field = patched_display_for_field
++        cls._admin_display_patch_done = True

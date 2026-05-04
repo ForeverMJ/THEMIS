@@ -1,0 +1,21 @@
+diff --git a/django/forms/fields.py b/django/forms/fields.py
+index 65d6a9e..7e08a45 100644
+--- a/django/forms/fields.py
++++ b/django/forms/fields.py
+@@ -706,8 +706,14 @@ class URLField(CharField):
+                 # Rebuild the url_fields list, since the domain segment may now
+                 # contain the path too.
+                 url_fields = split_url(urlunsplit(url_fields))
+-            value = urlunsplit(url_fields)
+-        return value
++        value = urlunsplit(url_fields)
++    return value
++
++def clean(self, value):
++    try:
++        return super().clean(value)
++    except ValueError as exc:
++        raise ValidationError(self.error_messages['invalid'], code='invalid') from exc
+ 
+ 
+ class BooleanField(Field):
