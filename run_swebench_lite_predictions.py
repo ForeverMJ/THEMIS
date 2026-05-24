@@ -515,6 +515,16 @@ def _semantic_contract_lines_for_preset(preset_name: str, instance_id: str) -> L
         return []
 
     contracts = {
+        "django__django-12308": [
+            "Semantic contract: readonly JSONField admin rendering must preserve JSON serialization semantics by using `prepare_value` or equivalent JSON-aware formatting rather than Python dict repr.",
+            "Semantic contract: preserve `InvalidJSONInput` behavior expected by the failing admin display tests; do not coerce invalid JSON into a normalized dict/string.",
+            "Semantic contract: fix only the readonly display path (`display_for_field` / JSONField-specific admin rendering) without changing unrelated form-field serialization behavior.",
+        ],
+        "django__django-13028": [
+            "Semantic contract: preserve filtering semantics for RHS values that implement `resolve_expression`; do not reject them merely because a `filterable` attribute is falsey.",
+            "Semantic contract: keep `NotSupportedError` behavior for truly non-filterable expressions while avoiding the false-positive rejection covered by the failing tests.",
+            "Semantic contract: target `Query.check_filterable`-level behavior rather than adding a high-level workaround in shortcut helpers.",
+        ],
         "matplotlib__matplotlib-18869": [
             "Semantic contract: preserve the public/private API expected by the failing tests exactly, including helper names.",
             "Semantic contract: expose `_parse_to_version_info` with the exact behavior expected by the tests rather than introducing a near-miss helper with a different name.",
@@ -525,6 +535,16 @@ def _semantic_contract_lines_for_preset(preset_name: str, instance_id: str) -> L
             "Semantic contract: match the exception semantics expected by the tests; do not replace an expected `ValueError`-style contract with a generic assertion side effect.",
             "Semantic contract: preserve valid nested-blueprint behavior while forbidding only the dotted-name cases covered by the failing tests.",
         ],
+        "pallets__flask-4992": [
+            "Semantic contract: `Config.from_file` must support binary loaders such as `tomllib.load`, including the file mode expected by the failing TOML test.",
+            "Semantic contract: preserve existing text-mode `from_file` behavior for current callers while adding only the binary-loading path required for TOML.",
+            "Semantic contract: fix the application config loading API, not just the test helper; the expected behavior is that `from_file(..., tomllib.load, mode=\"rb\")` works.",
+        ],
+        "pydata__xarray-4493": [
+            "Semantic contract: conversions that pass through `as_compatible_data` must preserve dask-backed `DataArray` chunk semantics rather than forcing eager `.values` materialization.",
+            "Semantic contract: keep existing NumPy/Variable conversion behavior intact while specifically ensuring chunked `DataArray` inputs retain their underlying lazy data.",
+            "Semantic contract: fix the implementation path (`as_compatible_data` / Variable conversion semantics), not only the regression test.",
+        ],
         "sympy__sympy-13773": [
             "Semantic contract: when matrix multiplication is unsupported in the direct dunder call path, prefer Python protocol-compatible `NotImplemented` behavior if that is what the failing test expects.",
             "Semantic contract: do not eagerly raise `TypeError` in a way that breaks the direct `__matmul__` test contract.",
@@ -534,6 +554,61 @@ def _semantic_contract_lines_for_preset(preset_name: str, instance_id: str) -> L
             "Semantic contract: converter-raised `Http404` errors must still produce the technical 404 response expected by the failing debug-view test rather than escaping as an unhandled exception.",
             "Semantic contract: preserve existing debug view behavior for normal 404 handling while specifically covering the converter-raises-404 path.",
             "Semantic contract: fix the response semantics, not just exception swallowing; the failing test expects the same technical 404 rendering contract as other resolver failures.",
+        ],
+        "django__django-14915": [
+            "Semantic contract: `ModelChoiceIteratorValue` must remain comparable by its wrapped value while also becoming hashable so widget option code can use it safely as a dict/set key.",
+            "Semantic contract: keep `__eq__` / hash semantics aligned by hashing the wrapped `.value`, rather than forcing callers to unwrap `value.value` manually.",
+            "Semantic contract: fix the `ModelChoiceIteratorValue` implementation path in `django.forms.models`, not an unrelated hashing helper or a test-only workaround.",
+        ],
+        "matplotlib__matplotlib-22711": [
+            "Semantic contract: `RangeSlider` must accept equal `valinit` endpoints without `IndexError` and still initialize a valid closed polygon in both orientations.",
+            "Semantic contract: preserve normal `RangeSlider.set_val` behavior for non-degenerate ranges while specifically handling the degenerate equal-endpoint case covered by the failing tests.",
+            "Semantic contract: fix the widget implementation path (`RangeSlider` / polygon vertex handling), not by xfail-ing or rewriting the regression tests.",
+        ],
+        "mwaskom__seaborn-3407": [
+            "Semantic contract: `pairplot` / `PairGrid` must accept DataFrames with `MultiIndex` columns without collapsing them into incompatible scalar labels that trigger `KeyError`.",
+            "Semantic contract: preserve current behavior for ordinary single-level columns while fixing the diagonal / variable-access path for `MultiIndex` columns.",
+            "Semantic contract: fix the `seaborn.axisgrid` implementation path, not only the regression test fixture.",
+        ],
+        "sphinx-doc__sphinx-7975": [
+            "Semantic contract: the generated index must contain exactly one `Symbols` section for non-alphabetic leading characters such as `@`, `£`, and `←`.",
+            "Semantic contract: preserve alphabetical bucket ordering while coalescing all symbol-leading entries under the single `Symbols` heading expected by the failing test.",
+            "Semantic contract: fix the `IndexEntries` grouping logic rather than only expanding the regression test expectations.",
+        ],
+        "scikit-learn__scikit-learn-10297": [
+            "Semantic contract: `RidgeClassifierCV(store_cv_values=True)` must expose `cv_values_` after fitting, matching the diagnostic storage contract of RidgeCV while preserving classifier label behavior.",
+            "Semantic contract: implement the model behavior in the RidgeClassifierCV/RidgeCV path rather than only adding or weakening regression tests.",
+            "Semantic contract: keep existing RidgeClassifierCV predictions and scoring behavior intact while adding only the requested cross-validation value storage semantics.",
+        ],
+        "astropy__astropy-14365": [
+            "Semantic contract: QDP command parsing must be case-insensitive, so lower-case commands such as `read serr 1 2` are accepted with the same table/error semantics as upper-case commands.",
+            "Semantic contract: fix the QDP parser implementation path rather than only changing test fixtures to upper-case commands.",
+            "Semantic contract: preserve existing upper-case QDP behavior while extending command recognition to mixed/lower-case input.",
+        ],
+        "mwaskom__seaborn-2848": [
+            "Semantic contract: scatter/pair plotting with `hue_order` that omits observed hue levels must drop the omitted levels rather than raising an error.",
+            "Semantic contract: preserve the requested hue order and legend semantics for included levels only.",
+            "Semantic contract: fix the relational plotting implementation path rather than replacing the regression test expectation.",
+        ],
+        "django__django-14017": [
+            "Semantic contract: boolean combinations between `Q` objects and conditional expressions such as `Exists` must support both operand orders (`Exists(...) & Q(...)` and `Q(...) & Exists(...)`).",
+            "Semantic contract: non-`Q` operands in `Q._combine` should defer via Python's binary-operator protocol where appropriate rather than eagerly raising `TypeError` before reverse methods can run.",
+            "Semantic contract: preserve existing `Q`-to-`Q` combination semantics while adding only the conditional-expression interop required by the failing tests.",
+        ],
+        "scikit-learn__scikit-learn-13496": [
+            "Semantic contract: `IsolationForest` must expose `warm_start` in its constructor/API and support appending estimators when `n_estimators` is increased across fits.",
+            "Semantic contract: implement the estimator parameter behavior in `IsolationForest`, not just by mutating tests or relying on hidden inherited attributes.",
+            "Semantic contract: preserve existing non-warm-start fitting behavior while enabling documented incremental tree growth when `warm_start=True`.",
+        ],
+        "django__django-13768": [
+            "Semantic contract: `Signal.send_robust()` must log receiver exceptions with the `django.dispatch` logger before returning `(receiver, exception)` tuples.",
+            "Semantic contract: preserve robust-send behavior that catches receiver exceptions; the change is observability/logging, not re-raising.",
+            "Semantic contract: fix the dispatcher implementation path rather than only changing the test harness or expected assertions.",
+        ],
+        "django__django-11283": [
+            "Semantic contract: auth permission creation/migration must reuse or update existing `(content_type, codename)` permissions instead of blindly inserting duplicates.",
+            "Semantic contract: avoid `IntegrityError` when proxy-model permissions already exist during `post_migrate` / `auth.0011` flows.",
+            "Semantic contract: preserve normal creation of genuinely new permissions while skipping or updating only pre-existing target permissions.",
         ],
         "sympy__sympy-11897": [
             "Semantic contract: `test_latex_Piecewise` expects the LaTeX printer path to preserve Piecewise formatting semantics rather than simplifying away conditional structure incorrectly.",
@@ -655,20 +730,65 @@ def _extra_context_files_for_preset(preset_name: str, instance_id: str) -> List[
         return []
 
     extra_context_map = {
+        "django__django-12308": [
+            "django/contrib/admin/utils.py",
+        ],
+        "django__django-13028": [
+            "django/db/models/sql/query.py",
+        ],
         "django__django-15320": [
             "django/db/models/expressions.py",
+        ],
+        "django__django-14915": [
+            "django/forms/models.py",
         ],
         "matplotlib__matplotlib-18869": [
             "lib/matplotlib/__init__.py",
         ],
+        "matplotlib__matplotlib-22711": [
+            "lib/matplotlib/widgets.py",
+        ],
         "pallets__flask-4045": [
             "src/flask/app.py",
+        ],
+        "pallets__flask-4992": [
+            "src/flask/config.py",
+        ],
+        "mwaskom__seaborn-3407": [
+            "seaborn/axisgrid.py",
         ],
         "psf__requests-3362": [
             "requests/__init__.py",
         ],
+        "pydata__xarray-4493": [
+            "xarray/core/variable.py",
+        ],
+        "sphinx-doc__sphinx-7975": [
+            "sphinx/environment/adapters/indexentries.py",
+        ],
         "sympy__sympy-13773": [
             "sympy/matrices/matrices.py",
+        ],
+        "scikit-learn__scikit-learn-10297": [
+            "sklearn/linear_model/_ridge.py",
+        ],
+        "astropy__astropy-14365": [
+            "astropy/io/ascii/qdp.py",
+        ],
+        "mwaskom__seaborn-2848": [
+            "seaborn/relational.py",
+        ],
+        "django__django-14017": [
+            "django/db/models/query_utils.py",
+        ],
+        "scikit-learn__scikit-learn-13496": [
+            "sklearn/ensemble/_iforest.py",
+        ],
+        "django__django-13768": [
+            "tests/dispatch/tests.py",
+        ],
+        "django__django-11283": [
+            "django/contrib/auth/migrations/0011_update_proxy_permissions.py",
         ],
     }
     return list(extra_context_map.get(str(instance_id), []))
