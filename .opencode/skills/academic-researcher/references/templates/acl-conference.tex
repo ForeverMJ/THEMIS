@@ -1,0 +1,344 @@
+% ACL / EACL / NAACL / EMNLP / ARR Conference Paper Template
+% 
+% This template demonstrates ACL Anthology style using natbib + acl_natbib.bst.
+% 
+% For ARR submissions: use \usepackage[review]{acl}
+% For non-anonymous preprint: use \usepackage[nonaclfinalcopy]{acl}
+% For final camera-ready: use \usepackage{acl} + \aclfinalcopy
+% 
+% Required style files (download from https://github.com/acl-org/acl-style-files):
+%   - acl.sty
+%   - acl_natbib.bst
+% 
+% Compilation:
+%   pdflatex paper.tex
+%   bibtex paper
+%   pdflatex paper.tex
+%   pdflatex paper.tex
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+
+% --- Choose ONE of the following ---
+% \usepackage[review]{acl}          % ARR review (double-blind, line numbers)
+% \usepackage[nonaclfinalcopy]{acl} % Non-anonymous preprint
+\usepackage{acl}                    % Final camera-ready (requires \aclfinalcopy below)
+
+\usepackage{natbib}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{xspace}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{float}
+
+% Enable this for final camera-ready version
+% \aclfinalcopy
+
+% ============================================================================
+% Title & Authors
+% ============================================================================
+
+\title{Your Paper Title: A Descriptive and Informative Title}
+
+% For ARR review (double-blind): remove author block entirely
+\author{
+  First Author\textsuperscript{1},
+  Second Author\textsuperscript{2},
+  Third Author\textsuperscript{1}}
+\affiliations{
+  \textsuperscript{1}Department of Computer Science, University One\\
+  \textsuperscript{2}School of Computing, University Two}
+\email{\{first.author, third.author\}@univ1.edu, second.author@univ2.edu}
+
+% ============================================================================
+% Document
+% ============================================================================
+
+\begin{document}
+\maketitle
+
+% ============================================================================
+\begin{abstract}
+This is where your abstract goes. ACL venues typically expect 150--250 words. 
+The abstract should concisely summarize:
+(1) the problem or research question,
+(2) your approach or methodology,
+(3) key results or findings, and
+(4) main conclusions or implications.
+
+For ARR submissions, keep the abstract self-contained and avoid references 
+that reveal author identity.
+\end{abstract}
+
+% ============================================================================
+\section{Introduction}
+
+The introduction should establish the context and motivation for your work. 
+Start broad (the general problem area), then narrow to the specific problem 
+you address.
+
+Key elements of an ACL-style introduction:
+\begin{itemize}
+  \item \textbf{Motivation:} Why is this problem important? What gap exists 
+    in current approaches? \citep{vaswani2017attention}
+  \item \textbf{Problem statement:} Clearly state the research question or 
+    objective.
+  \item \textbf{Approach overview:} Briefly describe your method (1--2 sentences).
+  \item \textbf{Contributions:} List 3--5 concrete contributions, typically 
+    as a bulleted or numbered list.
+  \item \textbf{Paper structure:} Optional roadmap sentence (``Section 2 
+    reviews related work...'').
+\end{itemize}
+
+Our contributions are:
+\begin{enumerate}
+  \item First contribution item — be specific and measurable.
+  \item Second contribution item — avoid vague claims.
+  \item Third contribution item — state what is \emph{new}.
+\end{enumerate}
+
+% ============================================================================
+\section{Related Work}
+
+Organize related work thematically, not chronologically. For an NLP paper, 
+common organizational themes include:
+
+\subsection{Theme One: Background Area}
+
+Discuss foundational and closely related work. Group papers by approach or 
+contribution, not by paper. Compare and contrast rather than summarizing 
+each paper individually.
+
+\citet{devlin2019bert} introduced BERT, which...
+
+\subsection{Theme Two: Alternative Approaches}
+
+Discuss competing approaches and explain how your work differs.
+
+\citet{brown2020language} demonstrated that...
+
+\subsection{Our Position}
+
+Explicitly state how your work differs from and improves upon existing work. 
+This subsection is common in ACL papers and helps reviewers understand your 
+novelty.
+
+% ============================================================================
+\section{Methodology / Approach}
+
+Describe your method in sufficient detail that a knowledgeable reader could 
+reproduce it. For NLP papers, this typically includes:
+
+\subsection{Problem Formulation}
+
+Formally define the task. Use mathematical notation where appropriate.
+
+Given an input sequence $x = (x_1, x_2, \ldots, x_n)$, the goal is to...
+
+\subsection{Model Architecture}
+
+Describe your model. Use diagrams (with \texttt{figure} environments) for 
+complex architectures.
+
+\begin{figure}[t]
+  \centering
+  % \includegraphics[width=0.8\columnwidth]{figures/architecture.pdf}
+  \fbox{\parbox{0.6\columnwidth}{\centering\vspace{3cm}Architecture diagram\\placeholder}}
+  \caption{Overview of our proposed model architecture. 
+    (Replace with actual figure.)}
+  \label{fig:architecture}
+\end{figure}
+
+Our model consists of three main components:
+\begin{enumerate}
+  \item \textbf{Encoder:} A transformer-based encoder that...
+  \item \textbf{Interaction module:} A cross-attention mechanism that...
+  \item \textbf{Decoder/classifier:} A linear projection that...
+\end{enumerate}
+
+\subsection{Training}
+
+Describe training details: dataset(s), hyperparameters, optimization, 
+computational resources.
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    \textbf{Hyperparameter} & \textbf{Value} \\
+    \midrule
+    Learning rate & $5 \times 10^{-5}$ \\
+    Batch size & 32 \\
+    Epochs & 3 \\
+    Optimizer & AdamW \\
+    Warmup steps & 500 \\
+    Max sequence length & 512 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Training hyperparameters.}
+  \label{tab:hyperparams}
+\end{table}
+
+% ============================================================================
+\section{Experimental Setup}
+
+\subsection{Datasets}
+
+Describe each dataset: size, source, splits, preprocessing. Use a table for 
+multiple datasets.
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{@{}lrrr@{}}
+    \toprule
+    \textbf{Dataset} & \textbf{Train} & \textbf{Dev} & \textbf{Test} \\
+    \midrule
+    Dataset A       & 10,000 & 1,000 & 1,000 \\
+    Dataset B       & 50,000 & 5,000 & 5,000 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Dataset statistics.}
+  \label{tab:datasets}
+\end{table}
+
+\subsection{Baselines}
+
+List and briefly describe each baseline. Distinguish between:
+\begin{itemize}
+  \item \textbf{Standard baselines:} Well-known approaches (e.g., BERT-base, 
+    RoBERTa-large).
+  \item \textbf{State-of-the-art:} Current best published results.
+  \item \textbf{Ablations:} Variants of your model for analysis.
+\end{itemize}
+
+\subsection{Evaluation Metrics}
+
+Define all metrics used. For NLP tasks, common metrics include:
+\begin{itemize}
+  \item Accuracy, F1 (classification)
+  \item BLEU, ROUGE, METEOR (generation)
+  \item Exact Match, F1 (extractive QA)
+  \item BERTScore, BLEURT (semantic similarity)
+\end{itemize}
+
+% ============================================================================
+\section{Results}
+
+\subsection{Main Results}
+
+Present your primary results. Use tables with clear formatting. Bold the best 
+score in each column. Report statistical significance where appropriate.
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    \textbf{Model} & \textbf{Dataset A} & \textbf{Dataset B} & 
+    \textbf{Dataset C} & \textbf{Avg} \\
+    \midrule
+    Baseline 1 & 72.3 & 68.1 & 75.4 & 71.9 \\
+    Baseline 2 & 74.1 & 70.2 & 76.8 & 73.7 \\
+    SOTA       & 76.5 & 72.8 & 78.9 & 76.1 \\
+    \midrule
+    Ours       & \textbf{78.2} & \textbf{74.5} & \textbf{80.1} & 
+    \textbf{77.6} \\
+    \bottomrule
+  \end{tabular}
+  \caption{Main results. Best scores in \textbf{bold}. 
+    Our model outperforms all baselines across all datasets.}
+  \label{tab:main-results}
+\end{table}
+
+\subsection{Ablation Studies}
+
+Analyze the contribution of each component. Remove or modify individual 
+components and measure the impact.
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{@{}lc@{}}
+    \toprule
+    \textbf{Configuration} & \textbf{F1} \\
+    \midrule
+    Full model              & \textbf{78.2} \\
+    -- Component A          & 75.1 \\
+    -- Component B          & 76.3 \\
+    -- Component A \& B     & 72.8 \\
+    With smaller model      & 74.9 \\
+    With less training data & 73.5 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Ablation results. Removing any component degrades performance.}
+  \label{tab:ablations}
+\end{table}
+
+\subsection{Analysis and Discussion}
+
+Go beyond numbers. Analyze \emph{why} your model works:
+\begin{itemize}
+  \item Qualitative examples (success and failure cases)
+  \item Error analysis (what types of errors does your model still make?)
+  \item Attention visualization or feature analysis
+  \item Comparison with human performance
+\end{itemize}
+
+% ============================================================================
+\section*{Limitations}
+
+ACL venues strongly encourage (and some require) a Limitations section. 
+Be honest about:
+\begin{itemize}
+  \item \textbf{Scope:} What tasks, languages, or domains does your approach 
+    NOT cover?
+  \item \textbf{Data:} Biases in training data, limited language coverage, 
+    dataset artifacts.
+  \item \textbf{Computational cost:} Training time, inference latency, model 
+    size.
+  \item \textbf{Assumptions:} Simplifying assumptions that may not hold in 
+    practice.
+  \item \textbf{Evaluation:} Limits of automatic metrics, lack of human 
+    evaluation.
+  \item \textbf{Generalizability:} Results on specific benchmarks may not 
+    transfer.
+\end{itemize}
+
+% ============================================================================
+\section*{Ethical Considerations / Broader Impact}
+
+Some ACL venues require an ethics statement. Consider:
+\begin{itemize}
+  \item Potential misuse of the technology
+  \item Bias and fairness implications
+  \item Environmental impact (carbon footprint of training)
+  \item Privacy concerns (if using personal data)
+  \item Intended use and users
+\end{itemize}
+
+% ============================================================================
+\section*{Acknowledgments}
+
+% For ARR review: comment out or remove this section
+We thank the anonymous reviewers for their helpful feedback. 
+This work was supported by [Grant/Agency].
+
+% ============================================================================
+% Bibliography
+% ============================================================================
+
+\bibliographystyle{acl_natbib}
+\bibliography{references}
+
+% ============================================================================
+% Appendix (optional, usually not included in page limit)
+% ============================================================================
+
+% \appendix
+% \section{Additional Experiments}
+% \section{Implementation Details}
+% \section{Full Results}
+
+\end{document}
