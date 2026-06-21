@@ -671,8 +671,26 @@ def _resolve_experiment_preset(name: str, *, mode: str) -> ExperimentPreset:
     preset = str(name or "default").strip().lower()
     if preset == "default":
         return ExperimentPreset(name="default")
+    if preset == "full_themis":
+        return ExperimentPreset(
+            name="full_themis",
+            workflow_builder="run_experiment_integrated:build_integrated_workflow",
+        )
+    if preset == "no_graph_same_input":
+        return ExperimentPreset(
+            name="no_graph_same_input",
+            workflow_builder="src.baselines.no_graph_same_input:build_app",
+            max_revisions=1,
+        )
     if mode != "integrated":
         raise ValueError(f"Experiment preset '{preset}' requires --mode integrated")
+    if preset == "graph_only":
+        return ExperimentPreset(
+            name="graph_only",
+            workflow_builder="run_experiment_integrated:build_integrated_workflow_ablation1",
+            analysis_strategy=AnalysisStrategy.GRAPH_ONLY.value,
+            max_revisions=1,
+        )
     if preset == "ablation1":
         return ExperimentPreset(
             name="ablation1",
@@ -956,6 +974,10 @@ def _run_langgraph_workflow(
     if isinstance(last_effective_revision, int):
         meta["last_effective_revision"] = last_effective_revision
 
+    no_graph_baseline_meta = final_state.get("no_graph_baseline_meta")
+    if isinstance(no_graph_baseline_meta, dict):
+        meta["no_graph_baseline_meta"] = no_graph_baseline_meta
+
     return updated_files, meta, fallback_files
 def _generate_patch(repo_root: Path) -> str:
     # Use git diff for a canonical patch that SWE-bench harness can apply.
@@ -966,6 +988,60 @@ def _write_jsonl_line(path: Path, obj: Dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as f:
         f.write(json.dumps(obj, ensure_ascii=False) + "\n")
+
+
+def _build_input_protocol_meta(
+    *,
+    args: argparse.Namespace,
+    preset: ExperimentPreset,
+    instance: Dict[str, Any],
+    selected_paths: Sequence[str],
+    workflow_builder: str,
+    analysis_strategy: str,
+    max_revisions: int,
+) -> Dict[str, Any]:
+    instance_id = str(instance.get("instance_id") or "")
+    fail_to_pass = _normalize_test_list(instance.get("FAIL_TO_PASS"))
+    pass_to_pass = _normalize_test_list(instance.get("PASS_TO_PASS"))
+    semantic_contract_lines = _semantic_contract_lines_for_preset(preset.name, instance_id)
+
+    uses_requirement_graph = preset.name not in {"no_graph_same_input"}
+    uses_advanced_analyzer = preset.name in {"default", "full_themis"} and args.mode == "integrated"
+    uses_judge_loop = preset.name not in {"no_graph_same_input"}
+
+    return {
+        "dataset": args.dataset,
+        "split": args.split,
+        "seed": args.seed,
+        "selection_start": args.start,
+        "selection_end": args.end,
+        "selection_num": None if args.start is not None or args.end is not None else args.num,
+        "instance_id": instance_id,
+        "workflow_variant": preset.name,
+        "workflow_builder": workflow_builder,
+        "analysis_strategy": analysis_strategy,
+        "model": args.model,
+        "analysis_model": args.analysis_model,
+        "max_revisions": max_revisions,
+        "uses_problem_statement": bool((instance.get("problem_statement") or "").strip()),
+        "uses_hints_text": bool((instance.get("hints_text") or "").strip()),
+        "uses_fail_to_pass": bool(fail_to_pass),
+        "uses_pass_to_pass": False,
+        "pass_to_pass_available": bool(pass_to_pass),
+        "uses_semantic_contract": bool(semantic_contract_lines),
+        "semantic_contract_source": "preset_manual_contract" if semantic_contract_lines else None,
+        "uses_requirement_graph": uses_requirement_graph,
+        "uses_advanced_analyzer": uses_advanced_analyzer,
+        "uses_judge_loop": uses_judge_loop,
+        "selected_file_strategy": (
+            "deterministic path/token matching from problem_statement, hints_text, "
+            "and FAIL_TO_PASS identifiers; PASS_TO_PASS is not used"
+        ),
+        "selected_paths": list(selected_paths),
+        "selected_file_count": len(selected_paths),
+        "same_selected_file_strategy_as_full_themis": True,
+        "same_requirement_string_builder_as_full_themis": True,
+    }
 
 
 def main() -> None:
@@ -989,10 +1065,13 @@ def main() -> None:
     parser.add_argument("--mode", choices=["integrated", "traditional"], default="integrated")
     parser.add_argument(
         "--experiment-preset",
-        choices=["default", "ablation1", "fault_space_fallback", "fault_space_neighborhood", "fault_space_neighborhood_context", "fault_space_neighborhood_retrieval", "semantics_contract_prompt", "semantics_contract_rerank"],
+        choices=["default", "full_themis", "no_graph_same_input", "graph_only", "ablation1", "fault_space_fallback", "fault_space_neighborhood", "fault_space_neighborhood_context", "fault_space_neighborhood_retrieval", "semantics_contract_prompt", "semantics_contract_rerank"],
         default="default",
         help=(
             "Optional reproducible experiment preset. "
+            "full_themis = integrated default workflow; "
+            "no_graph_same_input = direct same-input repair without graph/analyzer/judge; "
+            "graph_only = graph-only + conflict-only baseline; "
             "ablation1 = graph-only + conflict-only baseline; "
             "fault_space_fallback = ablation1 plus bounded fallback target expansion; "
             "fault_space_neighborhood = ablation1 plus file-local structural neighborhood expansion; "
@@ -1133,6 +1212,15 @@ def main() -> None:
                 raise RuntimeError(f"Could not load selected target file: {selected_file}")
 
             patch = ""
+            meta["input_protocol"] = _build_input_protocol_meta(
+                args=args,
+                preset=preset,
+                instance=inst,
+                selected_paths=selected_paths,
+                workflow_builder=workflow_builder,
+                analysis_strategy=analysis_strategy,
+                max_revisions=max_revisions,
+            )
 
             if not args.dry_run:
                 updated_files, meta, last_effective_files = _run_langgraph_workflow(
@@ -1145,6 +1233,15 @@ def main() -> None:
                     analysis_strategy=analysis_strategy,
                     max_revisions=max_revisions,
                     recursion_limit=args.recursion_limit,
+                )
+                meta["input_protocol"] = _build_input_protocol_meta(
+                    args=args,
+                    preset=preset,
+                    instance=inst,
+                    selected_paths=selected_paths,
+                    workflow_builder=workflow_builder,
+                    analysis_strategy=analysis_strategy,
+                    max_revisions=max_revisions,
                 )
 
                 # Apply updated files to disk
@@ -1199,6 +1296,9 @@ def main() -> None:
                         meta["empty_patch_reason"] = (
                             "no_effective_changes_in_workflow"
                         )
+            else:
+                meta["patch_source"] = "dry_run"
+                meta["empty_patch_reason"] = "dry_run_skips_llm_and_patch_generation"
 
             duration = time.time() - start
             result = SolveResult(

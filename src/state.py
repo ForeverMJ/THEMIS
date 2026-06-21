@@ -57,3 +57,4 @@ class AgentState(TypedDict):
     failure_class_history: NotRequired[List[Dict[str, Any]]]
     failure_memory: NotRequired[List[Dict[str, Any]]]
     execution_metrics_history: NotRequired[List[Dict[str, Any]]]
+    no_graph_baseline_meta: NotRequired[Dict[str, Any]]
