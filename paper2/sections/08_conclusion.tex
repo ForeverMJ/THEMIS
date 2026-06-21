@@ -1,0 +1,23 @@
+\documentclass[11pt]{article}
+\usepackage[review]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\title{Section 8 Draft: Conclusion}
+\author{Anonymous ARR Submission}
+
+\begin{document}
+\maketitle
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented THEMIS, a requirement-aware framework for LLM-driven code repair.  Instead of treating an issue report as an undifferentiated prompt, THEMIS decomposes issue text into requirement nodes, links those nodes to code elements in a knowledge graph, and uses graph conflicts, repair hypotheses, and semantic contracts to guide and audit the repair loop.
+
+Our evaluation provides bounded empirical evidence for this design.  On 300 SWE-bench Lite instances, THEMIS resolves 58 cases under the official harness, corresponding to 19.3\% over submitted instances and 20.8\% over completed non-empty-patch instances.  The system generates non-empty patches for roughly 94\% of instances, showing that candidate patch production is much easier than correct issue resolution.  In a controlled four-case semantic-contract slice, explicit contracts improve the outcome from 0/4 to 1/4, while a reranking variant does not improve beyond the contract prompt.
+
+These results do not establish broad superiority over APR systems.  Rather, they support a narrower conclusion: making requirements explicit can provide a useful and inspectable interface between natural-language issue understanding, code editing, and validation.  Future work should improve automatic semantic-contract induction, broaden multilingual and multi-file repair support, strengthen ablation evidence, and re-instrument LLM cost accounting so that requirement-aware repair can be evaluated more completely.
+
+\end{document}

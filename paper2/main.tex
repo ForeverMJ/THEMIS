@@ -1,0 +1,379 @@
+\documentclass[11pt]{article}
+
+\usepackage[review]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\title{Requirement-Aware Code Repair via Knowledge Graph Decomposition and Semantic Contract Guidance}
+
+\author{Anonymous ARR Submission}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Automated repair of repository-level software issues requires models to interpret natural-language requirements, localize relevant code, and produce patches that satisfy benchmark tests.  We present THEMIS, a requirement-aware repair framework that externalizes issue understanding into a code knowledge graph.  THEMIS decomposes issue text into requirement nodes, links those requirements to code elements, records violation and advisory edges, and uses these graph constraints to guide an LLM developer and judge.  We evaluate THEMIS on all 300 SWE-bench Lite instances using gpt-5.1-codex-mini.  The official harness reports 58 resolved instances, corresponding to 19.3\% over submitted cases and 20.8\% over completed non-empty-patch cases.  The system produces non-empty patches for roughly 94\% of instances, showing that patch production and correctness must be reported separately.  A controlled four-case semantic-contract slice improves from 0/4 resolved cases under context-only prompting to 1/4 with explicit contracts, while a reranking variant remains at 1/4.  These bounded results support explicit requirement decomposition as an inspectable interface for LLM-based repair.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:introduction}
+
+Automatically repairing real software bugs is a long-standing goal at the intersection of software engineering and language technologies.  A bug report is not merely a request to edit code: it contains natural-language descriptions of observed behavior, expected behavior, failing tests, examples, and often implicit domain constraints.  Modern benchmarks such as SWE-bench make this challenge concrete by asking models to resolve real GitHub issues in full repository contexts \citep{jimenez-etal-2024-swebench}.  While large language models (LLMs) have substantially expanded the space of plausible code edits, automated program repair (APR) remains difficult because the model must jointly understand the issue, localize the relevant code, infer the missing behavior, and produce a minimal patch that satisfies the test oracle \citep{monperrus-2018-automatic-repair-bibliography,jiang-etal-2023-code-lms-apr}.
+
+Most LLM-based repair pipelines still treat the issue report primarily as text to be inserted into a prompt.  This direct-prompt formulation is flexible, but it leaves requirement interpretation implicit inside the model.  As a result, the repair loop has limited visibility into which part of the issue is being addressed, which code element is responsible for each requirement, and whether a generated patch satisfies the decomposed expectations.  Conversational repair systems improve on one-shot prompting by feeding back test failures or previous patch attempts \citep{xia-zhang-2023-conversational-apr,xia-etal-2024-chatrepair}, yet the intermediate representation is still typically a sequence of textual messages.  We argue that issue understanding should be externalized into a structured representation that can guide both editing and validation.
+
+We present \textsc{THEMIS}, a requirement-aware code repair framework that decomposes natural-language issue descriptions into explicit constraints in a code knowledge graph.  THEMIS combines four agents.  An Enhanced Graph Manager extracts Python code structure, injects requirement nodes, traces dependencies, and flags requirement--code violations.  An Advanced Code Analyzer classifies the bug, maps code elements to higher-level concepts, enriches the LLM context, and derives repair hypotheses.  A Developer agent generates edits under graph-derived constraints and semantic hypotheses.  A Judge agent validates the revised graph using hard checks over blocking violation edges and optional LLM advisory checks.  Unlike direct prompting, the same graph representation is used for localization, repair guidance, and consistency checking.
+
+This paper makes three contributions.
+\begin{enumerate}
+    \item We introduce a requirement-aware repair architecture that converts issue text into requirement nodes and requirement--code edges, making the repair loop inspectable at the level of decomposed requirements.
+    \item We evaluate THEMIS on all 300 SWE-bench Lite instances.  Under the current \texttt{gpt-5.1-codex-mini} run, official harness summaries show 58 resolved instances out of 300 submitted cases (19.3\%), while the workflow produces non-empty patches for approximately 94\% of instances.  We report these as distinct outcome and patch-production metrics.
+    \item We conduct a controlled semantic-contract analysis.  In an executed four-case slice, explicit semantic repair contracts improve the result from 0/4 to 1/4 over a context-only control, while a more complex reranking variant remains at 1/4.  This provides bounded evidence for the value of explicit semantic guidance and a negative result for additional reranking complexity.
+\end{enumerate}
+
+The remainder of the paper is organized as follows.  Section~\ref{sec:related-work} reviews traditional APR, LLM-based repair, graph representations of code, and semantic-guided repair.  Section~\ref{sec:system-architecture} describes the THEMIS architecture and its four-agent workflow.  Section~\ref{sec:experimental-setup} presents the SWE-bench Lite experimental setup, presets, and metrics.  Section~\ref{sec:results} reports benchmark, ablation, and semantic-contract results.  Section~\ref{sec:discussion} discusses the implications of requirement-aware repair and the observed negative results.  Section~\ref{sec:limitations} summarizes limitations, and Section~\ref{sec:conclusion} concludes.
+
+\section{Related Work}
+\label{sec:related-work}
+
+\subsection{Automated Program Repair}
+\label{subsec:apr}
+
+Automated program repair has traditionally been formulated as a generate-and-validate problem: a repair system searches a space of candidate edits and uses tests, specifications, crashes, or semantic constraints as an oracle \citep{monperrus-2018-automatic-repair-bibliography}.  Early search-based systems such as GenProg used genetic programming to generate patches for real bugs \citep{weimer-etal-2009-genprog}, and subsequent empirical studies showed both the promise and cost profile of test-suite-based APR at larger scale \citep{legoues-etal-2012-systematic-apr}.  Other lines of work use learned priors over correct code, as in Prophet \citep{long-rinard-2016-prophet}, or synthesize repairs from symbolic constraints, as in SemFix and Angelix \citep{nguyen-etal-2013-semfix,mechtaev-etal-2016-angelix}.  Nopol focuses on conditional statements and missing preconditions using angelic values and SMT-based synthesis \citep{xuan-etal-2017-nopol}.  THEMIS builds on this tradition of constraint-guided repair, but its constraints are derived from issue text and represented as requirement--code graph relations rather than only as search operators, symbolic path constraints, or test outcomes.
+
+\subsection{LLM-Based Code Repair}
+\label{subsec:llm-repair}
+
+Large language models have shifted APR from hand-designed repair templates toward flexible code generation.  Code language models can produce patches directly or rank likely edits, and empirical studies show that they can be competitive with earlier learning-based and traditional APR systems \citep{jiang-etal-2023-code-lms-apr,sobania-etal-2023-chatgpt-bugfixing}.  Conversational repair systems further exploit LLM interaction by feeding back validation information and previous patch attempts \citep{xia-zhang-2023-conversational-apr,xia-etal-2024-chatrepair}.  Recent work also evaluates LLMs on repository-level issue resolution, where the task includes file localization, context selection, editing, and test-based validation \citep{jimenez-etal-2024-swebench,yang-etal-2024-swe-agent,xia-etal-2024-agentless}.  Surveys and critical reviews highlight both the rapid progress of LLM repair and methodological concerns such as data leakage, benchmark design, and unclear failure modes \citep{zhang-etal-2024-critical-review-chatgpt-apr,zubair-etal-2025-llm-program-repair-slr}.  THEMIS is complementary to this work: it does not propose a new base model, but instead structures the repair interaction by decomposing requirements and exposing graph conflicts to the model.
+
+\subsection{Knowledge Graphs and Structured Representations from Code}
+\label{subsec:code-graphs}
+
+Structured representations have long been used to capture information that token sequences alone miss.  Code property graphs combine abstract syntax trees, control-flow graphs, and program-dependence graphs into a single graph representation for vulnerability discovery \citep{yamaguchi-etal-2014-code-property-graphs}.  Neural program-analysis work similarly shows that graphs can encode syntactic and semantic relations useful for reasoning over code, including variable use and misuse detection \citep{allamanis-etal-2018-program-graphs}.  Other representation-learning approaches use AST paths or data-flow relations to improve code understanding, summarization, and retrieval \citep{alon-etal-2019-code2seq,alon-etal-2019-code2vec,guo-etal-2021-graphcodebert}.  Earlier semantic language models for code also demonstrate that source code benefits from structural and semantic signals beyond plain token statistics \citep{nguyen-etal-2013-statistical-semantic-code}.  THEMIS adopts the graph-oriented view, but extends it with natural-language requirement nodes, requirement--code mapping edges, and violation edges designed specifically for repair guidance.
+
+\subsection{Semantic-Guided Repair}
+\label{subsec:semantic-guided-repair}
+
+Semantic guidance is a recurring theme in APR.  SemFix uses semantic analysis and symbolic reasoning to synthesize patches satisfying inferred constraints \citep{nguyen-etal-2013-semfix}; Angelix scales symbolic repair by inferring angelic values and synthesizing multiline patches \citep{mechtaev-etal-2016-angelix}; and Nopol repairs buggy conditions and missing preconditions using runtime traces and SMT solving \citep{xuan-etal-2017-nopol}.  Learned approaches such as Prophet incorporate semantic and statistical signals through a model of correct code \citep{long-rinard-2016-prophet}.  LLM-era systems bring a different form of semantic guidance: natural-language hints, test failure messages, and conversational feedback can alter the model's repair trajectory \citep{sobania-etal-2023-chatgpt-bugfixing,xia-etal-2024-chatrepair}.  THEMIS combines these two traditions.  It uses LLMs for semantic interpretation and patch generation, but externalizes that interpretation into explicit requirement nodes, repair hypotheses, and graph conflicts.  This design makes semantic guidance auditable and allows negative evidence---for example, unresolved blocking conflicts---to be fed back to the repair loop.
+
+\section{System Architecture}
+\label{sec:system-architecture}
+
+THEMIS is designed around a simple departure from direct-prompt repair.  Rather than passing an issue report to a language model as an undifferentiated text string, THEMIS externalizes issue understanding into a requirement-aware knowledge graph.  The graph represents three kinds of information in a shared state: source-code structure, issue-derived requirements, and requirement--code consistency evidence.  Repair is then performed under graph-derived constraints, and validation is expressed as a consistency check over the same graph.
+
+The architecture follows the integrated workflow shown in Figure~\ref{fig:themis-architecture}.  A shared \textsc{AgentState} stores the editable file map, the natural-language requirements, the current and baseline knowledge graphs, the current conflict report, and optional analysis artifacts such as repair hypotheses, developer metrics, conflict metrics, and repair briefs.  Each stage reads and writes this state, which makes the repair loop explicit: semantic analysis and graph construction produce constraints; the developer edits the file map; the graph is rebuilt; and the judge decides whether graph conflicts remain.
+
+\begin{figure*}[t]
+\centering
+\fbox{%
+\begin{minipage}{0.94\linewidth}
+\small
+\begin{center}
+\begin{tabular}{c}
+Issue text + selected source files \\
+$\Downarrow$ \\
+\textbf{Advanced Code Analyzer}: classify bug, map concepts, enhance context, derive repair hypotheses \\
+$\Downarrow$ \\
+\textbf{Enhanced Graph Manager}: extract AST structure, inject requirements, trace dependencies, flag violations \\
+$\Downarrow$ \\
+\textbf{Developer}: generate search/replace or symbol-level edits under graph and semantic constraints \\
+$\Downarrow$ \\
+\textbf{Judge}: hard-check blocking graph conflicts; optionally attach LLM advisory feedback \\
+$\Downarrow$ \\
+Patch or bounded repair-loop continuation
+\end{tabular}
+\end{center}
+\end{minipage}}
+\caption{THEMIS integrated architecture.  The central design choice is to make requirements explicit graph objects before repair, so that both editing and validation can refer to requirement--code conflicts rather than only to the original issue text.}
+\label{fig:themis-architecture}
+\end{figure*}
+
+\subsection{State and Graph Representation}
+\label{subsec:state-graph}
+
+THEMIS represents the repair process as state transformation over a typed workflow state.  The core fields are: (i) \texttt{files}, a filename-to-content map that is the editable source of truth; (ii) \texttt{requirements}, the issue text plus benchmark constraints such as hints and failing tests; (iii) \texttt{knowledge\_graph}, the latest graph built from the current files; (iv) \texttt{baseline\_graph}, the graph built before modification; (v) \texttt{conflict\_report}, the judge output used to focus the next revision; and (vi) \texttt{revision\_count}, the bounded loop counter.  Optional fields store advanced-analysis results, token usage for the advanced analyzer, developer and conflict metrics, repair briefs, and the last effective file state.
+
+The graph itself is a directed property graph over typed nodes and edges.  Code nodes include \texttt{FunctionNode}, \texttt{ClassNode}, and \texttt{VariableNode}; requirement nodes are represented as \texttt{RequirementNode}s with an identifier, text, priority, and testability flag.  Edges encode calls, dependencies, mappings, and consistency evidence.  In particular, \texttt{DependencyEdge}s encode relations such as \texttt{MAPS\_TO}, \texttt{DEPENDS\_ON}, \texttt{USES\_VAR}, and \texttt{DEFINED\_IN}; \texttt{ViolationEdge}s encode whether a requirement is satisfied, violated, or advisory for a code node, together with a reason, confidence score, and blocking flag.  This representation follows the general motivation of graph-based code representations such as code property graphs \citep{yamaguchi-etal-2014-code-property-graphs}, but adds issue-derived requirement nodes and violation edges to support repair.
+
+\subsection{Agent 1: Enhanced Graph Manager}
+\label{subsec:graph-manager}
+
+The Enhanced Graph Manager constructs the requirement-aware knowledge graph.  It combines four subcomponents.
+
+\paragraph{Structural extractor.}
+The structural extractor parses Python source with the built-in abstract syntax tree parser and creates a graph of functions, classes, member variables, calls, instantiations, and definition relations.  For functions, it records names, arguments, return annotations, docstrings, and line numbers.  For classes, it records base classes, methods, docstrings, and line numbers.  For variables, it focuses on member-state patterns such as \texttt{self.x}.  This stage is intentionally fact-based: it extracts syntactic and structural evidence without deciding whether the issue is fixed.
+
+\paragraph{Semantic injector.}
+The semantic injector converts issue text into atomic requirement nodes and connects those nodes to candidate code elements.  It first splits the issue into sentences, filters out short or metadata-like sentences, and selects sentences containing requirement indicators such as expected behavior, errors, or required fixes.  Each selected sentence becomes a \texttt{RequirementNode} with a stable requirement identifier.  The injector then maps requirements to code nodes by matching requirement terms against names and metadata in the structural graph, producing requirement--code mapping edges.  This step is the key architectural bridge: natural-language issue information becomes an explicit object in the same graph as the code.
+
+\paragraph{Dependency tracer.}
+The dependency tracer enriches the graph with definition--usage and inter-symbol dependencies.  It parses the code, builds variable definition and usage chains, adds dependency edges between matching graph nodes, resolves \texttt{self} references, and records transitive dependency information.  These edges help the downstream repair prompt identify not only the directly mapped symbol, but also neighboring functions or variables that may carry the required behavior.
+
+\paragraph{Violation flagger.}
+The violation flagger analyzes requirement--code relationships and produces consistency evidence.  It searches for requirement nodes, related code nodes, and mapping evidence, then assigns statuses such as \texttt{SATISFIES}, \texttt{VIOLATES}, or \texttt{ADVISORY}.  A violation report includes the requirement id, code node, reason, confidence, severity, blocking flag, and evidence tags.  Blocking violations are used as hard repair obligations, whereas advisory findings can provide additional guidance without forcing the loop to continue.
+
+\subsection{Agent 2: Advanced Code Analyzer}
+\label{subsec:advanced-analyzer}
+
+The Advanced Code Analyzer provides the semantic analysis layer used before graph-guided repair.  Its role is not to replace the graph, but to generate structured semantic signals that narrow the repair search space.
+
+First, a bug classifier maps the issue to one of several bug categories, including logic errors, API issues, performance problems, boundary-condition errors, type errors, concurrency faults, resource-management bugs, and configuration problems.  The classification includes a confidence score and is used to select an analysis strategy.  Second, a context enhancer collects code context such as function signatures, class methods, import statements, and call-graph information under a context-window budget.  Third, a concept mapper links low-level code elements to higher-level concepts, making it easier to express why a symbol is relevant to the issue.  Finally, a multi-round reasoner iteratively evaluates repair hypotheses until a confidence threshold or round limit is reached.
+
+In the integrated workflow, the analyzer runs before graph construction.  Its output is stored in the shared state as findings, recommendations, confidence scores, strategy metadata, and usage statistics.  These artifacts are later translated into developer context: repair hypotheses specify a target symbol, fault mechanism, expected fix behavior, minimal edit scope, change operator, and confidence.  Thus, the analyzer contributes semantic focus, while the graph manager contributes explicit requirement--code constraints.
+
+\subsection{Agent 3: Developer}
+\label{subsec:developer}
+
+The Developer agent edits source files under the constraints accumulated in the state.  Its prompt contains the current files, the original requirements, the current conflict report, prioritized graph violations, any judge repair brief, repair hypotheses from the advanced analyzer, and selected code ingredients from the graph.  This design makes the generated patch requirement-aware: the model is asked to target conflict-related logic and to avoid unrelated rewrites.
+
+The implementation supports two edit forms.  In \emph{search/replace} mode, the model returns exact source snippets and replacements.  In \emph{symbol rewrite} mode, it returns a complete replacement for a function, class, or method.  The integrated runner tries a bounded sequence of edit modes, beginning with search/replace, falling back to symbol rewrite, and then returning to a smaller anchored search/replace mode when needed.  Each proposed edit is checked before it is accepted: whitespace-only changes are rejected, non-Python symbol rewrites are disallowed, and Python syntax is validated using AST parsing.  Failed rewrites are recorded with reasons such as unknown file, empty symbol, whitespace-only change, or syntax error.
+
+The surrounding SWE-bench pipeline also preserves file style when applying edits back to the repository.  It records the original newline convention and end-of-file newline status, writes files without platform newline translation, and reapplies the detected style to revised contents.  This engineering detail is important for patch quality: it reduces spurious diffs and keeps the model focused on semantic changes.
+
+\subsection{Agent 4: Judge}
+\label{subsec:judge}
+
+The Judge agent validates the revised graph.  It uses the graph as the primary source of truth: only blocking graph conflicts keep the repair loop alive.  Its hard check scans graph edges of type \texttt{VIOLATES} and \texttt{ADVISORY}.  \texttt{VIOLATES} edges become blocking conflicts; \texttt{ADVISORY} edges become non-blocking guidance.  Conflicts are sorted by confidence and formatted with requirement ids, code nodes, reasons, confidence values, and evidence tags.  In the experiment logs, these quantities are summarized through metrics such as \texttt{violates\_count}, \texttt{blocking\_conflicts\_count}, and \texttt{advisory\_conflicts\_count}.
+
+The judge also produces a repair brief.  The baseline brief selects the highest-priority blocking conflict when available, records the target symbol and related symbols, summarizes the issue, and marks whether the conflict is blocking.  When a structured-output LLM is available, a coaching prompt may refine this brief into a more actionable target-symbol recommendation.  If the hard check finds no blocking conflicts, the judge can additionally run a soft check: an LLM auditor receives the requirements, baseline graph edges, and current graph edges, and may return advisory feedback.  This soft feedback is appended to the advisory report but does not by itself force the loop to continue.
+
+\subsection{Repair Loop and Stop Policy}
+\label{subsec:repair-loop}
+
+The integrated workflow executes the following loop.  The advanced analyzer first produces semantic findings and repair hypotheses.  The graph manager builds a baseline graph, injects requirement nodes, traces dependencies, and flags violations.  The developer revises the file map using the requirements, graph-derived conflicts, semantic hypotheses, and repair brief.  The graph is rebuilt from the revised files.  The judge then performs hard and soft checks.  If blocking conflicts remain and the revision budget has not been exhausted, the conflict report is fed back to the developer; otherwise the workflow terminates and the runner emits the resulting patch.
+
+This loop gives THEMIS its central property: the repair process is guided by explicit requirement--code constraints rather than by the issue prompt alone.  The same representation is used for localization, patch guidance, and validation.  At the same time, the graph checks are approximate rather than formal proof obligations.  Their role is to make the model's repair context structured and auditable, not to guarantee semantic correctness in the absence of benchmark tests.
+
+\section{Experimental Setup}
+\label{sec:experimental-setup}
+
+We evaluate THEMIS on SWE-bench Lite, a 300-instance subset of real-world GitHub issue-resolution tasks drawn from Python repositories \citep{jimenez-etal-2024-swebench}.  Each instance contains a repository, a base commit, a natural-language problem statement, optional hints, and failing tests used by the official SWE-bench evaluation harness.  THEMIS consumes the issue text and selected source files, produces a patch as a standard \texttt{git diff}, and writes predictions in the JSONL format expected by the harness.
+
+\subsection{Dataset and Instance Processing}
+\label{subsec:dataset-processing}
+
+The primary benchmark run uses all 300 SWE-bench Lite test instances with random seed 42.  The instances span the benchmark's Python repository set, with the largest groups coming from Django, SymPy, scikit-learn, Matplotlib, Sphinx, Astropy, Xarray, Flask, Seaborn, Requests, Pytest, and other repositories.  For each instance, the runner checks out the repository at the recorded base commit, selects target files, builds a requirement string, executes the integrated THEMIS workflow, applies the resulting file updates, and emits a patch.
+
+The requirement string concatenates the problem statement, available hints, failing test identifiers, and---for selected semantic-contract presets---additional repair contracts.  This construction is intentionally explicit: failing tests and semantic contracts are not hidden evaluator signals, but become part of the textual requirement object that the graph manager can decompose into requirement nodes.
+
+\subsection{Model and Workflow Configuration}
+\label{subsec:model-workflow-config}
+
+All reported runs in this paper use \texttt{gpt-5.1-codex-mini} as both the repair workflow model and the advanced-analysis model.  The main benchmark uses the integrated workflow described in Section~\ref{sec:system-architecture}: Advanced Analysis, knowledge-graph construction, Developer revision, graph rebuilding, and Judge validation.  The default strategy is \texttt{auto\_select}; most controlled variants use \texttt{graph\_only} so that the comparison focuses on structural, context, or semantic-contract changes rather than a changing strategy selector.
+
+The maximum revision count is one in the documented experiments.  Within a revision, the Developer may attempt bounded edit modes, but the workflow-level loop is intentionally shallow.  This setting makes the evaluation closer to a constrained repair pass than to an open-ended autonomous debugging session.
+
+\subsection{File Selection and Context Construction}
+\label{subsec:file-selection}
+
+THEMIS uses conservative file selection because the current graph manager is optimized for bounded Python modules.  The runner first extracts explicit Python paths from the issue text and failing-test metadata.  If no direct path is available, it extracts up to a small set of meaningful tokens and searches the repository using a priority order of \texttt{ripgrep}, \texttt{git grep}, and a Python fallback scan.  Candidate files are ranked by token matches, with special weighting for identifier-like tokens, and test files are filtered when selecting the primary repair target.
+
+Several presets expand this conservative target in controlled ways.  Fault-space fallback and neighborhood variants add bounded nearby files; context variants add hand-curated auxiliary files for selected instances; retrieval variants add Python files mentioned in the instance text; and semantic-contract variants append instance-specific repair constraints to the requirement string.  These variants allow us to probe whether additional fault-space or semantic information helps, but they do not remove the bounded-file assumption.
+
+\subsection{Experiment Presets}
+\label{subsec:presets}
+
+Table~\ref{tab:presets} summarizes the presets used in the documented experiments.  The full 300-instance benchmark uses the default integrated configuration.  Additional ablation-labeled runs are performed on a fixed five-instance slice.  Because several ablation labels are documented by name rather than by a fully specified component removal, we treat them as probes of selected design choices rather than as a complete causal decomposition of every system component.
+
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{llll}
+\toprule
+Preset family & Workflow / strategy & Scope & Purpose \\
+\midrule
+Default & integrated, \texttt{auto\_select} & 300 instances & Main benchmark run \\
+\texttt{ablation1} & integrated variant, \texttt{graph\_only} & fixed 5-instance slice & graph-only conflict baseline \\
+Other ablation labels & ablation-labeled variants & fixed 5-instance slice & probe design choices; definitions require cautious interpretation \\
+Fault-space variants & fallback / neighborhood / context / retrieval & selected slices & test bounded target expansion and context additions \\
+Semantic contract & contract / control / rerank & controlled semantic slices & test explicit semantic constraints and reranking \\
+\bottomrule
+\end{tabular}
+\caption{Experiment preset families.  We distinguish the full 300-instance benchmark from smaller ablation and semantic-contract slices.}
+\label{tab:presets}
+\end{table*}
+
+\subsection{Metrics}
+\label{subsec:metrics}
+
+We report six metrics.  \textbf{Resolved rate} is the official SWE-bench harness outcome: the number of submitted instances whose generated patch passes the relevant benchmark tests divided by the number of submitted instances.  We also report a completed-only denominator, dividing resolved instances by completed non-empty-patch instances, because empty patches are not meaningful repair attempts.  \textbf{Patch generation rate} is the fraction of submitted instances for which the workflow produces a non-empty patch.  This is an engineering throughput measure, not a correctness measure.  \textbf{Runtime} is wall-clock processing time per instance.  \textbf{Advanced Analysis token usage} is the token count recorded by the separate advanced-analysis interface.  Finally, \textbf{chat-model usage} is not used as reliable cost evidence: the current callback-based accounting records \texttt{chat\_usage.total\_tokens=0}, but this reflects an instrumentation limitation for the chat-model path and cannot support conclusions about Developer or Judge LLM invocation counts.
+
+\section{Results}
+\label{sec:results}
+
+This section reports three sets of results: the full 300-instance SWE-bench Lite run, the fixed-slice ablation-labeled variants, and the controlled semantic-contract comparison.  Throughout, we distinguish official resolved rate from patch generation rate.
+
+\subsection{Overall Benchmark Performance}
+\label{subsec:overall-results}
+
+Table~\ref{tab:overall-results} summarizes the main benchmark outcome.  Across the 300 submitted SWE-bench Lite instances, the official harness summaries report 58 resolved instances, giving a resolved rate of 19.3\%.  If the denominator is restricted to the 279 completed non-empty-patch instances reported by the evaluation summaries, the completed-only resolved rate is 20.8\%.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lr}
+\toprule
+Metric & Value \\
+\midrule
+Submitted instances & 300 \\
+Completed non-empty-patch instances & 279 \\
+Official resolved instances & 58 \\
+Resolved / submitted & 19.3\% \\
+Resolved / completed & 20.8\% \\
+Patch generation rate (run logs) & $\sim$94\% \\
+Advanced Analysis tokens & $\sim$28.3M \\
+Mean runtime / instance & $\sim$523s \\
+\bottomrule
+\end{tabular}
+\caption{Overall 300-instance benchmark summary.  Resolved rate is the official harness outcome; patch generation rate is a separate non-empty-diff measure.}
+\label{tab:overall-results}
+\end{table}
+
+The difference between the 19.3\% resolved rate and the approximately 94\% patch generation rate is important.  The latter indicates that the workflow usually produces a syntactically applicable diff; it does not imply that the patch satisfies the benchmark tests.  THEMIS therefore appears better at producing candidate patches than at reliably producing correct issue resolutions under the current configuration.  This gap is consistent with the difficulty of repository-level issue repair, where a patch must localize the correct behavior, modify the correct file or symbol, and satisfy hidden or explicit tests.
+
+The batch-level results are shown in Table~\ref{tab:batch-results}.  The strongest batch is cases 261--300, with 13 resolved instances out of 40 submitted.  Earlier batches have lower resolved counts, including 3/40 for cases 101--140.  We do not interpret these differences as repository-specific causal effects because the batches mix repositories and issue types.
+
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+Batch & Submitted & Completed & Empty patch & Resolved & Resolved / submitted \\
+\midrule
+cases 1--100 & 100 & 89 & 11 & 19 & 19.0\% \\
+cases 101--140 & 40 & 38 & 2 & 3 & 7.5\% \\
+cases 141--180 & 40 & 36 & 4 & 7 & 17.5\% \\
+cases 181--220 & 40 & 39 & 1 & 8 & 20.0\% \\
+cases 221--260 & 40 & 39 & 1 & 8 & 20.0\% \\
+cases 261--300 & 40 & 38 & 2 & 13 & 32.5\% \\
+\midrule
+Total & 300 & 279 & 21 & 58 & 19.3\% \\
+\bottomrule
+\end{tabular}
+\caption{Official evaluation summaries by batch.  The completed column corresponds to non-empty-patch instances in the evaluation summaries.}
+\label{tab:batch-results}
+\end{table*}
+
+The full run covers the SWE-bench Lite Python repository set.  The largest approximate groups are Django ($\sim$70 instances), SymPy ($\sim$45), scikit-learn ($\sim$35), Matplotlib ($\sim$30), Sphinx ($\sim$20), Astropy ($\sim$18), Xarray ($\sim$16), Flask ($\sim$12), Seaborn ($\sim$12), Requests ($\sim$10), Pytest ($\sim$10), and other repositories ($\sim$22).  The run consumed approximately 28.3M tracked Advanced Analysis tokens, or about 94k tokens per instance, with an average wall-clock runtime of about 523 seconds per instance.
+
+We exclude chat-model token counts from quantitative cost claims.  The logged \texttt{chat\_usage} fields are zero under the current callback path, but this is an accounting limitation and cannot support conclusions about Developer or Judge invocation counts.
+
+\subsection{Ablation-Labeled Variants}
+\label{subsec:ablation-results}
+
+The experiment log records six ablation-labeled variants on a fixed five-instance slice: \texttt{ablation1}, \texttt{ablation2}, \texttt{ablation13}, \texttt{ablation15}, \texttt{ablation15\_rankfix}, and \texttt{ablation456}.  The shared slice contains \texttt{django\_\_django-16139}, \texttt{sympy\_\_sympy-13773}, \texttt{django\_\_django-12497}, \texttt{django\_\_django-15320}, and \texttt{django\_\_django-12284}.  The documented output files provide patches for these variants, but the current planning materials do not define every numbered variant with enough precision to claim a fully isolated component effect.
+
+We therefore treat this experiment as a design-probing slice rather than as a complete ablation proof.  Table~\ref{tab:ablation-variants} reports the verifiable setup information.  The clearest baseline is \texttt{ablation1}, which is documented as a graph-only conflict-detection baseline.  Other numbered variants should be interpreted cautiously until their exact component changes are defined in the manuscript or appendix.
+
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{llll}
+\toprule
+Variant & Strategy / preset evidence & Instances & Interpretation boundary \\
+\midrule
+\texttt{ablation1} & \texttt{graph\_only}; graph-only conflict baseline & 5 & clearest structural baseline \\
+\texttt{ablation2} & \texttt{graph\_only}; label documented & 5 & variant meaning requires definition \\
+\texttt{ablation13} & label documented; details unspecified & 5 & do not over-attribute component effect \\
+\texttt{ablation15} & label documented; details unspecified & 5 & do not over-attribute component effect \\
+\texttt{ablation15\_rankfix} & \texttt{graph\_only}; ranking-fix label & 5 & ranking-related probe \\
+\texttt{ablation456} & \texttt{graph\_only}; combined label & 5 & combined-variant probe \\
+\bottomrule
+\end{tabular}
+\caption{Ablation-labeled variants on the fixed five-instance slice.  The table reports documented setup evidence and intentionally avoids unsupported causal claims for under-specified variant labels.}
+\label{tab:ablation-variants}
+\end{table*}
+
+This conservative interpretation is useful for the paper.  It preserves the empirical record of the ablation-labeled runs while preventing the results section from implying that every architecture component has been independently isolated.  Detailed patch-level comparisons can be reported in an appendix once each variant is formally defined.
+
+\subsection{Semantic Contract Analysis}
+\label{subsec:semantic-contract-results}
+
+The most interpretable controlled comparison is the four-case semantic-contract slice.  In this slice, the context-only control resolves 0/4 cases, the semantic-contract prompt resolves 1/4, and the reranking variant also resolves 1/4.  Table~\ref{tab:semantic-contract} summarizes the result.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lrr}
+\toprule
+Condition & Resolved & Total \\
+\midrule
+Context-only control & 0 & 4 \\
+Semantic contract prompt & 1 & 4 \\
+Semantic contract + rerank & 1 & 4 \\
+\bottomrule
+\end{tabular}
+\caption{Controlled four-case semantic-contract slice.  Semantic contracts rescue one case relative to the context-only control, while reranking adds no observed gain in this slice.}
+\label{tab:semantic-contract}
+\end{table}
+
+This result supports a bounded claim: explicit semantic contracts can help in at least some cases where additional context alone is insufficient.  However, the evidence is small and should not be read as a general statistical claim about all SWE-bench instances.  The negative reranking result is also informative.  It suggests that adding a more complex harness-aligned reranking step does not automatically improve over a clear semantic repair contract, at least in the observed slice.
+
+The experiment log also records larger semantic-contract batches, including four-case, five-case, and seven-case semantic families with contract, control, and rerank outputs where available.  We use the four-case slice as the headline controlled result because it has the clearest documented control/contract/rerank comparison and aligns with the bounded claim in Section~\ref{sec:introduction}.
+
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Requirement-aware decomposition as an intermediate representation.}
+The central design lesson from THEMIS is that issue understanding can be made explicit before patch generation.  Direct-prompt repair asks an LLM to infer the relevant requirements, localize the code, and generate a patch in a single opaque step.  In contrast, THEMIS converts the issue into requirement nodes, maps those nodes to code elements, and records violation or advisory edges.  This does not make the repair problem solved, but it creates an auditable intermediate representation: a failed repair can be inspected in terms of missing mappings, low-confidence violation evidence, or an incorrect target symbol.  This is useful both for debugging the repair system and for designing future feedback mechanisms.
+
+\paragraph{Why patch generation is much higher than resolution.}
+The 300-instance benchmark shows a large gap between patch production and correctness.  The workflow generates non-empty patches for roughly 94\% of submitted instances, yet the official resolved rate is 58/300, or 19.3\% (20.8\% over completed non-empty-patch instances).  This gap suggests that the system is usually able to produce syntactically applicable edits, but correctness depends on harder steps: selecting the right file or symbol, preserving repository-specific semantics, matching the hidden test oracle, and avoiding plausible but incomplete changes.  The result is therefore not evidence that patch production alone is a strong success metric.  Instead, patch generation should be interpreted as a throughput measure, while resolved rate remains the primary correctness measure.
+
+\paragraph{Why semantic contracts may help.}
+The controlled semantic-contract slice provides bounded evidence that explicit semantic guidance can improve repair behavior.  The context-only control resolves 0/4 cases, while adding semantic contracts resolves 1/4.  A plausible interpretation is that contracts reduce the model's inference burden: rather than asking the model to infer the missing invariant entirely from issue text and code context, a contract states the expected behavior in a more operational form.  In THEMIS, such constraints also align naturally with the requirement-node view of repair.  However, the evidence remains small.  We therefore treat the result as a proof of usefulness in a controlled slice, not as a general claim that semantic contracts improve all repair tasks.
+
+\paragraph{The reranking negative result.}
+The reranking variant remains at 1/4 in the same controlled slice, matching the simpler semantic-contract prompt.  This negative result is informative.  It suggests that additional pipeline complexity does not automatically translate into better repairs when the core semantic constraint is already explicit.  In small fault spaces, a clear repair contract may provide most of the useful guidance, while reranking may be limited by the quality of the candidate patches or by weak alignment between ranking features and the actual test oracle.  We therefore view reranking as a hypothesis for future refinement rather than as an established improvement in the current system.
+
+\paragraph{Revision behavior.}
+The current logs record per-instance fields such as \texttt{developer\_rounds}, \texttt{effective\_rounds}, \texttt{effective\_modification\_rate}, and \texttt{target\_hit\_rate}.  These fields are useful diagnostics for future analysis.  However, the current aggregate materials do not provide a complete distribution of effective rounds across all 300 instances.  We therefore do not make a headline claim that one repair round is generally sufficient.  The safer conclusion is that the current experiments evaluate a shallow, bounded repair loop with maximum revision count one; deeper loops remain an open design choice.
+
+\paragraph{Cost and reproducibility.}
+The Advanced Analysis path records approximately 28.3M tokens across the 300-instance run, or about 94k tokens per instance.  This gives a partial cost signal for the semantic-analysis component.  We do not report total LLM cost because the current chat-model callback accounting does not reliably capture Developer and Judge usage: logged \texttt{chat\_usage.total\_tokens=0} reflects instrumentation limitations rather than reliable provider usage metadata.  Future experiments should re-instrument the chat-model path directly from provider response metadata before drawing total-cost conclusions.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented THEMIS, a requirement-aware framework for LLM-driven code repair.  Instead of treating an issue report as an undifferentiated prompt, THEMIS decomposes issue text into requirement nodes, links those nodes to code elements in a knowledge graph, and uses graph conflicts, repair hypotheses, and semantic contracts to guide and audit the repair loop.
+
+Our evaluation provides bounded empirical evidence for this design.  On 300 SWE-bench Lite instances, THEMIS resolves 58 cases under the official harness, corresponding to 19.3\% over submitted instances and 20.8\% over completed non-empty-patch instances.  The system generates non-empty patches for roughly 94\% of instances, showing that candidate patch production is much easier than correct issue resolution.  In a controlled four-case semantic-contract slice, explicit contracts improve the outcome from 0/4 to 1/4, while a reranking variant does not improve beyond the contract prompt.
+
+These results do not establish broad superiority over APR systems.  Rather, they support a narrower conclusion: making requirements explicit can provide a useful and inspectable interface between natural-language issue understanding, code editing, and validation.  Future work should improve automatic semantic-contract induction, broaden multilingual and multi-file repair support, strengthen ablation evidence, and re-instrument LLM cost accounting so that requirement-aware repair can be evaluated more completely.
+
+\section{Limitations}
+\label{sec:limitations}
+
+\paragraph{Single-model evaluation.}
+The reported experiments use \texttt{gpt-5.1-codex-mini} for both the repair workflow and the Advanced Code Analyzer.  The results therefore measure one model configuration, not the model-agnostic effectiveness of requirement-aware graph decomposition.  Different code LMs may respond differently to graph-derived conflict reports, semantic contracts, and structured edit prompts.
+
+\paragraph{Python and SWE-bench Lite scope.}
+The main evaluation is limited to SWE-bench Lite and its Python repository set.  THEMIS uses Python AST extraction and Python-oriented symbol rewriting in the current implementation.  The knowledge-graph idea is more general, but support for other languages would require language-specific parsers, dependency extractors, edit applicators, and validation logic.
+
+\paragraph{Bounded fault space and file selection.}
+The benchmark runner uses conservative file selection, with optional fallback, neighborhood, context, and retrieval presets.  This keeps repair focused and makes experiments tractable, but it can miss bugs requiring coordinated edits across multiple files.  A bounded fault space also means that a failed repair may reflect localization failure rather than inability to generate the right code once the correct files are available.
+
+\paragraph{Resolved rate versus patch generation rate.}
+THEMIS generates non-empty patches for roughly 94\% of submitted instances, but the official resolved rate is 58/300, or 19.3\%.  These are different metrics.  Patch generation measures whether the workflow produced a candidate diff; resolved rate measures whether the candidate passes the SWE-bench harness.  The gap limits any claim that high patch production alone indicates repair success.
+
+\paragraph{Manual semantic contracts.}
+The semantic-contract experiments rely on hand-crafted contracts for selected difficult instances.  This makes the controlled comparison informative, but it also limits scalability.  A production system would need to infer such contracts automatically or support a lightweight human-in-the-loop process.  The current 0/4 to 1/4 improvement should therefore be read as bounded evidence for explicit semantic guidance, not as a fully automated contract-generation result.
+
+\paragraph{Ablation scope.}
+The six ablation-labeled variants are run on a fixed five-instance slice, and several variant labels require further formal definition before they can support strong causal claims.  We therefore treat these runs as probes of design choices rather than as a complete isolation of every component contribution.
+
+\paragraph{Token accounting.}
+Advanced Analysis token usage is tracked separately and totals approximately 28.3M tokens in the 300-instance run.  In contrast, Developer and Judge chat-model usage is not reliably measured by the current callback path.  The logged zero chat-token values are an instrumentation limitation and cannot support component-usage conclusions.  Total-cost analysis requires corrected accounting.
+
+\paragraph{Requirement decomposition noise.}
+Requirement decomposition and requirement--code mapping are approximate.  Issue reports often contain metadata, environment details, stack traces, and low-signal terms that can produce noisy requirement nodes or weak \texttt{MAPS\_TO} edges.  Noise in this stage can propagate to violation reports and repair prompts.  Improved filtering, confidence calibration, and qualitative error analysis are important next steps.
+
+\bibliographystyle{acl_natbib}
+\bibliography{references}
+
+\end{document}

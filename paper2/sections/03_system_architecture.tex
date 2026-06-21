@@ -1,0 +1,106 @@
+\documentclass[11pt]{article}
+\usepackage[review]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\title{Section 3 Draft: System Architecture}
+\author{Anonymous ARR Submission}
+
+\begin{document}
+\maketitle
+
+\section{System Architecture}
+\label{sec:system-architecture}
+
+THEMIS is designed around a simple departure from direct-prompt repair.  Rather than passing an issue report to a language model as an undifferentiated text string, THEMIS externalizes issue understanding into a requirement-aware knowledge graph.  The graph represents three kinds of information in a shared state: source-code structure, issue-derived requirements, and requirement--code consistency evidence.  Repair is then performed under graph-derived constraints, and validation is expressed as a consistency check over the same graph.
+
+The architecture follows the integrated workflow shown in Figure~\ref{fig:themis-architecture}.  A shared \textsc{AgentState} stores the editable file map, the natural-language requirements, the current and baseline knowledge graphs, the current conflict report, and optional analysis artifacts such as repair hypotheses, developer metrics, conflict metrics, and repair briefs.  Each stage reads and writes this state, which makes the repair loop explicit: semantic analysis and graph construction produce constraints; the developer edits the file map; the graph is rebuilt; and the judge decides whether graph conflicts remain.
+
+\begin{figure*}[t]
+\centering
+\fbox{%
+\begin{minipage}{0.94\linewidth}
+\small
+\begin{center}
+\begin{tabular}{c}
+Issue text + selected source files \\
+$\Downarrow$ \\
+\textbf{Advanced Code Analyzer}: classify bug, map concepts, enhance context, derive repair hypotheses \\
+$\Downarrow$ \\
+\textbf{Enhanced Graph Manager}: extract AST structure, inject requirements, trace dependencies, flag violations \\
+$\Downarrow$ \\
+\textbf{Developer}: generate search/replace or symbol-level edits under graph and semantic constraints \\
+$\Downarrow$ \\
+\textbf{Judge}: hard-check blocking graph conflicts; optionally attach LLM advisory feedback \\
+$\Downarrow$ \\
+Patch or bounded repair-loop continuation
+\end{tabular}
+\end{center}
+\end{minipage}}
+\caption{THEMIS integrated architecture.  The central design choice is to make requirements explicit graph objects before repair, so that both editing and validation can refer to requirement--code conflicts rather than only to the original issue text.}
+\label{fig:themis-architecture}
+\end{figure*}
+
+\subsection{State and Graph Representation}
+\label{subsec:state-graph}
+
+THEMIS represents the repair process as state transformation over a typed workflow state.  The core fields are: (i) \texttt{files}, a filename-to-content map that is the editable source of truth; (ii) \texttt{requirements}, the issue text plus benchmark constraints such as hints and failing tests; (iii) \texttt{knowledge\_graph}, the latest graph built from the current files; (iv) \texttt{baseline\_graph}, the graph built before modification; (v) \texttt{conflict\_report}, the judge output used to focus the next revision; and (vi) \texttt{revision\_count}, the bounded loop counter.  Optional fields store advanced-analysis results, token usage for the advanced analyzer, developer and conflict metrics, repair briefs, and the last effective file state.
+
+The graph itself is a directed property graph over typed nodes and edges.  Code nodes include \texttt{FunctionNode}, \texttt{ClassNode}, and \texttt{VariableNode}; requirement nodes are represented as \texttt{RequirementNode}s with an identifier, text, priority, and testability flag.  Edges encode calls, dependencies, mappings, and consistency evidence.  In particular, \texttt{DependencyEdge}s encode relations such as \texttt{MAPS\_TO}, \texttt{DEPENDS\_ON}, \texttt{USES\_VAR}, and \texttt{DEFINED\_IN}; \texttt{ViolationEdge}s encode whether a requirement is satisfied, violated, or advisory for a code node, together with a reason, confidence score, and blocking flag.  This representation follows the general motivation of graph-based code representations such as code property graphs \citep{yamaguchi-etal-2014-code-property-graphs}, but adds issue-derived requirement nodes and violation edges to support repair.
+
+\subsection{Agent 1: Enhanced Graph Manager}
+\label{subsec:graph-manager}
+
+The Enhanced Graph Manager constructs the requirement-aware knowledge graph.  It combines four subcomponents.
+
+\paragraph{Structural extractor.}
+The structural extractor parses Python source with the built-in abstract syntax tree parser and creates a graph of functions, classes, member variables, calls, instantiations, and definition relations.  For functions, it records names, arguments, return annotations, docstrings, and line numbers.  For classes, it records base classes, methods, docstrings, and line numbers.  For variables, it focuses on member-state patterns such as \texttt{self.x}.  This stage is intentionally fact-based: it extracts syntactic and structural evidence without deciding whether the issue is fixed.
+
+\paragraph{Semantic injector.}
+The semantic injector converts issue text into atomic requirement nodes and connects those nodes to candidate code elements.  It first splits the issue into sentences, filters out short or metadata-like sentences, and selects sentences containing requirement indicators such as expected behavior, errors, or required fixes.  Each selected sentence becomes a \texttt{RequirementNode} with a stable requirement identifier.  The injector then maps requirements to code nodes by matching requirement terms against names and metadata in the structural graph, producing requirement--code mapping edges.  This step is the key architectural bridge: natural-language issue information becomes an explicit object in the same graph as the code.
+
+\paragraph{Dependency tracer.}
+The dependency tracer enriches the graph with definition--usage and inter-symbol dependencies.  It parses the code, builds variable definition and usage chains, adds dependency edges between matching graph nodes, resolves \texttt{self} references, and records transitive dependency information.  These edges help the downstream repair prompt identify not only the directly mapped symbol, but also neighboring functions or variables that may carry the required behavior.
+
+\paragraph{Violation flagger.}
+The violation flagger analyzes requirement--code relationships and produces consistency evidence.  It searches for requirement nodes, related code nodes, and mapping evidence, then assigns statuses such as \texttt{SATISFIES}, \texttt{VIOLATES}, or \texttt{ADVISORY}.  A violation report includes the requirement id, code node, reason, confidence, severity, blocking flag, and evidence tags.  Blocking violations are used as hard repair obligations, whereas advisory findings can provide additional guidance without forcing the loop to continue.
+
+\subsection{Agent 2: Advanced Code Analyzer}
+\label{subsec:advanced-analyzer}
+
+The Advanced Code Analyzer provides the semantic analysis layer used before graph-guided repair.  Its role is not to replace the graph, but to generate structured semantic signals that narrow the repair search space.
+
+First, a bug classifier maps the issue to one of several bug categories, including logic errors, API issues, performance problems, boundary-condition errors, type errors, concurrency faults, resource-management bugs, and configuration problems.  The classification includes a confidence score and is used to select an analysis strategy.  Second, a context enhancer collects code context such as function signatures, class methods, import statements, and call-graph information under a context-window budget.  Third, a concept mapper links low-level code elements to higher-level concepts, making it easier to express why a symbol is relevant to the issue.  Finally, a multi-round reasoner iteratively evaluates repair hypotheses until a confidence threshold or round limit is reached.
+
+In the integrated workflow, the analyzer runs before graph construction.  Its output is stored in the shared state as findings, recommendations, confidence scores, strategy metadata, and usage statistics.  These artifacts are later translated into developer context: repair hypotheses specify a target symbol, fault mechanism, expected fix behavior, minimal edit scope, change operator, and confidence.  Thus, the analyzer contributes semantic focus, while the graph manager contributes explicit requirement--code constraints.
+
+\subsection{Agent 3: Developer}
+\label{subsec:developer}
+
+The Developer agent edits source files under the constraints accumulated in the state.  Its prompt contains the current files, the original requirements, the current conflict report, prioritized graph violations, any judge repair brief, repair hypotheses from the advanced analyzer, and selected code ingredients from the graph.  This design makes the generated patch requirement-aware: the model is asked to target conflict-related logic and to avoid unrelated rewrites.
+
+The implementation supports two edit forms.  In \emph{search/replace} mode, the model returns exact source snippets and replacements.  In \emph{symbol rewrite} mode, it returns a complete replacement for a function, class, or method.  The integrated runner tries a bounded sequence of edit modes, beginning with search/replace, falling back to symbol rewrite, and then returning to a smaller anchored search/replace mode when needed.  Each proposed edit is checked before it is accepted: whitespace-only changes are rejected, non-Python symbol rewrites are disallowed, and Python syntax is validated using AST parsing.  Failed rewrites are recorded with reasons such as unknown file, empty symbol, whitespace-only change, or syntax error.
+
+The surrounding SWE-bench pipeline also preserves file style when applying edits back to the repository.  It records the original newline convention and end-of-file newline status, writes files without platform newline translation, and reapplies the detected style to revised contents.  This engineering detail is important for patch quality: it reduces spurious diffs and keeps the model focused on semantic changes.
+
+\subsection{Agent 4: Judge}
+\label{subsec:judge}
+
+The Judge agent validates the revised graph.  It uses the graph as the primary source of truth: only blocking graph conflicts keep the repair loop alive.  Its hard check scans graph edges of type \texttt{VIOLATES} and \texttt{ADVISORY}.  \texttt{VIOLATES} edges become blocking conflicts; \texttt{ADVISORY} edges become non-blocking guidance.  Conflicts are sorted by confidence and formatted with requirement ids, code nodes, reasons, confidence values, and evidence tags.  In the experiment logs, these quantities are summarized through metrics such as \texttt{violates\_count}, \texttt{blocking\_conflicts\_count}, and \texttt{advisory\_conflicts\_count}.
+
+The judge also produces a repair brief.  The baseline brief selects the highest-priority blocking conflict when available, records the target symbol and related symbols, summarizes the issue, and marks whether the conflict is blocking.  When a structured-output LLM is available, a coaching prompt may refine this brief into a more actionable target-symbol recommendation.  If the hard check finds no blocking conflicts, the judge can additionally run a soft check: an LLM auditor receives the requirements, baseline graph edges, and current graph edges, and may return advisory feedback.  This soft feedback is appended to the advisory report but does not by itself force the loop to continue.
+
+\subsection{Repair Loop and Stop Policy}
+\label{subsec:repair-loop}
+
+The integrated workflow executes the following loop.  The advanced analyzer first produces semantic findings and repair hypotheses.  The graph manager builds a baseline graph, injects requirement nodes, traces dependencies, and flags violations.  The developer revises the file map using the requirements, graph-derived conflicts, semantic hypotheses, and repair brief.  The graph is rebuilt from the revised files.  The judge then performs hard and soft checks.  If blocking conflicts remain and the revision budget has not been exhausted, the conflict report is fed back to the developer; otherwise the workflow terminates and the runner emits the resulting patch.
+
+This loop gives THEMIS its central property: the repair process is guided by explicit requirement--code constraints rather than by the issue prompt alone.  The same representation is used for localization, patch guidance, and validation.  At the same time, the graph checks are approximate rather than formal proof obligations.  Their role is to make the model's repair context structured and auditable, not to guarantee semantic correctness in the absence of benchmark tests.
+
+\end{document}

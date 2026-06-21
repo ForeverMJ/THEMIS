@@ -1,0 +1,35 @@
+\documentclass[11pt]{article}
+\usepackage[review]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\title{Section 6 Draft: Discussion}
+\author{Anonymous ARR Submission}
+
+\begin{document}
+\maketitle
+
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Requirement-aware decomposition as an intermediate representation.}
+The central design lesson from THEMIS is that issue understanding can be made explicit before patch generation.  Direct-prompt repair asks an LLM to infer the relevant requirements, localize the code, and generate a patch in a single opaque step.  In contrast, THEMIS converts the issue into requirement nodes, maps those nodes to code elements, and records violation or advisory edges.  This does not make the repair problem solved, but it creates an auditable intermediate representation: a failed repair can be inspected in terms of missing mappings, low-confidence violation evidence, or an incorrect target symbol.  This is useful both for debugging the repair system and for designing future feedback mechanisms.
+
+\paragraph{Why patch generation is much higher than resolution.}
+The 300-instance benchmark shows a large gap between patch production and correctness.  The workflow generates non-empty patches for roughly 94\% of submitted instances, yet the official resolved rate is 58/300, or 19.3\% (20.8\% over completed non-empty-patch instances).  This gap suggests that the system is usually able to produce syntactically applicable edits, but correctness depends on harder steps: selecting the right file or symbol, preserving repository-specific semantics, matching the hidden test oracle, and avoiding plausible but incomplete changes.  The result is therefore not evidence that patch production alone is a strong success metric.  Instead, patch generation should be interpreted as a throughput measure, while resolved rate remains the primary correctness measure.
+
+\paragraph{Why semantic contracts may help.}
+The controlled semantic-contract slice provides bounded evidence that explicit semantic guidance can improve repair behavior.  The context-only control resolves 0/4 cases, while adding semantic contracts resolves 1/4.  A plausible interpretation is that contracts reduce the model's inference burden: rather than asking the model to infer the missing invariant entirely from issue text and code context, a contract states the expected behavior in a more operational form.  In THEMIS, such constraints also align naturally with the requirement-node view of repair.  However, the evidence remains small.  We therefore treat the result as a proof of usefulness in a controlled slice, not as a general claim that semantic contracts improve all repair tasks.
+
+\paragraph{The reranking negative result.}
+The reranking variant remains at 1/4 in the same controlled slice, matching the simpler semantic-contract prompt.  This negative result is informative.  It suggests that additional pipeline complexity does not automatically translate into better repairs when the core semantic constraint is already explicit.  In small fault spaces, a clear repair contract may provide most of the useful guidance, while reranking may be limited by the quality of the candidate patches or by weak alignment between ranking features and the actual test oracle.  We therefore view reranking as a hypothesis for future refinement rather than as an established improvement in the current system.
+
+\paragraph{Revision behavior.}
+The current logs record per-instance fields such as \texttt{developer\_rounds}, \texttt{effective\_rounds}, \texttt{effective\_modification\_rate}, and \texttt{target\_hit\_rate}.  These fields are useful diagnostics for future analysis.  However, the current aggregate materials do not provide a complete distribution of effective rounds across all 300 instances.  We therefore do not make a headline claim that one repair round is generally sufficient.  The safer conclusion is that the current experiments evaluate a shallow, bounded repair loop with maximum revision count one; deeper loops remain an open design choice.
+
+\paragraph{Cost and reproducibility.}
+The Advanced Analysis path records approximately 28.3M tokens across the 300-instance run, or about 94k tokens per instance.  This gives a partial cost signal for the semantic-analysis component.  We do not report total LLM cost because the current chat-model callback accounting does not reliably capture Developer and Judge usage: logged \texttt{chat\_usage.total\_tokens=0} reflects instrumentation limitations rather than absence of calls.  Future experiments should re-instrument the chat-model path directly from provider response metadata before drawing total-cost conclusions.
+
+\end{document}

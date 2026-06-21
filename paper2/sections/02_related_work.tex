@@ -1,0 +1,40 @@
+\documentclass[11pt]{article}
+\usepackage[review]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\title{Section 2 Draft: Related Work}
+\author{Anonymous ARR Submission}
+
+\begin{document}
+\maketitle
+
+\section{Related Work}
+\label{sec:related-work}
+
+\subsection{Automated Program Repair}
+\label{subsec:apr}
+
+Automated program repair has traditionally been formulated as a generate-and-validate problem: a repair system searches a space of candidate edits and uses tests, specifications, crashes, or semantic constraints as an oracle \citep{monperrus-2018-automatic-repair-bibliography}.  Early search-based systems such as GenProg used genetic programming to generate patches for real bugs \citep{weimer-etal-2009-genprog}, and subsequent empirical studies showed both the promise and cost profile of test-suite-based APR at larger scale \citep{legoues-etal-2012-systematic-apr}.  Other lines of work use learned priors over correct code, as in Prophet \citep{long-rinard-2016-prophet}, or synthesize repairs from symbolic constraints, as in SemFix and Angelix \citep{nguyen-etal-2013-semfix,mechtaev-etal-2016-angelix}.  Nopol focuses on conditional statements and missing preconditions using angelic values and SMT-based synthesis \citep{xuan-etal-2017-nopol}.  THEMIS builds on this tradition of constraint-guided repair, but its constraints are derived from issue text and represented as requirement--code graph relations rather than only as search operators, symbolic path constraints, or test outcomes.
+
+\subsection{LLM-Based Code Repair}
+\label{subsec:llm-repair}
+
+Large language models have shifted APR from hand-designed repair templates toward flexible code generation.  Code language models can produce patches directly or rank likely edits, and empirical studies show that they can be competitive with earlier learning-based and traditional APR systems \citep{jiang-etal-2023-code-lms-apr,sobania-etal-2023-chatgpt-bugfixing}.  Conversational repair systems further exploit LLM interaction by feeding back validation information and previous patch attempts \citep{xia-zhang-2023-conversational-apr,xia-etal-2024-chatrepair}.  Recent work also evaluates LLMs on repository-level issue resolution, where the task includes file localization, context selection, editing, and test-based validation \citep{jimenez-etal-2024-swebench,yang-etal-2024-swe-agent,xia-etal-2024-agentless}.  Surveys and critical reviews highlight both the rapid progress of LLM repair and methodological concerns such as data leakage, benchmark design, and unclear failure modes \citep{zhang-etal-2024-critical-review-chatgpt-apr,zubair-etal-2025-llm-program-repair-slr}.  THEMIS is complementary to this work: it does not propose a new base model, but instead structures the repair interaction by decomposing requirements and exposing graph conflicts to the model.
+
+\subsection{Knowledge Graphs and Structured Representations from Code}
+\label{subsec:code-graphs}
+
+Structured representations have long been used to capture information that token sequences alone miss.  Code property graphs combine abstract syntax trees, control-flow graphs, and program-dependence graphs into a single graph representation for vulnerability discovery \citep{yamaguchi-etal-2014-code-property-graphs}.  Neural program-analysis work similarly shows that graphs can encode syntactic and semantic relations useful for reasoning over code, including variable use and misuse detection \citep{allamanis-etal-2018-program-graphs}.  Other representation-learning approaches use AST paths or data-flow relations to improve code understanding, summarization, and retrieval \citep{alon-etal-2019-code2seq,alon-etal-2019-code2vec,guo-etal-2021-graphcodebert}.  Earlier semantic language models for code also demonstrate that source code benefits from structural and semantic signals beyond plain token statistics \citep{nguyen-etal-2013-statistical-semantic-code}.  THEMIS adopts the graph-oriented view, but extends it with natural-language requirement nodes, requirement--code mapping edges, and violation edges designed specifically for repair guidance.
+
+\subsection{Semantic-Guided Repair}
+\label{subsec:semantic-guided-repair}
+
+Semantic guidance is a recurring theme in APR.  SemFix uses semantic analysis and symbolic reasoning to synthesize patches satisfying inferred constraints \citep{nguyen-etal-2013-semfix}; Angelix scales symbolic repair by inferring angelic values and synthesizing multiline patches \citep{mechtaev-etal-2016-angelix}; and Nopol repairs buggy conditions and missing preconditions using runtime traces and SMT solving \citep{xuan-etal-2017-nopol}.  Learned approaches such as Prophet incorporate semantic and statistical signals through a model of correct code \citep{long-rinard-2016-prophet}.  LLM-era systems bring a different form of semantic guidance: natural-language hints, test failure messages, and conversational feedback can alter the model's repair trajectory \citep{sobania-etal-2023-chatgpt-bugfixing,xia-etal-2024-chatrepair}.  THEMIS combines these two traditions.  It uses LLMs for semantic interpretation and patch generation, but externalizes that interpretation into explicit requirement nodes, repair hypotheses, and graph conflicts.  This design makes semantic guidance auditable and allows negative evidence---for example, unresolved blocking conflicts---to be fed back to the repair loop.
+
+\bibliographystyle{acl_natbib}
+\bibliography{../references}
+
+\end{document}

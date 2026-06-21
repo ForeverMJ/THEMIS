@@ -1,0 +1,41 @@
+\documentclass[11pt]{article}
+\usepackage[review]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\title{Section 7 Draft: Limitations}
+\author{Anonymous ARR Submission}
+
+\begin{document}
+\maketitle
+
+\section{Limitations}
+\label{sec:limitations}
+
+\paragraph{Single-model evaluation.}
+The reported experiments use \texttt{gpt-5.1-codex-mini} for both the repair workflow and the Advanced Code Analyzer.  The results therefore measure one model configuration, not the model-agnostic effectiveness of requirement-aware graph decomposition.  Different code LMs may respond differently to graph-derived conflict reports, semantic contracts, and structured edit prompts.
+
+\paragraph{Python and SWE-bench Lite scope.}
+The main evaluation is limited to SWE-bench Lite and its Python repository set.  THEMIS uses Python AST extraction and Python-oriented symbol rewriting in the current implementation.  The knowledge-graph idea is more general, but support for other languages would require language-specific parsers, dependency extractors, edit applicators, and validation logic.
+
+\paragraph{Bounded fault space and file selection.}
+The benchmark runner uses conservative file selection, with optional fallback, neighborhood, context, and retrieval presets.  This keeps repair focused and makes experiments tractable, but it can miss bugs requiring coordinated edits across multiple files.  A bounded fault space also means that a failed repair may reflect localization failure rather than inability to generate the right code once the correct files are available.
+
+\paragraph{Resolved rate versus patch generation rate.}
+THEMIS generates non-empty patches for roughly 94\% of submitted instances, but the official resolved rate is 58/300, or 19.3\%.  These are different metrics.  Patch generation measures whether the workflow produced a candidate diff; resolved rate measures whether the candidate passes the SWE-bench harness.  The gap limits any claim that high patch production alone indicates repair success.
+
+\paragraph{Manual semantic contracts.}
+The semantic-contract experiments rely on hand-crafted contracts for selected difficult instances.  This makes the controlled comparison informative, but it also limits scalability.  A production system would need to infer such contracts automatically or support a lightweight human-in-the-loop process.  The current 0/4 to 1/4 improvement should therefore be read as bounded evidence for explicit semantic guidance, not as a fully automated contract-generation result.
+
+\paragraph{Ablation scope.}
+The six ablation-labeled variants are run on a fixed five-instance slice, and several variant labels require further formal definition before they can support strong causal claims.  We therefore treat these runs as probes of design choices rather than as a complete isolation of every component contribution.
+
+\paragraph{Token accounting.}
+Advanced Analysis token usage is tracked separately and totals approximately 28.3M tokens in the 300-instance run.  In contrast, Developer and Judge chat-model usage is not reliably measured by the current callback path.  The logged zero chat-token values are an instrumentation limitation, not evidence that those components were unused.  Total-cost analysis requires corrected accounting.
+
+\paragraph{Requirement decomposition noise.}
+Requirement decomposition and requirement--code mapping are approximate.  Issue reports often contain metadata, environment details, stack traces, and low-signal terms that can produce noisy requirement nodes or weak \texttt{MAPS\_TO} edges.  Noise in this stage can propagate to violation reports and repair prompts.  Improved filtering, confidence calibration, and qualitative error analysis are important next steps.
+
+\end{document}

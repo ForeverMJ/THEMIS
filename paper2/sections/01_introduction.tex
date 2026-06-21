@@ -1,0 +1,35 @@
+\documentclass[11pt]{article}
+\usepackage[review]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\title{Section 1 Draft: Introduction}
+\author{Anonymous ARR Submission}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+\label{sec:introduction}
+
+Automatically repairing real software bugs is a long-standing goal at the intersection of software engineering and language technologies.  A bug report is not merely a request to edit code: it contains natural-language descriptions of observed behavior, expected behavior, failing tests, examples, and often implicit domain constraints.  Modern benchmarks such as SWE-bench make this challenge concrete by asking models to resolve real GitHub issues in full repository contexts \citep{jimenez-etal-2024-swebench}.  While large language models (LLMs) have substantially expanded the space of plausible code edits, automated program repair (APR) remains difficult because the model must jointly understand the issue, localize the relevant code, infer the missing behavior, and produce a minimal patch that satisfies the test oracle \citep{monperrus-2018-automatic-repair-bibliography,jiang-etal-2023-code-lms-apr}.
+
+Most LLM-based repair pipelines still treat the issue report primarily as text to be inserted into a prompt.  This direct-prompt formulation is flexible, but it leaves requirement interpretation implicit inside the model.  As a result, the repair loop has limited visibility into which part of the issue is being addressed, which code element is responsible for each requirement, and whether a generated patch satisfies the decomposed expectations.  Conversational repair systems improve on one-shot prompting by feeding back test failures or previous patch attempts \citep{xia-zhang-2023-conversational-apr,xia-etal-2024-chatrepair}, yet the intermediate representation is still typically a sequence of textual messages.  We argue that issue understanding should be externalized into a structured representation that can guide both editing and validation.
+
+We present \textsc{THEMIS}, a requirement-aware code repair framework that decomposes natural-language issue descriptions into explicit constraints in a code knowledge graph.  THEMIS combines four agents.  An Enhanced Graph Manager extracts Python code structure, injects requirement nodes, traces dependencies, and flags requirement--code violations.  An Advanced Code Analyzer classifies the bug, maps code elements to higher-level concepts, enriches the LLM context, and derives repair hypotheses.  A Developer agent generates edits under graph-derived constraints and semantic hypotheses.  A Judge agent validates the revised graph using hard checks over blocking violation edges and optional LLM advisory checks.  Unlike direct prompting, the same graph representation is used for localization, repair guidance, and consistency checking.
+
+This paper makes three contributions.
+\begin{enumerate}
+    \item We introduce a requirement-aware repair architecture that converts issue text into requirement nodes and requirement--code edges, making the repair loop inspectable at the level of decomposed requirements.
+    \item We evaluate THEMIS on all 300 SWE-bench Lite instances.  Under the current \texttt{gpt-5.1-codex-mini} run, official harness summaries show 58 resolved instances out of 300 submitted cases (19.3\%), while the workflow produces non-empty patches for approximately 94\% of instances.  We report these as distinct outcome and patch-production metrics.
+    \item We conduct a controlled semantic-contract analysis.  In an executed four-case slice, explicit semantic repair contracts improve the result from 0/4 to 1/4 over a context-only control, while a more complex reranking variant remains at 1/4.  This provides bounded evidence for the value of explicit semantic guidance and a negative result for additional reranking complexity.
+\end{enumerate}
+
+The remainder of the paper is organized as follows.  Section~\ref{sec:related-work} reviews traditional APR, LLM-based repair, graph representations of code, and semantic-guided repair.  Section~\ref{sec:system-architecture} describes the THEMIS architecture and its four-agent workflow.  Section~4 presents the SWE-bench Lite experimental setup, presets, and metrics.  Section~5 reports benchmark, ablation, and semantic-contract results.  Section~6 discusses the implications of requirement-aware repair and the observed negative results.  Section~7 summarizes limitations, and Section~8 concludes.
+
+\bibliographystyle{acl_natbib}
+\bibliography{../references}
+
+\end{document}

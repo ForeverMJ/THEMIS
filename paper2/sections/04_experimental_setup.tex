@@ -1,0 +1,72 @@
+\documentclass[11pt]{article}
+\usepackage[review]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\title{Section 4 Draft: Experimental Setup}
+\author{Anonymous ARR Submission}
+
+\begin{document}
+\maketitle
+
+\section{Experimental Setup}
+\label{sec:experimental-setup}
+
+We evaluate THEMIS on SWE-bench Lite, a 300-instance subset of real-world GitHub issue-resolution tasks drawn from Python repositories \citep{jimenez-etal-2024-swebench}.  Each instance contains a repository, a base commit, a natural-language problem statement, optional hints, and failing tests used by the official SWE-bench evaluation harness.  THEMIS consumes the issue text and selected source files, produces a patch as a standard \texttt{git diff}, and writes predictions in the JSONL format expected by the harness.
+
+\subsection{Dataset and Instance Processing}
+\label{subsec:dataset-processing}
+
+The primary benchmark run uses all 300 SWE-bench Lite test instances with random seed 42.  The instances span the benchmark's Python repository set, with the largest groups coming from Django, SymPy, scikit-learn, Matplotlib, Sphinx, Astropy, Xarray, Flask, Seaborn, Requests, Pytest, and other repositories.  For each instance, the runner checks out the repository at the recorded base commit, selects target files, builds a requirement string, executes the integrated THEMIS workflow, applies the resulting file updates, and emits a patch.
+
+The requirement string concatenates the problem statement, available hints, failing test identifiers, and---for selected semantic-contract presets---additional repair contracts.  This construction is intentionally explicit: failing tests and semantic contracts are not hidden evaluator signals, but become part of the textual requirement object that the graph manager can decompose into requirement nodes.
+
+\subsection{Model and Workflow Configuration}
+\label{subsec:model-workflow-config}
+
+All reported runs in this paper use \texttt{gpt-5.1-codex-mini} as both the repair workflow model and the advanced-analysis model.  The main benchmark uses the integrated workflow described in Section~\ref{sec:system-architecture}: Advanced Analysis, knowledge-graph construction, Developer revision, graph rebuilding, and Judge validation.  The default strategy is \texttt{auto\_select}; most controlled variants use \texttt{graph\_only} so that the comparison focuses on structural, context, or semantic-contract changes rather than a changing strategy selector.
+
+The maximum revision count is one in the documented experiments.  Within a revision, the Developer may attempt bounded edit modes, but the workflow-level loop is intentionally shallow.  This setting makes the evaluation closer to a constrained repair pass than to an open-ended autonomous debugging session.
+
+\subsection{File Selection and Context Construction}
+\label{subsec:file-selection}
+
+THEMIS uses conservative file selection because the current graph manager is optimized for bounded Python modules.  The runner first extracts explicit Python paths from the issue text and failing-test metadata.  If no direct path is available, it extracts up to a small set of meaningful tokens and searches the repository using a priority order of \texttt{ripgrep}, \texttt{git grep}, and a Python fallback scan.  Candidate files are ranked by token matches, with special weighting for identifier-like tokens, and test files are filtered when selecting the primary repair target.
+
+Several presets expand this conservative target in controlled ways.  Fault-space fallback and neighborhood variants add bounded nearby files; context variants add hand-curated auxiliary files for selected instances; retrieval variants add Python files mentioned in the instance text; and semantic-contract variants append instance-specific repair constraints to the requirement string.  These variants allow us to probe whether additional fault-space or semantic information helps, but they do not remove the bounded-file assumption.
+
+\subsection{Experiment Presets}
+\label{subsec:presets}
+
+Table~\ref{tab:presets} summarizes the presets used in the documented experiments.  The full 300-instance benchmark uses the default integrated configuration.  Additional ablation-labeled runs are performed on a fixed five-instance slice.  Because several ablation labels are documented by name rather than by a fully specified component removal, we treat them as probes of selected design choices rather than as a complete causal decomposition of every system component.
+
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{llll}
+\toprule
+Preset family & Workflow / strategy & Scope & Purpose \\
+\midrule
+Default & integrated, \texttt{auto\_select} & 300 instances & Main benchmark run \\
+\texttt{ablation1} & integrated variant, \texttt{graph\_only} & fixed 5-instance slice & graph-only conflict baseline \\
+Other ablation labels & ablation-labeled variants & fixed 5-instance slice & probe design choices; definitions require cautious interpretation \\
+Fault-space variants & fallback / neighborhood / context / retrieval & selected slices & test bounded target expansion and context additions \\
+Semantic contract & contract / control / rerank & controlled semantic slices & test explicit semantic constraints and reranking \\
+\bottomrule
+\end{tabular}
+\caption{Experiment preset families.  We distinguish the full 300-instance benchmark from smaller ablation and semantic-contract slices.}
+\label{tab:presets}
+\end{table*}
+
+\subsection{Metrics}
+\label{subsec:metrics}
+
+We report six metrics.  \textbf{Resolved rate} is the official SWE-bench harness outcome: the number of submitted instances whose generated patch passes the relevant benchmark tests divided by the number of submitted instances.  We also report a completed-only denominator, dividing resolved instances by completed non-empty-patch instances, because empty patches are not meaningful repair attempts.  \textbf{Patch generation rate} is the fraction of submitted instances for which the workflow produces a non-empty patch.  This is an engineering throughput measure, not a correctness measure.  \textbf{Runtime} is wall-clock processing time per instance.  \textbf{Advanced Analysis token usage} is the token count recorded by the separate advanced-analysis interface.  Finally, \textbf{chat-model usage} is not used as reliable cost evidence: the current callback-based accounting records \texttt{chat\_usage.total\_tokens=0}, but this reflects an instrumentation limitation for the chat-model path and should not be interpreted as absence of Developer or Judge LLM calls.
+
+\bibliographystyle{acl_natbib}
+\bibliography{../references}
+
+\end{document}
