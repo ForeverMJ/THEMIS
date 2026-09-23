@@ -44,3 +44,20 @@ Thumbs.db
 !requirements.txt
 .hypothesis/
 .env
+
+# Private manuscripts and their build artifacts (keep local copies).
+# Do not ignore paper*/ wholesale: those directories also contain audit code
+# and experimental evidence that may be published independently.
+/paper_最终版/
+/paper*/**/*.tex
+/paper*/**/*.pdf
+/paper*/**/*.bib
+/paper*/**/*.aux
+/paper*/**/*.bbl
+/paper*/**/*.blg
+/paper*/**/*.out
+/paper*/**/*.toc
+/paper*/**/*.synctex.gz
+/paper*/**/*.fls
+/paper*/**/*.fdb_latexmk
+/paper*/**/*.log
